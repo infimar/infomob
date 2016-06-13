@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Almaty',
 
     /*
     |--------------------------------------------------------------------------
@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'ru',
 
     /*
     |--------------------------------------------------------------------------
@@ -160,6 +160,11 @@ return [
          * FORM&HTML
          */
         Collective\Html\HtmlServiceProvider::class,
+
+        /*
+         * Baum nested list
+         */
+        'Baum\Providers\BaumServiceProvider',
 
     ],
 
