@@ -407,12 +407,12 @@ document.write('<meta name="viewport" content="width=device-width,initial-scale=
                 },
                 {
                     'id': 'Scheme 2',
-                    'url': 'css/colorScheme-1.css',
+                    'url': 'css/colorScheme-2.css',
                     'icon': '#2196F3'
                 },
                 {
                     'id': 'Scheme 3',
-                    'url': 'css/colorScheme-2.css',
+                    'url': 'css/colorScheme-1.css',
                     'icon': '#FF0000'
                 },
                 {
