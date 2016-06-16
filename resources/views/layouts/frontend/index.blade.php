@@ -7,35 +7,35 @@
     <meta name="format-detection" content="telephone=no"/>
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
 
-    <link rel="stylesheet" href="css/grid.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="{{ asset('css/grid.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/search.css') }}">
 
-    <link rel="stylesheet" href="css/touch-touch.css">
-    <link rel="stylesheet" href="css/styleswitcher.css">
+    <link rel="stylesheet" href="{{ asset('css/touch-touch.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/styleswitcher.css') }}">
 
-    <script type="text/javascript" src="http://gc.kis.scr.kaspersky-labs.com/1B74BD89-2A22-4B93-B451-1C9E1052A0EC/main.js" charset="UTF-8"></script><script src="js/jquery.js"></script>
-    <script src="js/jquery-migrate-1.2.1.js"></script>
+    <script src="{{ asset('js/jquery.js') }}"></script>
+    <script src="{{ asset('js/jquery-migrate-1.2.1.js') }}"></script>
 
     <!--[if lt IE 9]>
     <html class="lt-ie9">
     <div style=' clear: both; text-align:center; position: relative;'>
         <a href="http://windows.microsoft.com/en-US/internet-explorer/..">
-            <img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820"
+            <img src="{{ asset('images/ie8-panel/warning_bar_0000_us.jpg') }}" border="0" height="42" width="820"
                  alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."/>
         </a>
     </div>
     <script src="js/html5shiv.js"></script>
     <![endif]-->
 
-    <script src='js/device.min.js'></script>
+    <script src='{{ asset('js/device.min.js') }}'></script>
 </head>
 <body>
 <div class="page">
     <!--========================================================
                               HEADER
     =========================================================-->
-    <header class="parallax" data-url="images/parallax1.jpg" data-mobile="true" data-speed="0.8">
+    <header class="parallax" data-url="{{ asset('images/parallax1.jpg') }}" data-mobile="true" data-speed="0.8">
         <div id="stuck_container" class="stuck_container">
             <div class="container">
                 <div class="brand">
@@ -195,8 +195,8 @@
 
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <div class="thumbnail">
-                            <a class="thumb" href="images/page-1_img1_original.jpg">
-                                <img  src="images/page-1_img1.jpg" alt="">
+                            <a class="thumb" href="{{ asset('images/page-1_img1_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img1.jpg') }}" alt="">
                                 <span class="thumb_overlay"></span>
                             </a>
                             <div class="caption">
@@ -212,8 +212,8 @@
                     </div>
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <div class="thumbnail">
-                            <a class="thumb" href="images/page-1_img2_original.jpg">
-                                <img  src="images/page-1_img2.jpg" alt="">
+                            <a class="thumb" href="{{ asset('images/page-1_img2_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img2.jpg') }}" alt="">
                                 <span class="thumb_overlay"></span>
                             </a>
                             <div class="caption">
@@ -229,8 +229,8 @@
                     </div>
                     <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-12">
                         <div class="thumbnail">
-                            <a class="thumb" href="images/page-1_img3_original.jpg">
-                                <img  src="images/page-1_img3.jpg" alt="">
+                            <a class="thumb" href="{{ asset('images/page-1_img3_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img3.jpg') }}" alt="">
                                 <span class="thumb_overlay"></span>
                             </a>
                             <div class="caption">
@@ -246,8 +246,8 @@
                     </div>
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <div class="thumbnail">
-                            <a class="thumb" href="images/page-1_img4_original.jpg">
-                                <img  src="images/page-1_img4.jpg" alt="">
+                            <a class="thumb" href="{{ asset('images/page-1_img4_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img4.jpg') }}" alt="">
                                 <span class="thumb_overlay"></span>
                             </a>
                             <div class="caption">
@@ -267,8 +267,8 @@
 
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <div class="thumbnail">
-                            <a class="thumb" href="images/page-1_img5_original.jpg">
-                                <img  src="images/page-1_img5.jpg" alt="">
+                            <a class="thumb" href="{{ asset('images/page-1_img5_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img5.jpg') }}" alt="">
                                 <span class="thumb_overlay"></span>
                             </a>
                             <div class="caption">
@@ -284,8 +284,8 @@
                     </div>
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <div class="thumbnail">
-                            <a class="thumb" href="images/page-1_img6_original.jpg">
-                                <img  src="images/page-1_img6.jpg" alt="">
+                            <a class="thumb" href="{{ asset('images/page-1_img6_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img6.jpg') }}" alt="">
                                 <span class="thumb_overlay"></span>
                             </a>
                             <div class="caption">
@@ -301,8 +301,8 @@
                     </div>
                     <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-12">
                         <div class="thumbnail">
-                            <a class="thumb" href="images/page-1_img7_original.jpg">
-                                <img  src="images/page-1_img7.jpg" alt="">
+                            <a class="thumb" href="{{ asset('images/page-1_img7_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img7.jpg') }}" alt="">
                                 <span class="thumb_overlay"></span>
                             </a>
                             <div class="caption">
@@ -318,8 +318,8 @@
                     </div>
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <div class="thumbnail">
-                            <a class="thumb" href="images/page-1_img8_original.jpg">
-                                <img  src="images/page-1_img8.jpg" alt="">
+                            <a class="thumb" href="{{ asset('images/page-1_img8_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img8.jpg') }}" alt="">
                                 <span class="thumb_overlay"></span>
                             </a>
                             <div class="caption">
@@ -405,7 +405,7 @@
                         <h3 class="clr-white">
                             About
                         </h3>
-                        <img src="images/page-1_img9.jpg" alt="" class="img-full">
+                        <img src="{{ asset('images/page-1_img9.jpg') }}" alt="" class="img-full">
                         <p class="clr-darken word-wrap">
                             Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore. Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.
                         </p>
@@ -533,7 +533,7 @@
     </footer>
 </div>
 
-<script src="js/script.js"></script>
+<script src="{{ asset('js/script.js') }}"></script>
 <!-- begin olark code -->
 <script data-cfasync="false" type='text/javascript'>
     /*<![CDATA[*/window.olark||(function(c){var f=window,d=document,l=f.location.protocol=="https:"?"https:":"http:",z=c.name,r="load";var nt=function(){
