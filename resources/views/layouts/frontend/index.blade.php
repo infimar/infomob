@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="{{ asset('css/search.css') }}">
 
     <link rel="stylesheet" href="{{ asset('css/touch-touch.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/styleswitcher.css') }}">
 
     <script src="{{ asset('js/jquery.js') }}"></script>
     <script src="{{ asset('js/jquery-migrate-1.2.1.js') }}"></script>
