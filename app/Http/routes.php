@@ -14,7 +14,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::get('/template', function () {
+    return view('layouts.frontend.index');
+});
 Route::auth();
 
 Route::get('/home', 'HomeController@index');
