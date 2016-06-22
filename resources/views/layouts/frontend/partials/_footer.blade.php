@@ -87,7 +87,7 @@
 
                 <div class="col-md-3 col-sm-6 col-xs-6">
                     <h3 class="clr-white">
-                        Мы в социальных сетях
+                        Подпишитесь на нас
                     </h3>
 
                     <ul class="inline-list">
