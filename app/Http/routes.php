@@ -14,8 +14,14 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/template', function () {
+Route::get('/index', function () {
     return view('layouts.frontend.index');
+});
+Route::get('/category', function () {
+    return view('layouts.frontend.category');
+});
+Route::get('/organization', function () {
+    return view('layouts.frontend.organization');
 });
 Route::auth();
 

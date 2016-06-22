@@ -274,15 +274,11 @@ h2 + img {
 }
 .brand:before {
   position: absolute;
-  content: url(../images/logo.png);
+  content: url(../images/icons/logo_icon.png);
   width: 59px;
   height: 59px;
   left: 0;
   top: 0;
-  background: #2196F3;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
   text-align: center;
   line-height: 59px;
 }
@@ -1501,4 +1497,62 @@ footer .rights {
   padding-top: 15px;
   padding-bottom: 25px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+/*========================================================
+                     Category main  Styles
+=========================================================*/
+
+.category_main {
+  width: 100%;
+  heigth: 664px;
+  margin: 20px 0px;
+}
+.category_row {
+  text-align: center;
+  width: 984px;
+  height: 166px;
+  margin: 0 auto;
+}
+.category_row a:last-child {
+  margin: 0px 0px 22px 0px;
+}
+.category_row a:last-child .borderRight{
+  border: 0px;
+}
+.category_row:last-child .borderBottom {
+  border: 0px;
+}
+.category_row a {
+  float: left;
+  display: block;
+  position: relative;
+  margin: 0px 24px 22px 0px;
+}
+.category_item {
+  width: 120px;
+  height: 111px;
+  float: left;
+  margin: 0px 24px 22px 0px;
+}
+.category_item img {
+}
+.category_name {
+  line-height: 16px;
+  font-size: 14px;
+  height: 48px;
+  width: 120px;
+ }
+.borderBottom {
+  border-bottom: 1px solid #777;
+  position: absolute;
+  right: 20%;
+  left: 0;
+  bottom: 0;
+}
+.borderRight {
+  border-right: 1px solid #777;
+  position: absolute;
+  bottom: 20%;
+  right: 0;
+  top: 0;
 }

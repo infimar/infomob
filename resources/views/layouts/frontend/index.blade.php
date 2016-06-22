@@ -1,5 +1,9 @@
 @extends('layouts.frontend.template')
 
+@section('title')
+
+@endsection
+
 @section('slider')
     class="parallax" data-url="{{ asset('images/parallax1.jpg') }}" data-mobile="true" data-speed="0.8"
 @endsection
@@ -7,19 +11,17 @@
     <section class="well1">
         <div class="container">
             <div class="h1 clr-white text-center">
-                Find office space for small businesses,<br>
-                <small>
-                    startups &amp; freelancers - search now!
-                </small>
+                Найдите то, что искали
             </div>
 
-            <form class="search-form" action="search.php" method="GET" accept-charset="utf-8">
+
+            {!! Form::open(array('url' => '', 'class' => 'search-form')) !!}
                 <label class="search-form_label">
-                    <input class="search-form_input" type="text" name="s" autocomplete="off" placeholder="Location,  Size,  Cost "/>
+                    {{Form::text('s', $first_name = null, array('class' => 'search-form_input', 'placeholder' => 'Компании,  Сервисы,  Банкоматы'))}}
                     <span class="search-form_liveout"></span>
                 </label>
-                <button class="search-form_submit btn btn-primary" type="submit">Search</button>
-            </form>
+                {{Form::submit('Поиск', array('class' => 'search-form_submit btn btn-primary'))}}
+            {!! Form::close() !!}
         </div>
     </section>
 @endsection
@@ -29,70 +31,61 @@
         <section class="well2">
             <div class="container">
                 <h2 class="text-center">
-                    Quick guide to finding <span class="clr-primary">office space</span> with Office Rent
+                    Выберите категорию
                 </h2>
-                <ul class="row row_offs1 index-list">
-                    <li class="col-md-4 col-sm-6 col-xs-12">
-                        <h3>
-                            Lorem ipsum dolor sit
-                        </h3>
-                        <p>
-                            Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.
-                        </p>
-                    </li>
-
-                    <li class="col-md-4 col-sm-6 col-xs-12">
-                        <h3>
-                            Veniam quis nostrud
-                        </h3>
-                        <p>
-                            Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.
-                        </p>
-                    </li>
-
-                    <li class="col-md-4 col-md-release col-sm-6 col-sm-clear col-xs-12">
-                        <h3>
-                            Laboris nisi ut aliquip
-                        </h3>
-                        <p>
-                            Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.
-                        </p>
-                    </li>
-
-                    <li class="col-md-4 col-md-clear col-sm-6 col-xs-12">
-                        <h3>
-                            Ut enim ad minim
-                        </h3>
-                        <p>
-                            Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.
-                        </p>
-                    </li>
-
-                    <li class="col-md-4 col-md-release col-sm-6 col-sm-clear col-xs-12">
-                        <h3>
-                            Exercitation ullamco
-                        </h3>
-                        <p>
-                            Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.
-                        </p>
-                    </li>
-
-                    <li class="col-md-4 col-sm-6 col-xs-12">
-                        <h3>
-                            Ex ea commodo co
-                        </h3>
-                        <p>
-                            Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.
-                        </p>
-                    </li>
-                </ul>
+                <div class="category_main row text-xs-center">
+                    <div class="category_row">
+                        @for ($i = 1; $i <= 6; $i++)
+                        <a href="#" >
+                            <div class="category_item">
+                                <img src="images/icons/{{ $i }}.png" class="wow fadeInRight" data-wow-duration='1s'><div class="category_name wow fadeInRight" data-wow-duration='2s'>Торговые комплексы, рынки и магазины</div>
+                            </div>
+                            <div class="borderRight"></div>
+                            <div class="borderBottom"></div>
+                        </a>
+                        @endfor
+                    </div>
+                    <div class="category_row">
+                        @for ($i = 7; $i <= 12; $i++)
+                            <a href="#" >
+                                <div class="category_item">
+                                    <img src="images/icons/{{ $i }}.png" class="wow fadeInRight" data-wow-duration='1s'><div class="category_name wow fadeInRight" data-wow-duration='2s'>Торговые комплексы, рынки и магазины</div>
+                                </div>
+                                <div class="borderRight"></div>
+                                <div class="borderBottom"></div>
+                            </a>
+                        @endfor
+                    </div>
+                    <div class="category_row">
+                        @for ($i = 13; $i <= 18; $i++)
+                            <a href="#" >
+                                <div class="category_item">
+                                    <img src="images/icons/{{ $i }}.png" class="wow fadeInRight" data-wow-duration='1s'><div class="category_name wow fadeInRight" data-wow-duration='2s'>Торговые комплексы, рынки и магазины</div>
+                                </div>
+                                <div class="borderRight"></div>
+                                <div class="borderBottom"></div>
+                            </a>
+                        @endfor
+                    </div>
+                    <div class="category_row">
+                        @for ($i = 19; $i <= 24; $i++)
+                            <a href="#" >
+                                <div class="category_item">
+                                    <img src="images/icons/{{ $i }}.png" class="wow fadeInRight" data-wow-duration='1s'><div class="category_name wow fadeInRight" data-wow-duration='2s'>Торговые комплексы, рынки и магазины</div>
+                                </div>
+                                <div class="borderRight"></div>
+                                <div class="borderBottom"></div>
+                            </a>
+                        @endfor
+                    </div>
+                </div>
             </div>
         </section>
 
         <section class="well2 bg1 text-center">
             <div class="container">
                 <h2>
-                    Hot properties
+                    Популярные
                 </h2>
 
                 <div class="row text-left text-xs-center wow fadeIn" data-wow-duration='3s'>
@@ -110,7 +103,7 @@
                                 <p class="price">
                                     150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
                                 </p>
-                                <a href="#" class="btn btn-primary">Learn more <span class='fa fa-angle-double-right'></span></a>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                             </div>
                         </div>
                     </div>
@@ -127,7 +120,7 @@
                                 <p class="price">
                                     150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
                                 </p>
-                                <a href="#" class="btn btn-primary">Learn more <span class='fa fa-angle-double-right'></span></a>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                             </div>
                         </div>
                     </div>
@@ -144,7 +137,7 @@
                                 <p class="price">
                                     150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
                                 </p>
-                                <a href="#" class="btn btn-primary">Learn more <span class='fa fa-angle-double-right'></span></a>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                             </div>
                         </div>
                     </div>
@@ -161,7 +154,7 @@
                                 <p class="price">
                                     150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
                                 </p>
-                                <a href="#" class="btn btn-primary">Learn more <span class='fa fa-angle-double-right'></span></a>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                             </div>
                         </div>
                     </div>
@@ -182,7 +175,7 @@
                                 <p class="price">
                                     150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
                                 </p>
-                                <a href="#" class="btn btn-primary">Learn more <span class='fa fa-angle-double-right'></span></a>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                             </div>
                         </div>
                     </div>
@@ -199,7 +192,7 @@
                                 <p class="price">
                                     150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
                                 </p>
-                                <a href="#" class="btn btn-primary">Learn more <span class='fa fa-angle-double-right'></span></a>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                             </div>
                         </div>
                     </div>
@@ -216,7 +209,7 @@
                                 <p class="price">
                                     150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
                                 </p>
-                                <a href="#" class="btn btn-primary">Learn more <span class='fa fa-angle-double-right'></span></a>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                             </div>
                         </div>
                     </div>
@@ -233,64 +226,89 @@
                                 <p class="price">
                                     150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
                                 </p>
-                                <a href="#" class="btn btn-primary">Learn more <span class='fa fa-angle-double-right'></span></a>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <a href="#" class="btn btn-default btn-lg">See all</a>
             </div>
         </section>
 
         <section class="well3">
             <div class="container">
                 <h2 class="text-center">
-                    Popular office searches
+                    Недавно добавленные
                 </h2>
-                <div class="row">
+                <div class="row text-left text-xs-center wow fadeIn" data-wow-duration='3s'>
 
-                    <div class="col-md-4 col-sm-4 col-xs-12">
-                        <ul class="marked-list wow fadeInLeft" data-wow-duration='2s'>
-                            <li>
-                                <a href="#">Desk space</a>
-                            </li>
-                            <li>
-                                <a href="#">Office London</a>
-                            </li>
-                            <li>
-                                <a href="#">Executive office space</a>
-                            </li>
-                        </ul>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="thumbnail">
+                            <a class="thumb" href="{{ asset('images/page-1_img1_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img1.jpg') }}" alt="">
+                                <span class="thumb_overlay"></span>
+                            </a>
+                            <div class="caption">
+                                <p>
+                                    Lorem ipsum dolor sit amet conse
+                                </p>
+                                <p class="price">
+                                    150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
+                                </p>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="col-md-4 col-sm-4 col-xs-12">
-                        <ul class="marked-list">
-                            <li>
-                                <a href="#">Flexible office space</a>
-                            </li>
-                            <li>
-                                <a href="#">Serviced offices London</a>
-                            </li>
-                            <li>
-                                <a href="#">Business centres</a>
-                            </li>
-                        </ul>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="thumbnail">
+                            <a class="thumb" href="{{ asset('images/page-1_img2_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img2.jpg') }}" alt="">
+                                <span class="thumb_overlay"></span>
+                            </a>
+                            <div class="caption">
+                                <p>
+                                    Lorem ipsum dolor sit amet conse
+                                </p>
+                                <p class="price">
+                                    150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
+                                </p>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="col-md-4 col-sm-4 col-xs-12">
-                        <ul class="marked-list wow fadeInRight" data-wow-duration='2s'>
-                            <li>
-                                <a href="#">Office share</a>
-                            </li>
-                            <li>
-                                <a href="#">Co-working</a>
-                            </li>
-                            <li>
-                                <a href="#">Desk space London</a>
-                            </li>
-                        </ul>
+                    <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-12">
+                        <div class="thumbnail">
+                            <a class="thumb" href="{{ asset('images/page-1_img3_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img3.jpg') }}" alt="">
+                                <span class="thumb_overlay"></span>
+                            </a>
+                            <div class="caption">
+                                <p>
+                                    Lorem ipsum dolor sit amet conse
+                                </p>
+                                <p class="price">
+                                    150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
+                                </p>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
+                            </div>
+                        </div>
                     </div>
-
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="thumbnail">
+                            <a class="thumb" href="{{ asset('images/page-1_img4_original.jpg') }}">
+                                <img  src="{{ asset('images/page-1_img4.jpg') }}" alt="">
+                                <span class="thumb_overlay"></span>
+                            </a>
+                            <div class="caption">
+                                <p>
+                                    Lorem ipsum dolor sit amet conse
+                                </p>
+                                <p class="price">
+                                    150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
+                                </p>
+                                <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

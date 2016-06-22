@@ -5,18 +5,18 @@
             <div class="row">
 
                 <div class="col-md-3 col-sm-6 col-xs-6">
+                    <img src="{{ asset('images/logo.png') }}" alt="" class="img-full">
                     <h3 class="clr-white">
-                        About
+                        О нас
                     </h3>
-                    <img src="{{ asset('images/page-1_img9.jpg') }}" alt="" class="img-full">
                     <p class="clr-darken word-wrap">
-                        Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore. Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.
+                        «INFOMOB» - это и сайт, и удобное мобильное приложение  облегчающее  поиск вашего запроса в вашем городе! Преимущество данного продукта в том, что он может быть всегда под рукой, в вашем мобильном телефоне.
                     </p>
                 </div>
 
                 <div class="col-md-3 col-sm-6 col-xs-6">
                     <h3 class="clr-white">
-                        Latest news
+                        Последние добавленные
                     </h3>
 
                     <article>
@@ -51,13 +51,11 @@
                             </a>
                         </p>
                     </article>
-
-                    <a href="#" class="btn btn-primary btn-md">See all <span class='fa-angle-double-right'></span></a>
                 </div>
 
                 <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-6 col-xs-clear">
                     <h3 class="clr-white">
-                        Services
+                        Категории
                     </h3>
                     <ul class="marked-list marked-list__mod1">
                         <li>
@@ -72,12 +70,6 @@
                         <li>
                             <a href="#"><span>Incididunt ut labore</span></a>
                         </li>
-                    </ul>
-
-                    <h3 class="clr-white">
-                        Events
-                    </h3>
-                    <ul class="marked-list marked-list__mod1">
                         <li>
                             <a href="#"><span>Lorem ipsum dolor sit amet </span></a>
                         </li>
@@ -94,31 +86,15 @@
                 </div>
 
                 <div class="col-md-3 col-sm-6 col-xs-6">
-
                     <h3 class="clr-white">
-                        Facebook
-                    </h3>
-
-                    <div class="fb-page" data-href="https://www.facebook.com/TemplateMonster" data-width="270" data-height="230" data-hide-cover="false" data-show-facepile="true" data-show-posts="false">
-                        <div class="fb-xfbml-parse-ignore">
-                            <blockquote cite="https://www.facebook.com/TemplateMonster">
-                                <a href="https://www.facebook.com/TemplateMonster">TemplateMonster</a>
-                            </blockquote>
-                        </div>
-                    </div>
-
-                    <h3 class="clr-white">
-                        Follow Us
+                        Мы в социальных сетях
                     </h3>
 
                     <ul class="inline-list">
                         <li><a href="#" class="fa fa-facebook"></a></li>
                         <li><a href="#" class="fa fa-twitter"></a></li>
-                        <li><a href="#" class="fa fa-skype"></a></li>
                     </ul>
-
                 </div>
-
 
             </div>
         </div>
@@ -127,8 +103,7 @@
     <section class="rights">
         <div class="container">
             <p>
-                Office Rent &#169; <span id="copyright-year"></span>.
-                <a href="index-5.html">Privacy Policy</a>
+                Infomob.kz &#169; <span id="copyright-year"></span>.
                 <!-- {%FOOTER_LINK} -->
             </p>
         </div>

@@ -3,7 +3,7 @@
 
         <div class="brand">
             <h1 class="brand_name">
-                <a href="./">Office Rent</a>
+                <a href="./">Infomob</a>
             </h1>
         </div>
 
@@ -52,12 +52,12 @@
             </ul>
         </nav>
 
-        <div class="contact-info">
+        <!--<div class="contact-info">
             <dl class="text-right">
                 <dt>Call our helpline:</dt>
                 <dd><a href="callto:#">800-1234-5678</a></dd>
             </dl>
-        </div>
+        </div>-->
 
     </div>
 </div>
