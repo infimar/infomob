@@ -1,5 +1,14 @@
 @charset "UTF-8";
 /*================      Fonts    =================*/
+.search-form-all {
+  display: block;
+  position: relative;
+  width: 48.8%;
+  margin-top: 15px;
+  z-index: 3;
+  margin-left: auto;
+  margin-right: auto;
+}
 .search-form {
   display: block;
   position: relative;
@@ -17,8 +26,16 @@
 .search-form:after {
   clear: both;
 }
+.search-form-all:before, .search-form-all:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.search-form-all:after {
+  clear: both;
+}
 @media (max-width: 991px) {
-  .search-form {
+  .search-form, .search-form-all {
     width: 90%;
   }
 }

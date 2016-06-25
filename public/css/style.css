@@ -1419,7 +1419,10 @@ main {
   padding-bottom: 50px;
   padding-top: 50px;
 }
-
+.well_search {
+  padding-bottom: 20px;
+  padding-top: 20px;
+}
 .well1 {
   padding-bottom: 203px;
   padding-top: 200px;
@@ -1555,4 +1558,45 @@ footer .rights {
   bottom: 20%;
   right: 0;
   top: 0;
+}
+
+/*========================================================
+                     Category page  Styles
+=========================================================*/
+
+.left_block {
+  width: 25%;
+  float: left;
+}
+.right_block {
+  width: 75%;
+  float: left;
+  border-left: 1px solid #777;
+}
+.organization_item {
+  width: 100%;
+  height: 100px;
+  margin: 0 20px 10px;
+  clear: both;
+}
+.organization_item img {
+  float: left;
+  width: 100px;
+  height: 100px;
+  margin: 0px 10px;
+}
+.organization_item_text {
+}
+.organization_name_title a {
+  float: none;
+  width: 60%;
+  font-size: 16px;
+  line-height: 18px;
+  text-decoration: underline;
+}
+.organization_short_description {
+  float: none;
+  width: 100%;
+  font-size: 14px;
+  line-height: 18px;
 }
