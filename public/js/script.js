@@ -388,3 +388,141 @@ document.write('<meta name="viewport" content="width=device-width,initial-scale=
 /* Style Switcher
  =============================================*/
 ;
+var userAgent = navigator.userAgent.toLowerCase(),
+    plugins = {
+        swiper: $(".swiper-slider"),
+        slick: $('.carousel-slider')
+    }, $document = $(document),i = 0;
+
+$document.ready(function () {
+
+    /**
+     * @module       Swiper 3.1.7
+     * @description  Most modern mobile touch slider and framework with
+     *               hardware accelerated transitions
+     * @author       Vladimir Kharlampidi
+     * @see          http://www.idangero.us/swiper/
+     * @licesne      MIT License
+     */
+    if (plugins.swiper.length) {
+        for (i = 0; i < plugins.swiper.length; i++) {
+            var s = $(plugins.swiper[i]);
+            var pag = s.find(".swiper-pagination"),
+                next = s.find(".swiper-button-next"),
+                prev = s.find(".swiper-button-prev"),
+                bar = s.find(".swiper-scrollbar"),
+                parallax = s.parents('.rd-parallax').length,
+                swiperSlide = s.find(".swiper-slide");
+
+            for (j = 0; j < swiperSlide.length; j++) {
+                var $this = $(swiperSlide[j]),
+                    url;
+
+                if (url = $this.attr("data-slide-bg")) {
+                    $this.css({
+                        "background-image": "url(" + url + ")",
+                        "background-size": "cover"
+                    })
+                }
+            }
+
+            swiperSlide.end()
+                .find("[data-caption-animate]")
+                .addClass("not-animated")
+                .end()
+                .swiper({
+                    autoplay: s.attr('data-autoplay') ? s.attr('data-autoplay') === "false" ? undefined : s.attr('data-autoplay') : 5000,
+                    direction: s.attr('data-direction') ? s.attr('data-direction') : "horizontal",
+                    effect: s.attr('data-slide-effect') ? s.attr('data-slide-effect') : "slide",
+                    speed: s.attr('data-slide-speed') ? s.attr('data-slide-speed') : 600,
+                    keyboardControl: s.attr('data-keyboard') === "true",
+                    mousewheelControl: s.attr('data-mousewheel') === "true",
+                    mousewheelReleaseOnEdges: s.attr('data-mousewheel-release') === "true",
+                    nextButton: next.length ? next.get(0) : null,
+                    prevButton: prev.length ? prev.get(0) : null,
+                    pagination: pag.length ? pag.get(0) : null,
+                    paginationClickable: pag.length ? pag.attr("data-clickable") !== "false" : false,
+                    paginationBulletRender: pag.length ? pag.attr("data-index-bullet") === "true" ? function (index, className) {
+                        return '<span class="' + className + '">' + (index + 1) + '</span>';
+                    } : null : null,
+                    scrollbar: bar.length ? bar.get(0) : null,
+                    scrollbarDraggable: bar.length ? bar.attr("data-draggable") !== "false" : true,
+                    scrollbarHide: bar.length ? bar.attr("data-draggable") === "false" : false,
+                    loop: s.attr('data-loop') !== "false",
+                    onTransitionStart: function (swiper) {
+                        toggleSwiperInnerVideos(swiper);
+                    },
+                    onTransitionEnd: function (swiper) {
+                        toggleSwiperCaptionAnimation(swiper);
+                    },
+                    onInit: function (swiper) {
+                        toggleSwiperInnerVideos(swiper);
+                        toggleSwiperCaptionAnimation(swiper);
+                        var swiperParalax = s.find(".swiper-parallax");
+
+                        for (var k = 0; k < swiperParalax.length; k++) {
+                            var $this = $(swiperParalax[k]),
+                                speed;
+
+                            if (parallax && !isIEBrows && !isMobile) {
+                                if (speed = $this.attr("data-speed")) {
+                                    makeParallax($this, speed, s, false);
+                                }
+                            }
+                        }
+                        $(window).on('resize', function () {
+                            swiper.update(true);
+                        })
+                    }
+                });
+
+            $(window)
+                .on("resize", function () {
+                    var mh = getSwiperHeight(s, "min-height"),
+                        h = getSwiperHeight(s, "height");
+                    if (h) {
+                        s.css("height", mh ? mh > h ? mh : h : h);
+                    }
+                })
+                .trigger("resize");
+        }
+    }
+
+    /**
+     * @module       slick carousel
+     * @version      1.5.9
+     * @author       Ken Wheeler
+     * @license      The MIT License (MIT)
+     */
+    if (plugins.slick.length) {
+        for (i = 0; i < plugins.slick.length; i++) {
+
+            $('.carousel-slider').slick({
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                arrows: true,
+                infinite: false,
+                asNavFor: '.carousel-thumbnail'
+            });
+            $('.carousel-thumbnail').slick({
+                slidesToShow: 5,
+                slidesToScroll: 1,
+                asNavFor: '.carousel-slider',
+                dots: false,
+                infinite: false,
+                focusOnSelect: true,
+                arrows: true,
+                swipe: false,
+                responsive: [
+                    {
+                        breakpoint: 600,
+                        settings: {
+                            slidesToShow: 3
+                        }
+                    }
+                ]
+            });
+        }
+    }
+
+});

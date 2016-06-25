@@ -96,6 +96,7 @@
   line-height: 16px;
   height: 28px;
   font-family: "PT Sans", sans-serif;
+  z-index: 1;
 }
 .search-form_submit {
   -moz-transition: 0.3s all ease;
