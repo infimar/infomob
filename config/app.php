@@ -171,6 +171,11 @@ return [
          */
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
+        /**
+         * Tagging
+         */
+        \Conner\Tagging\Providers\TaggingServiceProvider::class,
+
     ],
 
     /*
