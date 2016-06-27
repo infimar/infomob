@@ -1,7 +1,7 @@
 @extends('layouts.frontend.template')
 
 @section('title')
-
+    Главная
 @endsection
 
 @section('slider')

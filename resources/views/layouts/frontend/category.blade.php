@@ -1,5 +1,7 @@
 @extends('layouts.frontend.template')
+
 @section('title')
+    Категории
 @endsection
 
 @section('search')
