@@ -3,51 +3,47 @@
 
         <div class="brand">
             <h1 class="brand_name">
-                <a href="./">Infomob</a>
+                <a href="/">Infomob</a>
             </h1>
         </div>
+
+        @if (isset($chosenCity))
+        <div id="div_citypicker">
+            <select id="citypicker">
+                @foreach (App\City::orderBy("order")->get() as $city)
+                    <option value="{{ $city->id }}"
+                        @if ($chosenCity->id == $city->id) selected @endif 
+                    >
+                        {{ $city->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        @endif
 
         <nav class="nav">
             <ul class="sf-menu" data-type="navbar">
                 <li class="active">
-                    <a href="./">Home</a>
+                    <a href="/">Главная</a>
                 </li>
                 <li>
-                    <a href="index-1.html">About Us</a>
+                    <a href="#">Категории</a>
                     <ul>
+                        @foreach (App\Category::roots()->get() as $category)                    
                         <li>
-                            <a href="#">Lorem ipsum dolor</a>
+                            <a href="/category/{{ $category->slug }}">{{ $category->name }}</a>
                         </li>
-                        <li>
-                            <a href="#">Ait amet conse</a>
-                        </li>
-                        <li>
-                            <a href="#" class="sub-menu">Ctetur adipisicing elit</a>
-                            <ul>
-                                <li>
-                                    <a href="#">Latest</a>
-                                </li>
-                                <li>
-                                    <a href="#">Archive</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#">Sed do eiusmod</a>
-                        </li>
-                        <li>
-                            <a href="#">Tempor incididunt</a>
-                        </li>
+                        @endforeach
                     </ul>
                 </li>
-                <li>
+                {{-- <li>
                     <a href="index-2.html">Our listings</a>
                 </li>
                 <li>
                     <a href="index-3.html">Requests</a>
-                </li>
+                </li> --}}
                 <li>
-                    <a href="index-4.html">Contact Us</a>
+                    <a href="/contacts">Наши контакты</a>
                 </li>
             </ul>
         </nav>

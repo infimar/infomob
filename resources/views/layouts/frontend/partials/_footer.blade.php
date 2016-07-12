@@ -10,7 +10,7 @@
                         О нас
                     </h3>
                     <p class="clr-darken word-wrap">
-                        «INFOMOB» - это и сайт, и удобное мобильное приложение  облегчающее  поиск вашего запроса в вашем городе! Преимущество данного продукта в том, что он может быть всегда под рукой, в вашем мобильном телефоне.
+                        «INFOMOB» - это и сайт, и удобное мобильное приложение,  облегчающее  поиск вашего запроса в вашем городе! Преимущество данного продукта в том, что он может быть всегда под рукой в вашем мобильном телефоне.
                     </p>
                 </div>
 
@@ -18,39 +18,19 @@
                     <h3 class="clr-white">
                         Последние добавленные
                     </h3>
-
-                    <article>
-                        <time datetime="2014-11-04">04 November 2014</time>
-                        <p class="clr-primary">
-                            <a href="#">
-                                Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod
-                            </a>
-                        </p>
-                    </article>
-                    <article>
-                        <time datetime="2014-11-04">04 November 2014</time>
-                        <p class="clr-primary">
-                            <a href="#">
-                                Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod
-                            </a>
-                        </p>
-                    </article>
-                    <article>
-                        <time datetime="2014-11-04">04 November 2014</time>
-                        <p class="clr-primary">
-                            <a href="#">
-                                Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod
-                            </a>
-                        </p>
-                    </article>
-                    <article>
-                        <time datetime="2014-11-04">04 November 2014</time>
-                        <p class="clr-primary">
-                            <a href="#">
-                                Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod
-                            </a>
-                        </p>
-                    </article>
+                    
+                    @foreach (App\Branch::take(7)->orderBy("id", "DESC")->get() as $branch)
+                        <article>
+                            <time datetime="{{ $branch->created_at->format("d M y") }}">
+                                {{ $branch->created_at->format("d M y") }}
+                            </time>
+                            <p class="clr-primary">
+                                <a href="/branch/{{ $branch->id }}">
+                                    {{ $branch->name }}
+                                </a>
+                            </p>
+                        </article>
+                    @endforeach
                 </div>
 
                 <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-6 col-xs-clear">
@@ -58,30 +38,11 @@
                         Категории
                     </h3>
                     <ul class="marked-list marked-list__mod1">
+                        @foreach (App\Category::roots()->get() as $category)
                         <li>
-                            <a href="#"><span>Lorem ipsum dolor sit amet </span></a>
+                            <a href="/category/{{ $category->slug }}"><span>{{ $category->name }} </span></a>
                         </li>
-                        <li>
-                            <a href="#"><span>Conse ctetur adipisicing </span></a>
-                        </li>
-                        <li>
-                            <a href="#"><span>Elit sed do eiusmod tempor</span></a>
-                        </li>
-                        <li>
-                            <a href="#"><span>Incididunt ut labore</span></a>
-                        </li>
-                        <li>
-                            <a href="#"><span>Lorem ipsum dolor sit amet </span></a>
-                        </li>
-                        <li>
-                            <a href="#"><span>Conse ctetur adipisicing </span></a>
-                        </li>
-                        <li>
-                            <a href="#"><span>Elit sed do eiusmod tempor</span></a>
-                        </li>
-                        <li>
-                            <a href="#"><span>Incididunt ut labore</span></a>
-                        </li>
+                        @endforeach
                     </ul>
                 </div>
 

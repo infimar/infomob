@@ -102,8 +102,34 @@ class Category extends Node {
   // to hook your own callbacks/observers into this events:
   // http://laravel.com/docs/5.0/eloquent#model-events
 
-  public function organizations()
+  protected $fillabe = ["name", "slug", "icon"];
+
+  /**
+   * Scopes
+   */
+  
+  public function scopePublished($query)
   {
-    return $this->hasMany(Organization::class, "category_id");
+    return $query->where("status", "published");
+  }
+
+  public function scopeDraft($query)
+  {
+    return $query->where("status", "draft");
+  }
+
+  public function scopePrivate($query)
+  {
+    return $query->where("status", "private");
+  }
+
+  public function scopeTrashed($query)
+  {
+    return $query->where("status", "trashed");
+  }
+
+  public function scopeArchived($query)
+  {
+    return $query->where("status", "archived");
   }
 }

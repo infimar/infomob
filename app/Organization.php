@@ -6,14 +6,44 @@ use Illuminate\Database\Eloquent\Model;
 
 class Organization extends Model
 {
-<<<<<<< HEAD
-    //
-=======
-    protected $fillable = ["name", "type", "description", "category_id"];
+    protected $fillable = ["name", "type", "description"];
 
-    public function category()
+    /**
+	 * Relationships
+	 */
+
+    public function branches()
     {
-    	return $this->belongsTo(Category::class);
+    	return $this->hasMany(Branch::class);
     }
->>>>>>> origin/db_seeder
+
+
+    /**
+	 * Scopes
+	 */
+	
+	public function scopePublished($query)
+	{
+		return $query->where("status", "published");
+	}
+
+	public function scopeDraft($query)
+	{
+		return $query->where("status", "draft");
+	}
+
+	public function scopePrivate($query)
+	{
+		return $query->where("status", "private");
+	}
+
+	public function scopeTrashed($query)
+	{
+		return $query->where("status", "trashed");
+	}
+
+	public function scopeArchived($query)
+	{
+		return $query->where("status", "archived");
+	}
 }

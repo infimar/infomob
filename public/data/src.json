@@ -1,0 +1,228 @@
+[
+	{
+		"name": "Автомобили",
+		"slug": "avto",
+		"icon": "avto.png",
+		"subcategories": [
+			{ "name": "Автосервис", "slug": "avtoservice", "icon": "noicon.png" },
+			{ "name": "АЗС, гаражи, стоянки", "slug": "azs-garagy", "icon": "noicon.png" },
+			{ "name": "Аксессуары и запчасти", "slug": "zapchasti", "icon": "noicon.png" },
+			{ "name": "Аренда, перевозки", "slug": "arenda-perevozki", "icon": "noicon.png" },
+			{ "name": "Продажа авто", "slug": "prodazha-avto", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Безопасность",
+		"slug": "security",
+		"icon": "security.png",
+		"subcategories": [
+			{ "name": "Оборудование", "slug": "oborudovanie", "icon": "noicon.png" },
+			{ "name": "Организации", "slug": "organizations", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Безопасность",
+		"slug": "security",
+		"icon": "security.png",
+		"subcategories": [
+			{ "name": "Оборудование", "slug": "sec-oborudovanie", "icon": "noicon.png" },
+			{ "name": "Организации", "slug": "sec-organizacii", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Бизнес и финансы",
+		"slug": "business",
+		"icon": "business.png",
+		"subcategories": [
+			{ "name": "Аудит и консалтинг", "slug": "audit-konsalting", "icon": "noicon.png" },
+			{ "name": "Банки и филиалы", "slug": "banki-filialy", "icon": "noicon.png" },
+			{ "name": "Микрокредиты и ломбарды", "slug": "mikrokredity-lombardy", "icon": "noicon.png" },
+			{ "name": "Пенсионные фонды и страхование", "slug": "pensiya-strahovanie", "icon": "noicon.png" },
+			{ "name": "Пункты обмена валют", "slug": "punkty-obmena-valyut", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Государство",
+		"slug": "gosudarstvo",
+		"icon": "gosudarstvo.png",
+		"subcategories": [
+			{ "name": "Аппарат акима города", "slug": "apparat-akima-goroda", "icon": "noicon.png" },
+			{ "name": "Аппарат акима области", "slug": "apparat-akima-oblasti", "icon": "noicon.png" },
+			{ "name": "Общественные организации", "slug": "obsh-organizacii", "icon": "noicon.png" },
+			{ "name": "Органы управления области", "slug": "upravlenie-oblasti", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Компьютеры и ПО",
+		"slug": "computers",
+		"icon": "computers.png",
+		"subcategories": [
+			{ "name": "Компьютеры и оргтехника", "slug": "comp-orgtehnika", "icon": "noicon.png" },
+			{ "name": "Программное обеспчение", "slug": "software", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Красота и здоровье",
+		"slug": "beauty",
+		"icon": "beauty.png",
+		"subcategories": [
+			{ "name": "Аптеки и фармацевтика", "slug": "apteki", "icon": "noicon.png" },
+			{ "name": "Ветеринария", "slug": "veterinariya", "icon": "noicon.png" },
+			{ "name": "Медицинские учреждения", "slug": "med-uchrezh", "icon": "noicon.png" },
+			{ "name": "Медицинские центры", "slug": "med-centry", "icon": "noicon.png" },
+			{ "name": "Оборудование", "slug": "med-oborudovanie", "icon": "noicon.png" },
+			{ "name": "Оптика", "slug": "optika", "icon": "noicon.png" },
+			{ "name": "Салоны и парикмахерские", "slug": "salony", "icon": "noicon.png" },
+			{ "name": "Стоматология", "slug": "stomatologiya", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Культура и искусство",
+		"slug": "culture",
+		"icon": "culture.png",
+		"subcategories": [
+			{ "name": "Библиотеки", "slug": "biblioteki", "icon": "noicon.png" },
+			{ "name": "Кинотеатры, театры, музеи", "slug": "kinoteatry", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Наука и образование",
+		"slug": "science",
+		"icon": "science.png",
+		"subcategories": [
+			{ "name": "Внеклассная работа", "slug": "vneklas", "icon": "noicon.png" },
+			{ "name": "ВУЗы и университеты", "slug": "vuzy", "icon": "noicon.png" },
+			{ "name": "Детские сады", "slug": "detsady", "icon": "noicon.png" },
+			{ "name": "Колледжи и ПТШ", "slug": "koledzhy-ptsh", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Оборудование",
+		"slug": "oborudovanie",
+		"icon": "oborudovanie.png",
+		"subcategories": [
+			{ "name": "Тара, фасовка, упаковка", "slug": "tara-fasovka", "icon": "noicon.png" },
+			{ "name": "Торговое оборудование", "slug": "torg-oborudovanie", "icon": "noicon.png" },
+			{ "name": "Электротехника и инструмент", "slug": "elektrotehnika", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Промышленность",
+		"slug": "promyshlennost",
+		"icon": "promyshlennost.png",
+		"subcategories": [
+			{ "name": "Металл и металлопластик", "slug": "metall", "icon": "noicon.png" },
+			{ "name": "Пищевая промышленность", "slug": "pish-prom", "icon": "noicon.png" },
+			{ "name": "Производство мебели", "slug": "proizvodstvo-mebeli", "icon": "noicon.png" },
+			{ "name": "Промышленное производство", "slug": "prom-hoz", "icon": "noicon.png" },
+			{ "name": "Сельское хозяйство", "slug": "sel-hoz", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "развлечения",
+		"slug": "razvlechinya",
+		"icon": "razvlechinya.png",
+		"subcategories": [
+			{ "name": "Бары, кафе, закусочные", "slug": "bary-cafe", "icon": "noicon.png" },
+			{ "name": "Ночные клубы и бильярд", "slug": "noch-cluby-billiard", "icon": "noicon.png" },
+			{ "name": "рестораны, залы торжеств", "slug": "restorany-toihana", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "реклама",
+		"slug": "reklama",
+		"icon": "reklama.png",
+		"subcategories": [
+			{ "name": "Продажа печатной продукции", "slug": "pech-prod", "icon": "noicon.png" },
+			{ "name": "рекламные агентства", "slug": "rek-agentstva", "icon": "noicon.png" },
+			{ "name": "СМИ и масс-медиа", "slug": "smi-media", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Связь и коммуникации",
+		"slug": "svyaz",
+		"icon": "svyaz.png",
+		"subcategories": [
+			{ "name": "Интернет", "slug": "internet", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Строительство",
+		"slug": "stroitelstvo",
+		"icon": "stroitelstvo.png",
+		"subcategories": [
+			{ "name": "Материалы и оборудование", "slug": "stroi-materialy", "icon": "noicon.png" },
+			{ "name": "Недвижимость", "slug": "stroi-nedvij", "icon": "noicon.png" },
+			{ "name": "Проектирование", "slug": "stroi-proektirovanie", "icon": "noicon.png" },
+			{ "name": "Строительные работы и услуги", "slug": "stroi-raboty-uslugi", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Товары для дома и офиса",
+		"slug": "goods",
+		"icon": "goods.png",
+		"subcategories": [
+			{ "name": "Аудио-, видео-, бытовая техника", "slug": "goods-audio-video", "icon": "noicon.png" },
+			{ "name": "Канцтовары, расходные материалы", "slug": "goods-kanctovary", "icon": "noicon.png" },
+			{ "name": "Кондиционеры и отопление", "slug": "goods-otoplenie", "icon": "noicon.png" },
+			{ "name": "Мебель", "slug": "goods-mebel", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Торговля",
+		"slug": "torg",
+		"icon": "torg.png",
+		"subcategories": [
+			{ "name": "Книги и печатная продукция", "slug": "torg-books", "icon": "noicon.png" },
+			{ "name": "Кондитерские", "slug": "torg-konditer", "icon": "noicon.png" },
+			{ "name": "Косметика и парфюмерия", "slug": "torg-kosmetika", "icon": "noicon.png" },
+			{ "name": "Магазины и супермаркеты", "slug": "torg-magaziny", "icon": "noicon.png" },
+			{ "name": "Одежда, обувь и аксессуары", "slug": "torg-odejda", "icon": "noicon.png" },
+			{ "name": "Товары для детей", "slug": "torg-dlya-detei", "icon": "noicon.png" },
+			{ "name": "Шторы", "slug": "torg-shtory", "icon": "noicon.png" },
+			{ "name": "Ювелирные изделия и украшения", "slug": "torg-uvelir", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Туризм",
+		"slug": "turizm",
+		"icon": "turizm.png",
+		"subcategories": [
+			{ "name": "Авиакомпании и турагентства", "slug": "aviakompanii", "icon": "noicon.png" },
+			{ "name": "Бани и сауны", "slug": "bani-sauny", "icon": "noicon.png" },
+			{ "name": "Гостиницы", "slug": "gostinicy", "icon": "noicon.png" },
+			{ "name": "Парки", "slug": "parki", "icon": "noicon.png" }
+		]
+	},
+
+	{
+		"name": "Услуги и сервис",
+		"slug": "uslugi",
+		"icon": "uslugi.png",
+		"subcategories": [
+			{ "name": "Водопровод и сантехника", "slug": "vodoprovod-santehnika", "icon": "noicon.png" },
+			{ "name": "Бизнес-услуги и консультации", "slug": "business-uslugi", "icon": "noicon.png" },
+			{ "name": "Дизайн и полиграфия", "slug": "design", "icon": "noicon.png" },
+			{ "name": "Изготовление печатей", "slug": "pechati", "icon": "noicon.png" },
+			{ "name": "Организация свадеб", "slug": "svadby", "icon": "noicon.png" },
+			{ "name": "Юридические услуги", "slug": "uridicheskie-uslugi", "icon": "noicon.png" }
+		]
+	}
+]

@@ -176,6 +176,17 @@ return [
          */
         \Conner\Tagging\Providers\TaggingServiceProvider::class,
 
+        // JS
+        'Laracasts\Utilities\JavaScript\JavaScriptServiceProvider',
+
+        // Flash
+        Laracasts\Flash\FlashServiceProvider::class,
+
+        // Debugbar
+        Barryvdh\Debugbar\ServiceProvider::class,
+
+        // Breadcrumbs
+        DaveJamesMiller\Breadcrumbs\ServiceProvider::class,
     ],
 
     /*
@@ -227,6 +238,9 @@ return [
         //
 
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Flash' => Laracasts\Flash\Flash::class,
+        'Debugbar' => Barryvdh\Debugbar\Facade::class,
+        'Breadcrumbs' => DaveJamesMiller\Breadcrumbs\Facade::class,        
     ],
 
 ];

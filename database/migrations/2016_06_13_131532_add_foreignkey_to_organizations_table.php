@@ -12,9 +12,6 @@ class AddForeignkeyToOrganizationsTable extends Migration
      */
     public function up()
     {
-        Schema::table('organizations', function ($table) {
-            $table->foreign('category_id')->references('id')->on('categories');
-        });
         Schema::table('raions', function ($table) {
             $table->foreign('city_id')->references('id')->on('cities');
         });
@@ -23,7 +20,7 @@ class AddForeignkeyToOrganizationsTable extends Migration
         });
         Schema::table('branches', function ($table) {
             $table->foreign('organization_id')->references('id')->on('organizations');
-            $table->foreign('raion_id')->references('id')->on('raions');
+            $table->foreign('city_id')->references('id')->on('cities');
         });
         Schema::table('phones', function ($table) {
             $table->foreign('branch_id')->references('id')->on('branches');
@@ -40,9 +37,6 @@ class AddForeignkeyToOrganizationsTable extends Migration
      */
     public function down()
     {
-        Schema::table('organizations', function ($table) {
-            $table->dropForeign('organizations_category_id_foreign');
-        });
         Schema::table('raions', function ($table) {
             $table->dropForeign('raions_city_id_foreign');
         });
@@ -51,7 +45,7 @@ class AddForeignkeyToOrganizationsTable extends Migration
         });
         Schema::table('branches', function ($table) {
             $table->dropForeign('branches_organization_id_foreign');
-            $table->dropForeign('branches_raion_id_foreign');
+            $table->dropForeign('branches_city_id_foreign');
         });
         Schema::table('phones', function ($table) {
             $table->dropForeign('phones_branch_id_foreign');

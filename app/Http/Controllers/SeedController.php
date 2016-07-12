@@ -19,12 +19,235 @@ use App\Phone;
 use App\Social;
 use App\Photo;
 
+use Goutte\Client;
+
 class SeedController extends Controller
 {
+  protected $client;
+
 	public function __construct()
 	{
 		// header('Content-Type: text/html; charset=utf-8');
+    
+    $this->client = new Client(); 
 	}
+
+  public function parse()
+  {
+    $urls = [
+      "http://www.e-shymkent.kz/catalog/services/legal/1/0/",
+      "http://www.e-shymkent.kz/catalog/services/legal/1/1/",
+      "http://www.e-shymkent.kz/catalog/services/legal/1/2/",
+      "http://www.e-shymkent.kz/catalog/services/legal/1/3/",
+      "http://www.e-shymkent.kz/catalog/services/legal/1/4/",
+    ];
+    
+    $result = [];
+    
+    foreach ($urls as $url) 
+    {
+      $data = $this->crawl($url);
+      $result[] = $data;
+    }
+    
+    $i = 0;
+    foreach ($result as $items)
+    {
+      foreach ($items as $item)
+      {
+        // dd($item);
+        $isCreated = $this->seedOrganization($item);
+        
+        if ($isCreated) $i++;
+      }
+    }
+
+    echo "<hr>";
+    echo "DONE: " . $i . " organizations created.";
+  }
+
+  public function crawl($url)
+  {
+    $crawler = $this->client->request('GET', $url);
+    
+    $indicatorKey = "Подробнее";
+    $result = [];
+    $idx = 0;
+    $skip = false;
+    $item = [];
+
+    $categories = [];
+
+    $data = $crawler->filterXPath('//table[@cellpadding="2"]/tr');
+    $data->each(function ($node, $i) use (&$result, $indicatorKey, &$idx, $skip, &$item, &$categories) 
+    {
+      if ($i < 5) return;
+
+      $text = $node->text();
+      //echo $text . "<br>";
+
+      if (mb_strpos($text, $indicatorKey) !== false) 
+      {
+        return;
+      } 
+      elseif (empty($text)) 
+      {
+        $result[$idx] = $item;
+
+        $item = [];
+        $idx += 1;
+      }
+      elseif (mb_strpos($text, "Категория") !== false) 
+      {
+        $item["category"] = $text;
+      }
+      elseif (mb_strpos($text, "Продукты") !== false) 
+      {
+        $item["description"] = $text;
+      }
+      elseif (mb_strpos($text, "Адрес") !== false) 
+      {
+        $item["address"] = $text;
+      }
+      elseif (mb_strpos($text, "Телефон") !== false) 
+      {
+        $item["phone"] = $text;
+      }
+      elseif (mb_strpos($text, "Факс") !== false) 
+      {
+        $item["fax"] = $text;
+      }
+      else 
+      {
+        $item["name"] = $text;
+      }
+    });
+
+    // dd($result);
+
+    $db = [];
+    $i = 0;
+
+    foreach ($result as $item) 
+    {
+      foreach ($item as $key => $value) 
+      {
+        if ($key == "name")
+        {
+          $value = str_replace(["\n", "\t", "\r"], '', $value);
+          $start = mb_strpos($value, ".");
+          $name = mb_substr(htmlspecialchars_decode($value), $start + 1);
+          $db[$i]["name"] = trim($name);
+        }
+        elseif ($key == "description")
+        {
+          $start = mb_strpos($value, ":");
+          $description = mb_substr(htmlspecialchars_decode($value), $start + 1);
+          $db[$i]["description"] = trim($description);
+        }
+        elseif ($key == "category")
+        {
+          $value = str_replace(['.', "\n", "\t", "\r"], '', $value);
+          $start = mb_strpos($value, '/');
+          $category = mb_substr($value, $start + 1);          
+          $db[$i]["category"] = trim($category);
+        }
+        elseif ($key == "address")
+        {
+          $value = str_replace(["\n", "\t", "\r"], '', $value);
+          $start = mb_strpos($value, ':');
+          $address = mb_substr($value, $start + 1);          
+          $db[$i]["address"] = trim($address);
+        }
+        elseif ($key == "phone")
+        {
+          $start = mb_strpos($value, ':');
+          $phone = mb_substr($value, $start + 1);
+
+          // parse phone
+          $phone = trim($phone);
+          $start = mb_strpos($phone, "(");
+          $codeCountry = mb_substr($phone, 0, $start);
+
+          $end = mb_strpos($phone, ")");
+          $codeOperator = mb_substr($phone, $start + 1, $end - $start - 1);
+
+          $number = mb_substr($phone, $end + 1);
+          $number = str_replace(["-", " "], "", $number);
+
+          // if number contains ',' -> 2 numbers
+          if (mb_strpos($number, ","))
+          {
+            $numbers = explode(",", $number);
+
+            foreach ($numbers as $key => $num)
+            {
+              $db[$i]["phones"][] = [
+                "type" => "work",
+                "code_country" => trim($codeCountry),
+                "code_operator" => trim($codeOperator),
+                "number" => trim($num)
+              ];
+            }
+          }
+          else
+          {
+            $db[$i]["phones"][] = [
+              "type" => "work",
+              "code_country" => trim($codeCountry),
+              "code_operator" => trim($codeOperator),
+              "number" => trim($number)
+            ];
+          }
+        }
+        elseif ($key == "fax")
+        {
+          $start = mb_strpos($value, ':');
+          $fax = mb_substr($value, $start + 1);
+
+          // parse fax
+          $fax = trim($fax);
+          $start = mb_strpos($fax, "(");
+          $codeCountry = mb_substr($fax, 0, $start);
+
+          $end = mb_strpos($fax, ")");
+          $codeOperator = mb_substr($fax, $start + 1, $end - $start - 1);
+
+          $number = mb_substr($fax, $end + 1);
+          $number = str_replace(["-", " "], "", $number);
+
+          // if number contains ',' -> 2 numbers
+          if (mb_strpos($number, ","))
+          {
+            $numbers = explode(",", $number);
+
+            foreach ($numbers as $key => $num)
+            {
+              $db[$i]["faxes"][] = [
+                "type" => "fax",
+                "code_country" => trim($codeCountry),
+                "code_operator" => trim($codeOperator),
+                "number" => trim($num)
+              ];
+            }
+          }
+          else
+          {
+            $db[$i]["faxes"][] = [
+              "type" => "fax",
+              "code_country" => trim($codeCountry),
+              "code_operator" => trim($codeOperator),
+              "number" => trim($number)
+            ];
+          }
+        }
+      }
+
+      $i += 1;
+    }
+
+    return $db;
+  }
 
     public function index()
     {
@@ -110,6 +333,7 @@ class SeedController extends Controller
     		foreach ($roots as $root)
     		{
     			$countParents++;
+          echo "<img src='" . asset("images/icons/" . $root->icon) . "'>";
     			echo $root->name . ":\n";
 
     			foreach ($root->descendants()->get() as $child)
@@ -135,8 +359,12 @@ class SeedController extends Controller
     				echo "\t- " . $raion->name . "\n";
     			}
     		}
-
     	}
+      else if ($table == "organization")
+      {
+        $organization = Organization::with(["branches", "branches.phones", "branches.categories"])->first();
+        dd($organization);
+      }
     	
     	echo "\n\n";
     	echo " Count (parents): " . $countParents . "\n";
@@ -226,7 +454,7 @@ class SeedController extends Controller
     private function seedCategory($category)
     {
     	// check for existing root category		   
-	    if (Category::whereName($category->name)->first())
+	    if (Category::where("slug", $category->slug)->first())
 	    {
 	    	// interrupt
 	    	echo "Category [" . $category->name . "] already exists.\n";
@@ -234,14 +462,23 @@ class SeedController extends Controller
 	    }
 
 	    // create root category
-	    $root = Category::create(['name' => $category->name]);
+	    $root = Category::create([
+        'name' => $category->name,
+        'slug' => $category->slug,
+        'icon' => $category->icon,
+      ]);
+
 	    echo "Category [" . $category->name . "] created.\n";
 	    echo "-----\n\n";
 
 	    // create its subcategories
 	    foreach ($category->subcategories as $key => $subcategory) 
 	    {
-	    	$root->children()->create(['name' => $subcategory->name]);
+	    	$root->children()->create([
+          'name' => $subcategory->name,
+          'slug' => $subcategory->slug,
+          'icon' => $subcategory->icon,
+        ]);
 	    	echo "\tsubcategory [" . $subcategory->name . "] created.\n";
 	    }
     }
@@ -272,98 +509,134 @@ class SeedController extends Controller
 	    }
     }
 
-    /**
-     * Seed organization with branches
-     * @param  StdClass $organizationData parsed json object
-     */
-    private function seedOrganization($organizationData)
+  /**
+   * Seed organization with branches
+   * @param  StdClass $data parsed json object
+   */
+  private function seedOrganization($data)
+  {
+  	DB::beginTransaction();
+
+    if (!isset($data["name"]))
     {
-    	DB::beginTransaction();
+      DB::rollBack();
+      echo "No name<br>";
+      return false;
+    }
 
-    	if (Organization::whereName($organizationData->name)->first())
-    	{
-    		// interrupt
-    		echo "Organization [" . $organizationData->name . "] already exists.\n";
-    		return;
-    	}
+  	if (Organization::whereName($data["name"])->first())
+  	{
+  		// interrupt
+  		echo "Organization [" . $data["name"] . "] already exists.<br>";
+  		return false;
+  	}
 
-    	// get category's id
-    	$category = Category::whereName($organizationData->category)->first();
-    	if (!$category) dd("Could not find category.");
+  	// get category's id
+    if (!isset($data["category"]))
+    {
+      DB::rollBack();
+      echo "No category<br>";
+      return false;
+    }
 
-    	// create organization to get its ID
-    	$organization = Organization::create([
-    		"name" 			=> $organizationData->name,
-    		"type" 			=> $organizationData->type,
-			"category_id" 	=> $category->id,
-			"description" 	=> $organizationData->description
-		]);
+  	$category = Category::whereName($data["category"])->first();
+  	if (!$category) dd("Could not find category.");
 
-		// create branches
-		foreach ($organizationData->branches as $key => $branchData)
-		{
-			// copied name and description?
-			$name = ($branchData->name === "_copy_") ? $organization->name : $branchData->name;
-			$description = ($branchData->description === "_copy_") ? $organization->description : $branchData->description;
+  	// create organization to get its ID
+  	$organization = Organization::create([
+  		"name" 			    => $data["name"],
+  		"type" 			    => "custom",
+		  "description" 	=> $data["description"]
+	  ]);
+    // dd($organization);
 
-			// TODO: get raions' id
-			$raion = ($branchData->raion === "_astana_") ? 5 : 1;
+		// create branch
+    $address = (isset($data["address"])) ? $data["address"] : "";
 
-			// create branch
-			$branch = Branch::create([
-				"organization_id" 	=> $organization->id,
-				"type" 				=> $branchData->type,
-				"name" 				=> $name,
-				"description" 		=> $description,
-				"raion_id" 			=> $raion,
-				"address" 			=> $branchData->address,
-				"post_index" 		=> $branchData->post_index,
-				"email"				=> $branchData->email,
-				"hits"				=> $branchData->hits,
-				"lat"				=> $branchData->lat,
-				"lng"				=> $branchData->lng
-			]);
+    $branch = Branch::create([
+      "organization_id"   => $organization->id,
+      "type"              => "main",
+      "name"              => $organization->name,
+      "description"       => $organization->description,
+      "raion_id"          => 1,
+      "address"           => $address,
+      "post_index"        => "160000",
+      "email"             => "",
+      "hits"              => 0,
+      "lat"               => "0.00",
+      "lng"               => "0.00"
+    ]);
+    //dd($branch->toArray());
 
-			// create its phones
-			foreach ($branchData->phones as $phoneData)
-			{
-				Phone::create([
-					"branch_id"			=> $branch->id,
-					"type"				=> $phoneData->type,
-					"code_country"		=> $phoneData->code_country,
-					"code_operator" 	=> $phoneData->code_operator,
-					"number" 			=> $phoneData->number,
-					"contact_person"	=> $phoneData->contact_person
-				]);
-			}
+    // map branch to category!
+    $pivotRecord = DB::table("branch_category")->insert([
+      "branch_id"   => $branch->id,
+      "category_id" => $category->id
+    ]);
+    // dd($pivotRecord);
 
-			// create its socials
-			foreach ($branchData->socials as $socialData)
-			{
-				Social::create([
-					"branch_id"			=> $branch->id,
-					"type"				=> $socialData->type,
-					"name"				=> $socialData->name,
-					"contact_person"	=> $socialData->contact_person
-				]);
-			}
+    // create its phones
+		if (isset($data["phones"]))
+    {
+      foreach ($data["phones"] as $phone)
+      {
+        $phoneRecord = Phone::create([
+          "branch_id"      => $branch->id,
+          "type"           => $phone["type"],
+          "code_country"   => $phone["code_country"],
+          "code_operator"  => $phone["code_operator"],
+          "number"         => $phone["number"],
+          "contact_person" => ""
+        ]);
+        //dd($phoneRecord);
+      }
+    }
+			
+    // create its faxes
+    if (isset($data["faxes"]))
+    {
+      foreach ($data["faxes"] as $fax)
+      {
+        $phoneRecord = Phone::create([
+          "branch_id"      => $branch->id,
+          "type"           => $fax["type"],
+          "code_country"   => $fax["code_country"],
+          "code_operator"  => $fax["code_operator"],
+          "number"         => $fax["number"],
+          "contact_person" => ""
+        ]);
+        // dd($phoneRecord);
+      }
+    }
+			
 
-			// create its photos (logo)
-			foreach ($branchData->photos as $key => $photoData) 
-			{
-				Photo::create([
-					"branch_id"		=> $branch->id,
-					"type"			=> $photoData->type,
-					"path"			=> $photoData->path,
-					"description"	=> $photoData->description
-				]);
-			}
-		}
+		// // create its socials
+		// foreach ($branchData->socials as $socialData)
+		// {
+		// 	Social::create([
+		// 		"branch_id"			=> $branch->id,
+		// 		"type"				=> $socialData->type,
+		// 		"name"				=> $socialData->name,
+		// 		"contact_person"	=> $socialData->contact_person
+		// 	]);
+		// }
+
+		// // create its photos (logo)
+		// foreach ($branchData->photos as $key => $photoData) 
+		// {
+		// 	Photo::create([
+		// 		"branch_id"		=> $branch->id,
+		// 		"type"			=> $photoData->type,
+		// 		"path"			=> $photoData->path,
+		// 		"description"	=> $photoData->description
+		// 	]);
+		// }
 
 		// everything is fine -> go ahead
 		DB::commit();
-		echo "Organization [" . $organization->name . "] created.";
-    }
+		echo "Organization [" . $organization->name . "] created.<br>";
+    return true;
+  }
 
     /**
      * Get data from json file.

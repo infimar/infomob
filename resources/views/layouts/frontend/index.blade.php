@@ -4,9 +4,15 @@
     Главная
 @endsection
 
+@section('breadcrumbs')
+    {!! Breadcrumbs::render('home') !!}
+@endsection
+
 @section('slider')
     class="parallax" data-url="{{ asset('images/parallax1.jpg') }}" data-mobile="true" data-speed="0.8"
 @endsection
+
+
 @section('search')
     <section class="well1">
         <div class="container">
@@ -35,48 +41,21 @@
                 </h2>
                 <div class="category_main row text-xs-center">
                     <div class="category_row">
-                        @for ($i = 1; $i <= 6; $i++)
-                        <a href="#" >
-                            <div class="category_item">
-                                <img src="images/icons/{{ $i }}.png" class="wow fadeInRight" data-wow-duration='1s'><div class="category_name wow fadeInRight" data-wow-duration='2s'>Торговые комплексы, рынки и магазины</div>
-                            </div>
-                            <div class="borderRight"></div>
-                            <div class="borderBottom"></div>
-                        </a>
-                        @endfor
-                    </div>
-                    <div class="category_row">
-                        @for ($i = 7; $i <= 12; $i++)
-                            <a href="#" >
+                        @foreach ($categories as $key => $category)                        
+                            <a href="/category/{{ $category->slug }}">
                                 <div class="category_item">
-                                    <img src="images/icons/{{ $i }}.png" class="wow fadeInRight" data-wow-duration='1s'><div class="category_name wow fadeInRight" data-wow-duration='2s'>Торговые комплексы, рынки и магазины</div>
+                                    <img src="{{ asset("images/icons/" . $category->icon) }}" class="wow fadeInRight" data-wow-duration='1s' width="78px" height="63px">
+                                    <div class="category_name wow fadeInRight" data-wow-duration='2s'>
+                                        {{ $category->name }}
+                                    </div>
                                 </div>
                                 <div class="borderRight"></div>
                                 <div class="borderBottom"></div>
                             </a>
-                        @endfor
-                    </div>
-                    <div class="category_row">
-                        @for ($i = 13; $i <= 18; $i++)
-                            <a href="#" >
-                                <div class="category_item">
-                                    <img src="images/icons/{{ $i }}.png" class="wow fadeInRight" data-wow-duration='1s'><div class="category_name wow fadeInRight" data-wow-duration='2s'>Торговые комплексы, рынки и магазины</div>
-                                </div>
-                                <div class="borderRight"></div>
-                                <div class="borderBottom"></div>
-                            </a>
-                        @endfor
-                    </div>
-                    <div class="category_row">
-                        @for ($i = 19; $i <= 24; $i++)
-                            <a href="#" >
-                                <div class="category_item">
-                                    <img src="images/icons/{{ $i }}.png" class="wow fadeInRight" data-wow-duration='1s'><div class="category_name wow fadeInRight" data-wow-duration='2s'>Торговые комплексы, рынки и магазины</div>
-                                </div>
-                                <div class="borderRight"></div>
-                                <div class="borderBottom"></div>
-                            </a>
-                        @endfor
+                            @if (($key + 1) % 6 == 0)
+                                </div><div class="category_row">
+                            @endif
+                        @endforeach                        
                     </div>
                 </div>
             </div>
