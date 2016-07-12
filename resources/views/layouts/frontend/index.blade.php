@@ -38,24 +38,17 @@
             <h2 class="text-center">
                 Выберите категорию
             </h2>
-            <div class="category_main row text-xs-center">
-                <div class="category_row">
-                    @foreach ($categories as $key => $category)
+            <div class="row text-center">
+                @foreach ($categories as $key => $category)
+                    <div class="col-xs-6 col-sm-5 col-md-2 col-lg-2 category_item">
                         <a href="/category/{{ $category->slug }}">
-                            <div class="category_item">
-                                <img src="{{ asset("images/icons/" . $category->icon) }}" class="wow fadeInRight" data-wow-duration='1s' width="78px" height="63px">
-                                <div class="category_name wow fadeInRight" data-wow-duration='2s'>
-                                    {{ $category->name }}
-                                </div>
+                            <img src="{{ asset("images/icons/" . $category->icon) }}" class="wow fadeInRight" data-wow-duration='1s'>
+                            <div class="category_name wow fadeInRight" data-wow-duration='2s'>
+                                {{ $category->name }}
                             </div>
-                            <div class="borderRight"></div>
-                            <div class="borderBottom"></div>
                         </a>
-                        @if (($key + 1) % 6 == 0 && ($key + 1) !== count($categories))
-                            </div><div class="category_row">
-                        @endif
-                    @endforeach
-                </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>

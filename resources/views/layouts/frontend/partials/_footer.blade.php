@@ -52,8 +52,9 @@
                     </h3>
 
                     <ul class="inline-list">
-                        <li><a href="#" class="fa fa-facebook"></a></li>
-                        <li><a href="#" class="fa fa-twitter"></a></li>
+                        <li><a href="https://www.facebook.com/infomob.kazakhstan" target="_blank" class="fa fa-facebook"></a></li>
+                        <li><a href="https://vk.com/infomobkaz" target="_blank" class="fa fa-vk"></a></li>
+                        <li><a href="https://www.instagram.com/infomobkz" target="_blank" class="fa fa-instagram"></a></li>
                     </ul>
                 </div>
 

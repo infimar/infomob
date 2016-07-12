@@ -1503,61 +1503,22 @@ footer .rights {
 /*========================================================
                      Category main  Styles
 =========================================================*/
-
-.category_main {
-  width: 100%;
-  heigth: 664px;
-  margin: 20px 0px;
-}
-.category_row {
+.category_item {
   text-align: center;
-  width: 984px;
-  height: 166px;
+  height: 180px;
+}
+.category_item a {
+  display: block;
   margin: 0 auto;
 }
-.category_row a:last-child {
-  margin: 0px 0px 22px 0px;
-}
-.category_row a:last-child .borderRight{
-  border: 0px;
-}
-.category_row:last-child .borderBottom {
-  border: 0px;
-}
-.category_row a {
-  float: left;
-  display: block;
-  position: relative;
-  margin: 0px 24px 22px 0px;
-}
-.category_item {
-  width: 120px;
-  height: 111px;
-  float: left;
-  margin: 0px 24px 22px 0px;
-}
 .category_item img {
+  width: 96px;
+  height: 96px;
 }
 .category_name {
-  line-height: 16px;
-  font-size: 14px;
-  height: 48px;
-  width: 120px;
+  line-height: 1.6rem;
+  font-size: 1.4rem;
  }
-.borderBottom {
-  border-bottom: 1px solid #777;
-  position: absolute;
-  right: 20%;
-  left: 0;
-  bottom: 0;
-}
-.borderRight {
-  border-right: 1px solid #777;
-  position: absolute;
-  bottom: 20%;
-  right: 0;
-  top: 0;
-}
 
 /*========================================================
                      Category page  Styles
