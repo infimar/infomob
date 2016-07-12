@@ -5,6 +5,7 @@
     <title>@yield ('title') | Infomob.kz</title>
     <meta charset="utf-8">
     <meta name="format-detection" content="telephone=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{{ asset('images/icons/favicon.ico') }}" type="image/x-icon">
 
     <link rel="stylesheet" href="{{ asset('css/grid.css') }}">
