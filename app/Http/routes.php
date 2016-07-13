@@ -13,11 +13,8 @@
 
 // index
 Route::get('/', 'HomeController@index');
-
 Route::get('/category/{slug}', 'HomeController@category');
-
 Route::get('/organization/{organizationId}/{categoryId}', 'HomeController@organization');
-
 Route::get('/branch/{id}/{category_id}', 'HomeController@branch');
 
 // change city
@@ -37,7 +34,7 @@ Route::post('password/reset', 'Auth\PasswordController@reset');
 /**
  * Seeding routes
  */
-Route::group(['prefix' => 'seed'], function() 
+Route::group(['prefix' => 'seed', 'middleware' => 'auth'], function() 
 {
 	Route::get('/', 'SeedController@index');
 	
@@ -56,7 +53,7 @@ Route::group(['prefix' => 'seed'], function()
 /**
  * Admin
  */
-Route::group(['prefix' => 'admin'], function() 
+Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function() 
 {
 	Route::get('/', 'AdminController@index');
 
@@ -114,7 +111,7 @@ Route::group(['prefix' => 'admin'], function()
 /**
  * Ajax
  */
-Route::group(['prefix' => 'ajax'], function()
+Route::group(['prefix' => 'ajax', 'middleware' => 'auth'], function()
 {
 	Route::post('/togglestatus', 'AjaxController@toggleStatus');
 	Route::post('/topit', 'AjaxController@topIt');

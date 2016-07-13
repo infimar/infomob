@@ -19,7 +19,7 @@
                         Последние добавленные
                     </h3>
                     
-                    @foreach (App\Branch::take(7)->orderBy("id", "DESC")->get() as $branch)
+                    @foreach (App\Branch::published()->take(7)->orderBy("id", "DESC")->get() as $branch)
                         <article>
                             <time datetime="{{ $branch->created_at->format("d M y") }}">
                                 {{ $branch->created_at->format("d M y") }}

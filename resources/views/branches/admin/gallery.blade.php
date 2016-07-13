@@ -24,7 +24,7 @@
 	<div class="col-md-8">
 		<h3>Новые фотографии</h3>
 		<hr>
-		<form method="post" action="/admin/mediamanager/upload/photo/" class="dropzone" id="myAwesomeDropzone" enctype="multipart/form-data">
+		<form method="POST" action="/admin/mediamanager/upload/photo" class="dropzone" id="myAwesomeDropzone" enctype="multipart/form-data">
 			{{ csrf_field() }}
 			<input type="hidden" name="branch_id" value="{{ $branch->id }}">
 

@@ -129,6 +129,8 @@
         });
 
         $('body').on('click', '.btn_toggleStatus', function(e) {
+          e.preventDefault();
+
           var id = $(this).data('id');
           var model = $(this).data('model');
 
@@ -139,7 +141,7 @@
 
           $('.imageLoader[data-id=' + id + ']').removeClass("visible", "gone").addClass("visible");
 
-          $.post('/ajax/togglestatus/', { data: data }, function(result) {
+          $.post('/ajax/togglestatus', { data: data }, function(result) {
             $('.imageLoader[data-id=' + id + ']').removeClass("visible", "gone").addClass("gone");
 
             if (result.status == "error") {

@@ -30,13 +30,13 @@
     <section class="well2">
         <div class="container">
             <div class="row">
-                <div class="subcategories_links col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                <div class="subcategories_links col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="row">
                     @foreach ($children as $child)
                         <div class="col-xs-6 col-sm-4">
                             <a href="/category/{{ $category->slug }}?subcategory={{ $child->slug }}"
                                 @if ($activeSubcategory->slug == $child->slug)
-                                    style="color: #2196F3;"
+                                    style="color: red"
                                 @endif
                             >{{ $child->name }}</a> ({{ DB::table('branch_category')->where('category_id', $child->id)->count() }})
                         </div>
