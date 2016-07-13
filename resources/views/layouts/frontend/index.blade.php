@@ -40,7 +40,7 @@
             </h2>
             <div class="row text-center">
                 @foreach ($categories as $key => $category)
-                    <div class="col-xs-6 col-sm-5 col-md-2 col-lg-2 category_item">
+                    <div class="col-xs-6 col-sm-4 col-md-2 col-lg-2 category_item">
                         <a href="/category/{{ $category->slug }}">
                             <img src="{{ asset("images/icons/" . $category->icon) }}" class="wow fadeInRight" data-wow-duration='1s'>
                             <div class="category_name wow fadeInRight" data-wow-duration='2s'>

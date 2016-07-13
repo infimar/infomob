@@ -1524,42 +1524,53 @@ footer .rights {
                      Category page  Styles
 =========================================================*/
 
-.left_block {
-  width: 25%;
-  float: left;
+.subcategories_links{
+  margin: 0px 0px 20px;
 }
-.right_block {
-  width: 75%;
-  float: left;
-  border-left: 1px solid #777;
+.subcategories_links a {
+  text-decoration: underline;
+  color: #2196F3;
+}
+.organizations {
+
 }
 .organization_item {
-  width: 100%;
-  /*height: 100px;*/
-  margin: 0 20px 10px;
-  clear: both;
+  height: 120px;
+  border-bottom: 1px solid #b7b7b7;
+  margin: 0px 0px 10px;
+}
+.organization_item a {
+  display: block;
 }
 .organization_item img {
   float: left;
   width: 100px;
   height: 100px;
-  margin: 0px 10px;
 }
 .organization_item_text {
+  margin-left: 10px;
+  height: 77px;
 }
 .organization_name_title a {
-  float: none;
-  width: 60%;
+  display: block;
   font-size: 16px;
   line-height: 18px;
   text-decoration: underline;
+  margin-bottom: 5px;
+  height: 18px;
+  overflow: hidden;
 }
 .organization_short_description {
-  float: none;
-  width: 100%;
   font-size: 14px;
   line-height: 18px;
-  margin-left: 120px;
+}
+.organization_short_description div:first-child {
+  overflow: hidden;
+  height: 59px;
+}
+.organization_short_description div:last-child {
+  overflow: hidden;
+  height: 18px;
 }
 
 
