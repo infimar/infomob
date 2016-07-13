@@ -10,11 +10,11 @@
         @if (isset($chosenCity))
         <div id="div_citypicker">
             <select id="citypicker">
-                @foreach (App\City::orderBy("order")->get() as $city)
-                    <option value="{{ $city->id }}"
-                        @if ($chosenCity->id == $city->id) selected @endif 
+                @foreach (App\City::dropdown() as $key => $value)
+                    <option value="{{ $key }}"
+                        @if ($chosenCity->id == $key) selected @endif 
                     >
-                        {{ $city->name }}
+                        {{ $value }}
                     </option>
                 @endforeach
             </select>

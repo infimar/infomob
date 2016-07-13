@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Branch extends Model
 {
+	use \Conner\Tagging\Taggable;
+	
     protected $fillable = [
-    	"organization_id",
+    	"organization_id", "status",
     	"name", "type", "description", 
     	"city_id", "address", "post_index",
     	"email", "hits", "lat", "lng", "working_hours"

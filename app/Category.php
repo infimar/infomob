@@ -102,7 +102,7 @@ class Category extends Node {
   // to hook your own callbacks/observers into this events:
   // http://laravel.com/docs/5.0/eloquent#model-events
 
-  protected $fillabe = ["name", "slug", "icon"];
+  protected $fillable = ["name", "slug", "icon", "status"];
 
   /**
    * Scopes
@@ -131,5 +131,42 @@ class Category extends Node {
   public function scopeArchived($query)
   {
     return $query->where("status", "archived");
+  }
+
+  protected static $statuses = [
+    "draft" => "Черновик",
+    "published" => "Опубликовано",
+    "private" => "Частное",
+    "trashed" => "В корзине",
+    "archived" => "Архивировано"
+  ];
+
+  public static function statuses($status)
+  {
+    return isset(self::$statuses[$status]) ? self::$statuses[$status] : "Неизвестно";
+  }
+
+  public static function statusesDropdown()
+  {
+    return self::$statuses;
+  }
+
+  public static function dropdown($all = false)
+  {
+    $dropdown = [];
+    $roots = Category::roots()->orderBy("name", "ASC")->get();
+
+    foreach ($roots as $root)
+    {
+      $categories = $root->descendants()->limitDepth(1)->get();
+      $dropdown[$root->name] = [];
+
+      foreach ($categories as $category)
+      {
+        $dropdown[$root->name][$category->id] = $category->name;
+      }
+    }
+
+    return $dropdown;
   }
 }

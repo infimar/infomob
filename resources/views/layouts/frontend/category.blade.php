@@ -52,7 +52,7 @@
                     @if (count($organizations) > 0)
                         @foreach ($organizations as $organization)
                             <div class="organization_item">
-                                <a href="/organization/{{ $organization->id }}">
+                                <a href="/organization/{{ $organization->id }}/{{ $activeSubcategory->id }}">
                                     @if (!$organization->branches->isEmpty() && !$organization->branches[0]->photos->isEmpty())
                                         <div class="thumbnail_100">
                                             <img src="{{ asset('images/photos/' . $organization->branches[0]->photos[0]->path) }}">

@@ -12,20 +12,33 @@
 		<table id="myTable" class="display" cellspacing="0" width="100%">
 			<thead>
 				<tr>
-					<th>ID</th>
 					<th>NAME</th>
-					<th>SLUG</th>
+					<th>STATUS</th>
 					<th>ACTIONS</th>
 				</tr>
 			</thead>
 			<tbody>
 				@foreach ($categories as $category)
 					<tr>
-						<td>{{ $category->id }}</td>
 						<td>
+							<img style="width: 24px; height: 24px;" src="{{ asset('images/icons/' . $category->icon) }}"> 
 							{{ $category->name }}
 						</td>
-						<td>{{ $category->slug }}</td>
+						<td width="120px">
+							<img src="{{ asset("images/imageloader.gif") }}" class="imageLoader gone" data-id="{{ $category->id }}">
+							
+							<span data-id="{{ $category->id }}" data-model="category" 
+								@if ($category->status == "draft")
+									class="btn_toggleStatus label label-danger"
+								@elseif ($category->status == "published")
+									class="btn_toggleStatus label label-success"
+								@else
+									class="btn_toggleStatus label label-default"
+								@endif
+							>
+								{{ App\Category::statuses($category->status) }}
+							</span>
+						</td>
 						<td width="200px">
 							<a href="/admin/categories/{{ $category->id }}/edit" class="btn btn-sm btn-default" title="Редактировать"><i class="fa fa-pencil"></i></a>
 							<a href="/admin/categories/{{ $category->id }}/remove" class="btn_remove btn btn-sm btn-default" title="Удалить"><i class="fa fa-trash"></i></a>

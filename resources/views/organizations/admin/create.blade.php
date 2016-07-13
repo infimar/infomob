@@ -43,16 +43,18 @@
 				<div class="form-group">
 			    	<label for="inputCategoryId" class="col-sm-2 control-label">Категория</label>
 			    	<div class="col-sm-4">
-			      		<select id="inputCategoryId" name="branch_categoryId" class="form-control">
-							<option value="">Выберите категорию</option>
+			      		<select id="inputCategoryId" name="branch_categoryIds[]" class="form-control js-categories-multiple-select" multiple="multiple">
+							<option></option>
 
-							@foreach (App\Category::roots()->get() as $parentCategory)
-								<optgroup label="{{ $parentCategory->name }}">
-									@foreach ($parentCategory->descendants()->limitDepth(1)->get() as $category)
-										<option value="{{ $category->id }}">{{ $category->name }}</option>
-									@endforeach
-								</optgroup>
-							@endforeach
+							@foreach (App\Category::dropdown() as $section => $categories)
+				            	<optgroup label="{{ $section }}">
+									@foreach ($categories as $key => $name)
+						                <option value="{{ $key }}">
+						                    {{ $name }}
+						                </option>
+					                @endforeach
+				                </optgroup>
+				            @endforeach
 			      		</select>
 			    	</div>
 			  	</div>
@@ -60,8 +62,8 @@
 				<div class="form-group">
 			    	<label for="inputCityId" class="col-sm-2 control-label">Город</label>
 			    	<div class="col-sm-4">
-			      		<select id="inputCityId" name="branch_cityId" class="form-control">
-							<option value="">Выберите город</option>
+			      		<select id="inputCityId" name="branch_cityId" class="form-control js-cities-single-select">
+			      			<option></option>
 
 							@foreach (App\City::orderBy('order')->get() as $city)
 								<option value="{{ $city->id }}">{{ $city->name }}</option>
@@ -72,7 +74,7 @@
 
 			  	<div class="form-group">
 			    	<label for="inputAddress" class="col-sm-2 control-label">Адрес</label>
-			    	<div class="col-sm-10">
+			    	<div class="col-sm-4">
 			      		<input type="text" class="form-control" id="inputAddress" name="branch_address" placeholder="Адрес">
 			    	</div>
 			  	</div>
@@ -103,7 +105,7 @@
 
 			  	<div class="form-group">
 			    	<label for="inputWorkingHours" class="col-sm-2 control-label">Часы работы</label>
-			    	<div class="col-sm-10">
+			    	<div class="col-sm-4">
 			      		<input type="text" class="form-control" id="inputWorkingHours" name="branch_workingHours" placeholder="Часы работы">
 			    	</div>
 			  	</div>
@@ -142,6 +144,18 @@
 					
 				</div>
 			</fieldset>
+
+			<fieldset>
+				<legend>Тэги</legend>
+
+				<div class="row">
+					<col-md-6>
+						<input class="form-control" type="text" id="tags" name="tags" placeholder="Тэги" class="tm-input"/>
+						<input type="hidden" id="branch_tags" name="branch_tags">
+					</col-md-6>
+				</div>
+				
+			</fieldset>
 			
 			<fieldset>
 				<legend>&nbsp;</legend>
@@ -168,49 +182,24 @@
 
 @section('scripts_body')
 
-// photo uploads
-Dropzone.options.myDropzone = {
-	acceptedFiles: "image/*",
-	maxFilesize: "2",
-	dictFileTooBig: 'Слишком большой файл. Максимальный размер: 2 MB',
-	dictInvalidFileType: 'Файл не является изображением или тип файла не поддерживается.',
-    init: function() {
-      	this.on("success", function(file, response) {
-			console.log(response);
-
-	        var removeButton = Dropzone.createElement('<a class="dz-remove">Удалить</a>');
-	        var _this = this;
-
-	        removeButton.addEventListener("click", function(e) {
-	          	e.preventDefault();
-	          	e.stopPropagation();
-
-	          	_this.removeFile(file);
-
-	          	// If you want to the delete the file on the server as well,
-	          	// you can do the AJAX request here.
-	          	$.ajax({
-	                type: "POST",
-	                url: "{{ url('/delete-image') }}",
-	                data: { path: response.path, },
-	                beforeSend: function () {
-	                    // before send
-	                },
-	                success: function (response) { 
-	                    //if (response == 'success') alert('deleted');
-	                },
-	                error: function () {
-	                    //alert("Ошибка");
-	                }
-	            });
-	        });
+$('#tags').tagsManager({
+    CapitalizeFirstLetter: true,
+}).on('tm:pushed', function(e, tag) {
+	console.log(tag);
+  	$('#branch_tags').val($('#branch_tags').val() + "|" + tag);
+  	console.log($('#branch_tags').val());
+});
 
 
-	        // Add the button to the file preview element.
-	        file.previewElement.appendChild(removeButton);
-      	});
-    }
-};
+$(".js-cities-single-select").select2({
+  placeholder: "Выберите город",
+  allowClear: true
+});
+
+$(".js-categories-multiple-select").select2({
+  placeholder: "Выберите категорию",
+  //allowClear: true
+});
 
 // add phone
 $('#btn_addphone').click(function(e) {

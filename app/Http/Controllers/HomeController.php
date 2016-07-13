@@ -10,12 +10,10 @@ use App\Organization;
 use App\City;
 use App\Branch;
 use View;
+use DB;
 
 class HomeController extends InfomobController
 {
-    protected $cityId;
-    protected $city;
-
     /**
      * Create a new controller instance.
      *
@@ -24,16 +22,16 @@ class HomeController extends InfomobController
     public function __construct(Request $request)
     {
         // $this->middleware('auth');
-        parent::__construct($request);        
-    }
+        parent::__construct($request);
 
-    /**
-     * Change city
-     */
-    public function changeCity(Request $request, $cityId)
-    {
-        $request->session()->set("city_id", $cityId);
-        return redirect()->back();
+        if ($this->cityId == 0)
+        {
+            $this->city = City::correct()->orderBy('order')->first();
+            $this->cityId = $this->city->id;
+
+            View::share('chosenCity', $this->city);
+            JavaScript::put(["chosenCity" => $this->city, "chosenCategory" => $this->category]);
+        } 
     }
 
 
@@ -76,7 +74,19 @@ class HomeController extends InfomobController
         // get organizations for activeSubcategory
         $cityId = $this->city->id;
         $categoryId = $activeSubcategory->id;
-         
+        
+        // toptens
+        $toptens = DB::table('toptens')
+            ->where('city_id', $cityId)
+            ->where('category_id', $categoryId)
+            ->get();
+
+        $toptenIds = DB::table('toptens')
+            ->where('city_id', $cityId)
+            ->where('category_id', $categoryId)
+            ->lists('id');
+
+        // rest organizations
         $organizations = Organization::published()
             // ->orderBy("name", "ASC")
             ->orderBy("order", "ASC")
@@ -95,6 +105,7 @@ class HomeController extends InfomobController
                     ->with(["phones", "photos"])
                     ->where("type", "main")->get();
             }])
+            ->whereNotIn('id', $toptenIds)
             ->paginate(10);
 
         // TODO: what if there is no main branch???
