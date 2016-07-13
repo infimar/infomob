@@ -10,22 +10,41 @@
 <hr>
 <div class="row">
 	<div class="col-md-12">
+		{{-- City Picker --}}
 		@if (isset($chosenCity))
 		<div id="div_admin_citypicker">
-			<select id="admin_citypicker">
-	            @foreach (App\City::orderBy("order")->get() as $city)
-	                <option value="{{ $city->id }}"
-	                    @if ($chosenCity->id == $city->id) selected @endif 
+			<select id="admin_citypicker" class="js-single-select">
+	            @foreach (App\City::dropdown(true) as $key => $name)
+	                <option value="{{ $key }}"
+	                    @if ($chosenCity->id == $key) selected @endif 
 	                >
-	                    {{ $city->name }}
+	                    {{ $name }}
 	                </option>
 	            @endforeach
 	        </select>
 		</div>
 		@endif
 
+		{{-- Category Picker --}}
+		<div id="div_admin_citypicker">
+			<select id="admin_categorypicker" class="js-single-select">
+	            @foreach (App\Category::dropdown() as $section => $categories)
+	            	<optgroup label="{{ $section }}">
+						@foreach ($categories as $key => $name)
+			                <option value="{{ $key }}"
+			                	@if ($chosenCategory->id == $key) selected @endif 
+			                >
+			                    {{ $name }}
+			                </option>
+		                @endforeach
+	                </optgroup>
+	            @endforeach
+	        </select>
+	    </div>
+
+		{{-- TOP Organizations --}}
 		<div id="div_admin_topten">
-			<a href="?topten=1" class="btn btn-default"><i class="fa fa-star"></i> ТОП организации</a>
+			<a href="/admin/topten" class="btn btn-default"><i class="fa fa-star"></i> ТОП организации</a>
 		</div>
 	</div>
 </div>
@@ -37,30 +56,46 @@
 		<table id="myTable" class="display" cellspacing="0" width="100%">
 			<thead>
 				<tr>
-					<th>ID</th>
 					<th>NAME</th>
 					<th>DESCRIPTION</th>
 					<th>STATUS</th>
+					<th>DATE ADDED</th>
 					<th>ACTIONS</th>
 				</tr>
 			</thead>
 			<tbody>
 				@foreach ($organizations as $organization)
 					<tr>
-						<td>{{ $organization->id }}</td>
 						<td>
 							<a href="/admin/organizations/{{ $organization->id }}/edit">
 								{{ $organization->name }}
 							</a>
 						</td>
 						<td>{{ $organization->description }}</td>
-						<td>{{ $organization->status }}</td>
+						<td width="120px">
+							<img src="{{ asset("images/imageloader.gif") }}" class="imageLoader gone" data-id="{{ $organization->id }}">
+							
+							<span data-id="{{ $organization->id }}" data-model="organization" 
+								@if ($organization->status == "draft")
+									class="btn_toggleStatus label label-danger"
+								@elseif ($organization->status == "published")
+									class="btn_toggleStatus label label-success"
+								@else
+									class="btn_toggleStatus label label-default"
+								@endif
+							>
+								{{ App\Category::statuses($organization->status) }}
+							</span>
+						</td>
+						<td>{{ $organization->created_at->format('d/m/Y H:i:s') }}</td>
 						<td width="200px">
-							<a href="#" @if ($organization->order != 9999) data-topten="1" class="btn btn-sm btn-warning" @else data-topten="0" class="btn btn-sm btn-default"  @endif  title="В ТОП!" id="topit"><i class="fa fa-star"></i></a>
 							<a href="/admin/organizations/{{ $organization->id }}/edit" class="btn btn-sm btn-default" title="Редактировать"><i class="fa fa-pencil"></i></a>
 							<a href="/admin/organizations/{{ $organization->id }}/remove" class="btn_remove btn btn-sm btn-default" title="Удалить"><i class="fa fa-trash"></i></a>
+
 							<a href="/admin/organizations/{{ $organization->id }}/edit#tableBranches" class="btn btn-sm btn-default" title="Филиалы"><i class="fa fa-bars"></i></a>
 							<a href="/admin/organizations/{{ $organization->id }}/createbranch" class="btn btn-sm btn-default" title="Добавить филиал"><i class="fa fa-plus"></i></a>
+							
+							<a href="#" data-id="{{ $organization->id }}" @if (isset($topten_map[$organization->id])) class="btn btn-sm btn-warning btn_topIt" @else class="btn btn-sm btn-default btn_topIt" @endif title="В ТОП!"><i class="fa fa-star"></i></a>
 						</td>
 					</tr>
 				@endforeach
@@ -80,13 +115,29 @@
 		aaSorting:[]
 	});
 
-	$('#topit').click(function($e) {
-		var topTen = $(this).data('topten');
+	$('body').on('click', 'a.btn_topIt', function(e) {
+		e.preventDefault();
 
-		if (topTen == 1) {
-			alert('Убрать из топа (ajax request)');
-		} else {
-			alert('Добавить в топ и перейти для установления порядка');
-		}
+		var id = $(this).data('id');
+		var cityId = chosenCity.id;
+		var categoryId = chosenCategory.id;
+
+		var data = {
+			id: id,
+			cityId: cityId,
+			categoryId: categoryId
+		};
+
+		console.log(data);
+
+		$.post('/ajax/organizations/topten', { data: data }, function(response) {
+			console.log(response);
+
+			if (response.code == "added") {
+				$('.btn_topIt[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-warning btn_topIt');
+			} else {
+				$('.btn_topIt[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-default btn_topIt');
+			}
+		});
 	});
 @stop

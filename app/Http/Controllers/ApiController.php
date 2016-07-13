@@ -27,7 +27,7 @@ class ApiController extends Controller
 	{
 		try
 		{
-			$cities = City::orderBy("order")->get();
+			$cities = City::published()->orderBy("order")->get();
 			$result = [];
 			
 			foreach ($cities as $city)

@@ -10,13 +10,14 @@
 			<input type="hidden" name="_method" value="PUT">
 			{{ csrf_field() }}
 
+			{{-- GENERAL INFO --}}
 			<fieldset>
 				<legend>Общая информация</legend>
 
 				<div class="form-group">
 			    	<label for="inputName" class="col-sm-2 control-label">Наименование</label>
 			    	<div class="col-sm-10">
-			      		<input type="text" class="form-control" id="inputName" name="branch_name" placeholder="Наименование" value={{ $branch->name }}>
+			      		<input type="text" class="form-control" id="inputName" name="branch_name" placeholder="Наименование" value="{{ $branch->name }}">
 			    	</div>
 			  	</div>
 
@@ -30,18 +31,20 @@
 				<div class="form-group">
 			    	<label for="inputCategoryId" class="col-sm-2 control-label">Категория</label>
 			    	<div class="col-sm-4">
-			      		<select id="inputCategoryId" name="branch_categoryId" class="form-control">
-							<option value="">Выберите категорию</option>
+			      		<select id="inputCategoryId" name="branch_categoryIds[]" class="form-control js-categories-multiple-select" multiple="multiple">
+							<option></option>
 
-							@foreach (App\Category::roots()->get() as $parentCategory)
-								<optgroup label="{{ $parentCategory->name }}">
-									@foreach ($parentCategory->descendants()->limitDepth(1)->get() as $category)
-										<option value="{{ $category->id }}"
-											@if ($branch->categories[0]->id == $category->id) selected="true" @endif 
-										>{{ $category->name }}</option>
-									@endforeach
-								</optgroup>
-							@endforeach
+							@foreach (App\Category::dropdown() as $section => $categories)
+				            	<optgroup label="{{ $section }}">
+									@foreach ($categories as $key => $name)
+						                <option value="{{ $key }}"
+											@if ($branch->categories->contains("id", $key)) selected="selected" @endif 
+						                >
+						                    {{ $name }}
+						                </option>
+					                @endforeach
+				                </optgroup>
+				            @endforeach
 			      		</select>
 			    	</div>
 			  	</div>
@@ -49,13 +52,11 @@
 				<div class="form-group">
 			    	<label for="inputCityId" class="col-sm-2 control-label">Город</label>
 			    	<div class="col-sm-4">
-			      		<select id="inputCityId" name="branch_cityId" class="form-control">
-							<option value="">Выберите город</option>
+			      		<select id="inputCityId" name="branch_cityId" class="form-control js-cities-single-select">
+			      			<option></option>
 
 							@foreach (App\City::orderBy('order')->get() as $city)
-								<option value="{{ $city->id }}"
-									@if ($branch->city->id == $city->id) selected="true" @endif
-								>{{ $city->name }}</option>
+								<option value="{{ $city->id }}" @if ($city->id == $branch->city_id) selected="selected" @endif>{{ $city->name }}</option>
 							@endforeach
 			      		</select>
 			    	</div>
@@ -110,6 +111,7 @@
 		 		</div>
 			</fieldset>
 
+			{{-- PHONES --}}
 			<fieldset>
 				<legend>Контакты</legend>
 
@@ -151,7 +153,8 @@
 
 				</div>
 			</fieldset>
-
+	
+			{{-- SOCIALS --}}
 			<fieldset>
 				<legend>Вебсайт и Социальные сети</legend>
 
@@ -164,22 +167,22 @@
 						<div data-id="{{ $social->id }}" class="form-group div_social" style="margin-top: 10px;">
 							<div class="col-sm-3">
 								<select name="branch_socials[{{ $social->id }}][type]" class="form-control">
-									<option value="website" selected="selected">Вебсайт</option>
-									<option value="facebook">Facebook</option>
-									<option value="vk">VK</option>
-									<option value="googleplus">Google +</option>
-									<option value="instagram">Instagram</option>
-									<option value="youtube">Youtube</option>
-									<option value="twitter">Twitter</option>
-									<option value="foursquare">Foursquare</option>
-									<option value="linkedin">Linkedin</option>
+									<option value="website" @if ($social->type == "website") selected="selected" @endif>Вебсайт</option>
+									<option value="facebook" @if ($social->type == "facebook") selected="selected" @endif>Facebook</option>
+									<option value="vk" @if ($social->type == "vk") selected="selected" @endif>VK</option>
+									<option value="googleplus" @if ($social->type == "googleplus") selected="selected" @endif>Google +</option>
+									<option value="instagram" @if ($social->type == "instagram") selected="selected" @endif>Instagram</option>
+									<option value="youtube" @if ($social->type == "youtube") selected="selected" @endif>Youtube</option>
+									<option value="twitter" @if ($social->type == "twitter") selected="selected" @endif>Twitter</option>
+									<option value="foursquare" @if ($social->type == "foursquare") selected="selected" @endif>Foursquare</option>
+									<option value="linkedin" @if ($social->type == "linkedin") selected="selected" @endif>Linkedin</option>
 								</select>
 							</div>
 							<div class="col-sm-5">
-								<input type="text" class="form-control" name="branch_socials[{{ $social->id }}][name]" placeholder="Адрес / Название">
+								<input type="text" class="form-control" name="branch_socials[{{ $social->id }}][name]" placeholder="Адрес / Название" value="{{ $social->name }}">
 							</div>
 							<div class="col-sm-3">
-								<input type="text" class="form-control" name="branch_socials[{{ $social->id }}][contact_person]" placeholder="Контактное лицо">
+								<input type="text" class="form-control" name="branch_socials[{{ $social->id }}][contact_person]" placeholder="Контактное лицо" value="{{ $social->contact_person }}">
 							</div>
 							<div class="col-sm-1">
 								<a href="#" data-id="{{ $social->id }}" class="btn btn-danger btn_removesocial"><i class="fa fa-trash"></i></a>
@@ -188,13 +191,24 @@
 					@endforeach
 				</div>
 			</fieldset>
-			
+
+			<fieldset>
+				<legend>Тэги</legend>
+
+				<div class="row">
+					<col-md-6>
+						<input class="form-control" type="text" id="tags" name="tags" placeholder="Тэги" class="tm-input"/>
+						<input type="hidden" id="branch_tags" name="branch_tags">
+					</col-md-6>
+				</div>				
+			</fieldset>
+
 			<fieldset>
 				<legend>&nbsp;</legend>
 		  		<div class="form-group">
 			    	<div class="col-sm-offset-2 col-sm-10">
 			    		<a href="{{ $backUrl }}" class="btn btn-default">Отмена</a>
-			      		<button type="submit" class="btn btn-primary">Создать</button>
+			      		<button type="submit" class="btn btn-primary">Сохранить изменения</button>
 			    	</div>
 		  		</div>
 		  	</fieldset>
@@ -206,57 +220,22 @@
 @endsection
 
 
-@section('scripts_global')
-	var phoneId = {{ $branch->phones->last()->id }};
-	var socialId = {{ $branch->socials->last()->id }};
-@endsection
-
-
 @section('scripts_body')
 
-// photo uploads
-Dropzone.options.myDropzone = {
-	acceptedFiles: "image/*",
-	maxFilesize: "2",
-	dictFileTooBig: 'Слишком большой файл. Максимальный размер: 2 MB',
-	dictInvalidFileType: 'Файл не является изображением или тип файла не поддерживается.',
-    init: function() {
-      	this.on("success", function(file, response) {
-			console.log(response);
+$('#tags').tagsManager({
+	prefilled: tags,
+    CapitalizeFirstLetter: true,
+});
 
-	        var removeButton = Dropzone.createElement('<a class="dz-remove">Удалить</a>');
-	        var _this = this;
+$(".js-cities-single-select").select2({
+  placeholder: "Выберите город",
+  allowClear: true
+});
 
-	        removeButton.addEventListener("click", function(e) {
-	          	e.preventDefault();
-	          	e.stopPropagation();
-
-	          	_this.removeFile(file);
-
-	          	// If you want to the delete the file on the server as well,
-	          	// you can do the AJAX request here.
-	          	$.ajax({
-	                type: "POST",
-	                url: "{{ url('/delete-image') }}",
-	                data: { path: response.path, },
-	                beforeSend: function () {
-	                    // before send
-	                },
-	                success: function (response) { 
-	                    //if (response == 'success') alert('deleted');
-	                },
-	                error: function () {
-	                    //alert("Ошибка");
-	                }
-	            });
-	        });
-
-
-	        // Add the button to the file preview element.
-	        file.previewElement.appendChild(removeButton);
-      	});
-    }
-};
+$(".js-categories-multiple-select").select2({
+  placeholder: "Выберите категорию",
+  //allowClear: true
+});
 
 // add phone
 $('#btn_addphone').click(function(e) {

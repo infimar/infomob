@@ -104,8 +104,11 @@ body {
   border-radius: 50%;
 }
 
+#admin_citypicker {
+  width: 150px;
+}
 
-#admin_citypicker, #organization_citypicker {
+#organization_citypicker {
   padding: 8px 10px;
   border: 1px solid #000;
   font-size: 16px;
@@ -123,4 +126,99 @@ body {
   float: left;
   margin-left: 20px;
   line-height: 59px;
+}
+
+.btn_toggleStatus {
+  cursor: pointer;
+}
+
+.gone {
+  visibility: hidden;
+}
+
+.visible {
+  visibility: visible;
+}
+
+.icon {
+  float: left; 
+  text-align: center; 
+  width: 100px; 
+  height: 100px;
+  margin-bottom: 4px;
+  /*margin-right: 4px;*/
+}
+
+.icon img {
+  /*width: 64px;
+  height: 64px;*/
+}
+
+.icon:hover {
+  cursor: pointer;
+  outline: 1px solid #ccc;
+}
+
+.photo {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  float: left;
+  margin: 0 10px 10px 10px;
+}
+
+.photo img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
+.photo:hover {
+  cursor: pointer;
+  outline: 3px solid blue;
+}
+
+
+.activeIcon {
+  outline: 5px solid blue;
+}
+
+/*#myAwesomeDropzone {
+  width: 400px;
+  height: 100px;
+  border: 2px dashed #000;
+  text-align: center;
+  vertical-align: center;
+}
+
+#myAwesomeDropzone .dz-message {
+  line-height: 100px;
+  width: 160px;
+  margin: 0 auto;
+}*/
+
+#sortable { 
+  list-style-type: none;
+  margin: 0; 
+  padding: 0; 
+  width: 60%; 
+}
+
+#sortable li { 
+  margin: 0 5px 5px 5px; 
+  padding-left: 10px; 
+  font-size: 1.2em; 
+  height: 48px;
+  line-height: 48px;
+}
+
+#sortable li:hover {
+  cursor: move;
 }

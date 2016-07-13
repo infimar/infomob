@@ -60,19 +60,41 @@
 <hr>
 <div class="row">
 	<div class="col-md-12">
+		{{-- City Picker --}}
+		@if (isset($chosenCity))
 		<div id="div_admin_citypicker">
-			<select id="organization_citypicker">
+			<select id="organization_citypicker" class="js-single-select">
 				<option value="0">Все города</option>
 
-	            @foreach (App\City::orderBy("order")->get() as $city)
-	                <option value="{{ $city->id }}"
-	                    @if ($pickedCityId == $city->id) selected @endif 
+	            @foreach (App\City::dropdown() as $key => $name)
+	                <option value="{{ $key }}"
+	                    @if ($pickedCityId == $key) selected @endif 
 	                >
-	                    {{ $city->name }}
+	                    {{ $name }}
 	                </option>
 	            @endforeach
 	        </select>
 		</div>
+		@endif
+
+		{{-- Category Picker --}}
+		<div id="div_admin_citypicker">
+			<select id="organization_categorypicker" class="js-single-select">
+				<option value="0">Все категории</option>
+
+	            @foreach (App\Category::dropdown() as $section => $categories)
+	            	<optgroup label="{{ $section }}">
+						@foreach ($categories as $key => $name)
+			                <option value="{{ $key }}"
+			                	@if ($pickedCategoryId == $key) selected @endif 
+			                >
+			                    {{ $name }}
+			                </option>
+		                @endforeach
+	                </optgroup>
+	            @endforeach
+	        </select>
+	    </div>
 	</div>
 </div>
 <hr>
@@ -80,29 +102,46 @@
 <table id="tableBranches" class="display" cellspacing="0" width="100%">
 	<thead>
 		<tr>
-			<th>ID</th>
 			<th>NAME</th>
 			<th>CITY</th>
 			<th>CATEGORY</th>
 			<th>STATUS</th>
+			<th>ADDED ON</th>
 			<th>ACTIONS</th>
 		</tr>
 	</thead>
 	<tbody>
 		@foreach ($organization->branches as $branch)
 			<tr>
-				<td>{{ $branch->id }}</td>
 				<td>
 					<a href="/admin/branches/{{ $branch->id }}/edit">
-						@if ($branch->type == "main") <i class="fa fa-star"></i> @endif {{ $branch->name }}
+						{{ $branch->name }}
 					</a>
 				</td>
 				<td>{{ $branch->city->name }}</td>
 				<td>{{ $branch->categoryLabel }}</td>
-				<td>{{ $branch->status }}</td>
+				<td width="120px">
+					<img src="{{ asset("images/imageloader.gif") }}" class="imageLoader gone" data-id="{{ $branch->id }}">
+					
+					<span data-id="{{ $branch->id }}" data-model="branch" 
+						@if ($branch->status == "draft")
+							class="btn_toggleStatus label label-danger"
+						@elseif ($branch->status == "published")
+							class="btn_toggleStatus label label-success"
+						@else
+							class="btn_toggleStatus label label-default"
+						@endif
+					>
+						{{ App\Category::statuses($branch->status) }}
+					</span>
+				</td>
+				<td>{{ $branch->created_at->format('d/m/Y H:i:s') }}</td>
 				<td width="200px">
 					<a href="/admin/branches/{{ $branch->id }}/edit" class="btn btn-sm btn-default" title="Редактировать"><i class="fa fa-pencil"></i></a>
-					<a href="/admin/branches/{{ $branch->id }}/remove" class="btn_remove btn btn-sm btn-default" title="Удалить"><i class="fa fa-trash"></i></a>					
+					<a href="/admin/branches/{{ $branch->id }}/remove" class="btn_remove btn btn-sm btn-default" title="Удалить"><i class="fa fa-trash"></i></a>
+
+					<a href="/admin/branches/{{ $branch->id }}/gallery" class="btn btn-sm @if (count($branch->photos) > 0) btn-info @else btn-default @endif" title="Удалить"><i class="fa fa-picture-o"></i></a>
+					<a href="#" data-id="{{ $branch->id }}" @if ($branch->type == "main") class="btn btn-sm btn-warning btn_makeMain" @else class="btn btn-sm btn-default btn_makeMain" @endif title="Сделать главным филиалом"><i class="fa fa-star"></i></a>		
 				</td>
 			</tr>
 		@endforeach
@@ -112,6 +151,20 @@
 @endsection
 
 @section('scripts_body')
+
+	$('.btn_makeMain').click(function(e) {
+		e.preventDefault();
+	
+		var id = $(this).data('id');
+
+		$.post('/ajax/branches/makemain', { id: id }, function(response) {
+			if (response.code == 200) {
+				$('.btn_makeMain').removeClass().addClass('btn btn-sm btn-default btn_makeMain');
+				$('.btn_makeMain[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-warning btn_makeMain');
+			}
+		});
+	});
+
 	$('#tableBranches').DataTable({
 		paging: true,
 		aaSorting:[]
@@ -119,6 +172,17 @@
 
 	$('#organization_citypicker').change(function(e) {
     	var cityId = $('#organization_citypicker').val();
-		location.href = "/admin/organizations/{{ $organization->id }}/edit?city_id=" + cityId;
+		var url = "/admin/organizations/{{ $organization->id }}/edit?city_id=" + cityId + "&category_id=" + pickedCategoryId;
+		url += "#tableBranches";
+
+		location.href = url;
+    });
+
+    $('#organization_categorypicker').change(function(e) {
+    	var categoryId = $('#organization_categorypicker').val();
+		var url = "/admin/organizations/{{ $organization->id }}/edit?city_id=" + pickedCityId + "&category_id=" + categoryId;
+		url += "#tableBranches";
+
+		location.href = url;
     });
 @endsection

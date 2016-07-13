@@ -21,7 +21,8 @@ Route::get('/organization/{organizationId}/{categoryId}', 'HomeController@organi
 Route::get('/branch/{id}/{category_id}', 'HomeController@branch');
 
 // change city
-Route::get('/utils/changecity/{city_id}', 'HomeController@changeCity');
+Route::get('/utils/changecity/{city_id}', 'UtilsController@changeCity');
+Route::get('/utils/changecategory/{category_id}', 'UtilsController@changeCategory');
 
 // Authentication Routes...
 Route::get('login', 'Auth\AuthController@showLoginForm');
@@ -55,15 +56,23 @@ Route::group(['prefix' => 'seed'], function()
 /**
  * Admin
  */
-Route::group(['prefix' => 'admin', 'middleware' => 'web'], function() 
+Route::group(['prefix' => 'admin'], function() 
 {
 	Route::get('/', 'AdminController@index');
 
+	// Cities
+	Route::get('/cities', 'CitiesController@index');
+	Route::get('/cities/create', 'CitiesController@create');
+	Route::post('/cities', 'CitiesController@store');
+	Route::get('/cities/{id}/edit', 'CitiesController@edit');
+	Route::put('/cities/{id}', 'CitiesController@update');
+	Route::get('/cities/{id}/remove', 'CitiesController@destroy');
+
 	// Categories / Subcategories
 	Route::get('/categories/{id}/children', 'CategoriesController@children');
-	Route::get('/categories/{id}/removechild', 'CategoriesController@destroyChild');
 	Route::get('/categories/{id}/editchild', 'CategoriesController@editChild');
 	Route::put('/categories/{id}/updatechild', 'CategoriesController@updateChild');
+	Route::get('/categories/{id}/removechild', 'CategoriesController@destroyChild');
 	Route::get('/categories/{parent_id}/createchild', 'CategoriesController@createChild');
 	Route::post('/categories/{parent_id}/storechild', 'CategoriesController@storeChild');
 
@@ -71,23 +80,48 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function()
 	Route::get('/categories', 'CategoriesController@index');
 	Route::get('/categories/create', 'CategoriesController@create');
 	Route::post('/categories', 'CategoriesController@store');
-	Route::get('/categories/{id}/remove', 'CategoriesController@destroy');
 	Route::get('/categories/{id}/edit', 'CategoriesController@edit');
 	Route::put('/categories/{id}', 'CategoriesController@update');
+	Route::get('/categories/{id}/remove', 'CategoriesController@destroy');
 
 	// Organizations / Branches
 	Route::get('/organizations/{organization_id}/createbranch', 'BranchesController@create');
 	Route::post('/organizations/{organization_id}/storebranch', 'BranchesController@store');
 	Route::get('/branches/{branch_id}/edit', 'BranchesController@edit');
+	Route::put('/branches/{branch_id}', 'BranchesController@update');
+	Route::get('/branches/{branch_id}/gallery', 'BranchesController@editGallery');
+	Route::get('/branches/{branch_id}/remove', 'BranchesController@destroy');
 	 
 	// Organizations
+	Route::get('/topten', 'OrganizationsController@topTen');
 	Route::get('/organizations', 'OrganizationsController@index');
 	Route::get('/organizations/create', 'OrganizationsController@create');
 	Route::post('/organizations', 'OrganizationsController@store');
-	Route::get('/organizations/{id}/remove', 'OrganizationsController@destroy');
 	Route::get('/organizations/{id}/edit', 'OrganizationsController@edit');
 	Route::put('/organizations/{id}', 'OrganizationsController@update');
+	Route::get('/organizations/{id}/remove', 'OrganizationsController@destroy');
 
+	// Media manager
+	Route::get('/mediamanager', 'MediaManagerController@index');
+	Route::post('/mediamanager/upload/icon', 'MediaManagerController@uploadIcon');
+	Route::post('/mediamanager/delete/icon', 'MediaManagerController@deleteIcon');
+	Route::post('/mediamanager/upload/photo/', 'MediaManagerController@uploadPhoto');
+	Route::post('/mediamanager/update/photo', 'MediaManagerController@updatePhoto');
+	Route::post('/mediamanager/deletebyid/photo', 'MediaManagerController@deletePhotoById');
+	Route::post('/mediamanager/delete/photo', 'MediaManagerController@deletePhoto');
+});
+
+/**
+ * Ajax
+ */
+Route::group(['prefix' => 'ajax'], function()
+{
+	Route::post('/togglestatus', 'AjaxController@toggleStatus');
+	Route::post('/topit', 'AjaxController@topIt');
+	Route::post('/branches/makemain', 'AjaxController@makeMainBranch');
+	Route::post('/organizations/topten', 'AjaxController@addToTopTen');
+	Route::post('/topten/reorder', 'AjaxController@topTenReorder');
+	Route::post('/topten/remove', 'AjaxController@removeFromTopTen');
 });
 
 /**
@@ -95,6 +129,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function()
  */
 Route::group(['prefix' => 'api'], function() 
 {
+	Route::get('/cities', 'ApiController@getCities');
 	Route::get('/searchautocomplete', 'ApiController@searchAutoComplete');
 	
 	Route::get('/branch', 'ApiController@getBranch');

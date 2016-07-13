@@ -14,6 +14,7 @@ use App\Social;
 use JavaScript;
 use Flash;
 use DB;
+use File;
 
 class OrganizationsController extends AdminController
 {
@@ -25,16 +26,39 @@ class OrganizationsController extends AdminController
     public function index()
     {
     	$city = $this->city;
+        $category = $this->category;
 
         $organizations = Organization::orderBy("id", "DESC")
-        	->whereHas("branches", function($query) use ($city) 
+        	->whereHas("branches", function($query) use ($city, $category) 
         	{
         		$query->where('city_id', $city->id);
+                $query->whereHas('categories', function ($q) use ($category) {
+                    $q->where("category_id", $category->id);
+                });
         	})
         	->get();
 
+
+        $ids = [];
+        foreach ($organizations as $organization)
+        {
+            $ids[] = $organization->id;
+        }
+
+        $toptens = DB::table('toptens')
+            ->where("city_id", $city->id)
+            ->where('category_id', $category->id)
+            ->whereIn('organization_id', $ids)
+            ->get();
+        
+        $topten_map = [];
+        foreach ($toptens as $key => $topten) 
+        {
+            $topten_map[$topten->organization_id] = true;
+        }
+
         JavaScript::put(['activeLink' => 'organizations_index']);
-        return view('organizations.admin.index', compact("organizations"));
+        return view('organizations.admin.index', compact("organizations", "topten_map"));
     }
 
     /**
@@ -95,12 +119,21 @@ class OrganizationsController extends AdminController
             // dd($branch);
 
             // set branch category
-            $category = Category::findOrFail($input['branch_categoryId']);
-            $success = DB::table('branch_category')->insert([
-                'branch_id' => $branch->id,
-                'category_id' => $category->id
-            ]);
-            // dd($success);
+            $categoryIds = [];
+            foreach ($input['branch_categoryIds'] as $key => $catId) 
+            {
+                $categoryIds[] = $catId;
+            }
+
+            $categories = Category::whereIn("id", $categoryIds)->get();
+            foreach ($categories as $category) 
+            {
+                $success = DB::table('branch_category')->insert([
+                    'branch_id' => $branch->id,
+                    'category_id' => $category->id
+                ]);
+                // dd($success);
+            }
             
             // branch phones
             if (isset($input['branch_phones']))
@@ -133,6 +166,16 @@ class OrganizationsController extends AdminController
                     // dd($social);
                 }
             }
+
+            // tags
+            $tags = explode("|", $input['branch_tags']);
+            // dd($tags);
+            foreach ($tags as $key => $tag) 
+            {
+                if (empty($tag)) continue;
+                $branch->tag($tag);
+            }
+            // dd($branch->tagNames());
 
             DB::commit();
         } 
@@ -168,25 +211,52 @@ class OrganizationsController extends AdminController
     {
         $backUrl = url()->previous();
         $pickedCityId = 0;
+        $pickedCategoryId = 0;
 
         if ($request->has('city_id'))
         {
             $pickedCityId = $request->input('city_id');
         }
 
+        if ($request->has('category_id'))
+        {
+            $pickedCategoryId = $request->input('category_id');
+        }
+
         try
         {
             $organization = Organization::
-                with(['branches' => function($q) use ($pickedCityId) { 
+                with(['branches' => function($q) use ($pickedCityId, $pickedCategoryId) { 
                     if ($pickedCityId != 0)
                         $q->where("city_id", $pickedCityId);
 
-                    $q->orderBy("type", "DESC"); 
-                }, "branches.city", "branches.categories"])
-                ->findOrFail($id);
+                    if ($pickedCategoryId != 0)
+                        $q->whereHas("categories", function ($query) use ($pickedCategoryId) {
+                            $query->where("id", $pickedCategoryId);
+                        });
+                }, "branches.city", "branches.categories", "branches.photos"])->findOrFail($id);
 
-            JavaScript::put(['activeLink' => 'organizations_edit']);
-            return view('organizations.admin.edit', compact("organization", "backUrl", 'pickedCityId'));
+            foreach ($organization->branches as $branch)
+            {
+                $categoryLabel = "";
+
+                $length = count($branch->categories);
+                foreach ($branch->categories as $key => $category)
+                {
+                    $categoryLabel .= $category->name;
+                    if ($key + 1 < $length) $categoryLabel .= " | ";
+                }
+
+                $branch->categoryLabel = $categoryLabel;
+            }
+
+            JavaScript::put([
+                'activeLink' => 'organizations_edit',
+                'pickedCityId' => $pickedCityId,
+                'pickedCategoryId' => $pickedCategoryId
+            ]);
+
+            return view('organizations.admin.edit', compact("organization", "backUrl", 'pickedCityId', 'pickedCategoryId'));
         }
         catch (Exception $e)
         {
@@ -252,6 +322,7 @@ class OrganizationsController extends AdminController
 
                 foreach ($branch->photos as $key => $photo) 
                 {
+                    File::delete(public_path() . "/images/photos/" . $photo->path);
                     $photo->delete();
                 }
 
@@ -260,7 +331,7 @@ class OrganizationsController extends AdminController
 
             $organization->delete();
 
-            flash()->success("Организация удалена");
+            flash()->info("Организация удалена");
             return redirect()->back();
         } 
         catch (Exception $e) 
@@ -268,5 +339,19 @@ class OrganizationsController extends AdminController
             flash()->error('Ошибка удаления: ' . $e->getMessage());
             return redirect()->back();
         }
+    }
+
+    public function topTen()
+    {
+        $toptens = DB::table('toptens')
+            ->join('organizations', 'toptens.organization_id', '=', 'organizations.id')
+            ->where('city_id', $this->city->id)
+            ->where('category_id', $this->category->id)
+            ->orderBy('toptens.order')
+            ->get(['city_id', 'category_id', 'organization_id', 'toptens.order', 'organizations.name']);
+        // dd($toptens);
+
+        JavaScript::put(['activeLink' => 'organizations_topten']);
+        return view('organizations.admin.topten', compact('toptens'));
     }
 }

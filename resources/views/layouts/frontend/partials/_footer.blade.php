@@ -25,7 +25,7 @@
                                 {{ $branch->created_at->format("d M y") }}
                             </time>
                             <p class="clr-primary">
-                                <a href="/branch/{{ $branch->id }}">
+                                <a href="#">
                                     {{ $branch->name }}
                                 </a>
                             </p>

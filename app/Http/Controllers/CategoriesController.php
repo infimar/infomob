@@ -32,8 +32,23 @@ class CategoriesController extends AdminController
      */
     public function create()
     {
+        $icons = [];
+        $path = public_path() . "/images/icons/";
+        $files = array_diff(scandir($path), array('.', '..'));
+
+        foreach ($files as $file)
+        {
+            $ext = pathinfo($path . $file, PATHINFO_EXTENSION);
+            // dd($ext);
+
+            if (in_array($ext, ["png"]))
+            {
+                $icons[] = $file;
+            }
+        }
+
         JavaScript::put(['activeLink' => 'categories_create']);
-        return view('categories.admin.create');
+        return view('categories.admin.create', compact("icons"));
     }
 
     /**
@@ -44,6 +59,7 @@ class CategoriesController extends AdminController
      */
     public function store(Request $request)
     {
+        $input = $request->all();
         $name = $request->input("name");
 
         if (empty($name))
@@ -58,13 +74,15 @@ class CategoriesController extends AdminController
         
         if ($existingCategory !== null)
         {
-            Flash::error('Ошибка: такая категория уже сущетсвует');
+            Flash::error('Ошибка: такая категория уже существует');
             return redirect()->back();
         }
 
         $category = Category::create([
             'name' => $name,
             'slug' => $this->sluggify($name),
+            'status' => $input["status"],
+            'icon' => $input["icon"]
         ]);
 
         $category->parent_id = null;
@@ -97,7 +115,23 @@ class CategoriesController extends AdminController
         {
             $category = Category::findOrFail($id);
 
-            return view('categories.admin.edit', compact("category"));
+            $icons = [];
+            $path = public_path() . "/images/icons/";
+            $files = array_diff(scandir($path), array('.', '..'));
+
+            foreach ($files as $file)
+            {
+                $ext = pathinfo($path . $file, PATHINFO_EXTENSION);
+                // dd($ext);
+
+                if (in_array($ext, ["png"]))
+                {
+                    $icons[] = $file;
+                }
+            }
+
+            JavaScript::put(['activeLink' => 'categories_edit']);
+            return view('categories.admin.edit', compact("category", "icons"));
         }
         catch (Exception $e)
         {
@@ -115,6 +149,7 @@ class CategoriesController extends AdminController
      */
     public function update(Request $request, $id)
     {
+        $input = $request->all();
         $name = $request->input("name");
 
         if (empty($name))
@@ -131,7 +166,7 @@ class CategoriesController extends AdminController
             $slug = $this->sluggify($name);
             $existingCategory = Category::where("slug", $slug)->first();
             
-            if ($existingCategory !== null && $existingCategory->id !== $id)
+            if ($existingCategory !== null && $existingCategory->id !== $category->id)
             {
                 Flash::error('Ошибка: такая категория уже сущетсвует');
                 return redirect()->back();
@@ -139,6 +174,8 @@ class CategoriesController extends AdminController
 
             $category->name = $name;
             $category->slug = $slug;
+            $category->status = $input['status'];
+            $category->icon = $input['icon'];
             $category->save();
 
             flash()->success("Категория обновлена");
@@ -147,16 +184,6 @@ class CategoriesController extends AdminController
         catch (Exception $e)
         {
             flash()->error('Ошибка обновления: ' . $e->getMessage());
-            return redirect()->back();
-        }
-
-        // check for slug
-        $slug = $this->sluggify($name);
-        $existingCategory = Category::where("slug", $slug)->first();
-        
-        if ($existingCategory !== null)
-        {
-            Flash::error('Ошибка: такая категория уже сущетсвует');
             return redirect()->back();
         }
     }
@@ -181,7 +208,7 @@ class CategoriesController extends AdminController
 
             $category->delete();
 
-            flash()->success("Категория удалена");
+            flash()->info("Категория удалена");
             return redirect()->back();
         } 
         catch (Exception $e) 
@@ -198,6 +225,7 @@ class CategoriesController extends AdminController
             $category = Category::findOrFail($id);
             $children = $category->descendants()->limitDepth(1)->get();
 
+            JavaScript::put(['activeLink' => 'categories_children']);
             return view('categories.admin.children', compact("category", "children"));
         } 
         catch (Exception $e) 
@@ -212,7 +240,24 @@ class CategoriesController extends AdminController
         try
         {
             $category = Category::findOrFail($parentId);
-            return view('categories.admin.createChild', compact("category"));
+
+            $icons = [];
+            $path = public_path() . "/images/icons/";
+            $files = array_diff(scandir($path), array('.', '..'));
+
+            foreach ($files as $file)
+            {
+                $ext = pathinfo($path . $file, PATHINFO_EXTENSION);
+                // dd($ext);
+
+                if (in_array($ext, ["png"]))
+                {
+                    $icons[] = $file;
+                }
+            }
+
+            JavaScript::put(['activeLink' => 'categories_createchild']);
+            return view('categories.admin.createChild', compact("category", "icons"));
         }
         catch (Exception $e)
         {
@@ -223,6 +268,7 @@ class CategoriesController extends AdminController
 
     public function storeChild(Request $request, $parentId)
     {
+        $input = $request->all();
         $name = $request->input("name");
 
         if (empty($name))
@@ -246,6 +292,8 @@ class CategoriesController extends AdminController
             $category = Category::create([
                 'name' => $name,
                 'slug' => $this->sluggify($name),
+                'status' => $input["status"],
+                'icon' => $input["icon"]
             ]);
 
             $category->parent_id = $parentId;
@@ -266,8 +314,25 @@ class CategoriesController extends AdminController
         try
         {
             $category = Category::findOrFail($id);
+            $parent = $category->parent()->first();
 
-            return view('categories.admin.editchild', compact("category"));
+            $icons = [];
+            $path = public_path() . "/images/icons/";
+            $files = array_diff(scandir($path), array('.', '..'));
+
+            foreach ($files as $file)
+            {
+                $ext = pathinfo($path . $file, PATHINFO_EXTENSION);
+                // dd($ext);
+
+                if (in_array($ext, ["png"]))
+                {
+                    $icons[] = $file;
+                }
+            }
+
+            JavaScript::put(['activeLink' => 'categories_editchild']);
+            return view('categories.admin.editchild', compact("category", "parent", "icons"));
         }
         catch (Exception $e)
         {
@@ -278,6 +343,7 @@ class CategoriesController extends AdminController
 
     public function updateChild(Request $request, $id)
     {
+        $input = $request->all();
         $name = $request->input("name");
 
         if (empty($name))
@@ -294,7 +360,7 @@ class CategoriesController extends AdminController
             $slug = $this->sluggify($name);
             $existingCategory = Category::where("slug", $slug)->first();
             
-            if ($existingCategory !== null && $existingCategory->id !== $id)
+            if ($existingCategory !== null && $existingCategory->id !== $category->id)
             {
                 Flash::error('Ошибка: такая подкатегория уже сущетсвует');
                 return redirect()->back();
@@ -302,6 +368,8 @@ class CategoriesController extends AdminController
 
             $category->name = $name;
             $category->slug = $slug;
+            $category->status = $input['status'];
+            $category->icon = $input['icon'];
             $category->save();
 
             flash()->success("Подкатегория обновлена");
@@ -320,6 +388,23 @@ class CategoriesController extends AdminController
         if ($existingCategory !== null)
         {
             Flash::error('Ошибка: такая категория уже сущетсвует');
+            return redirect()->back();
+        }
+    }
+
+    public function destroyChild(Request $request, $id)
+    {
+        try 
+        {
+            $category = Category::findOrFail($id);
+            $category->delete();
+
+            flash()->info("Категория удалена");
+            return redirect()->back();
+        } 
+        catch (Exception $e) 
+        {
+            flash()->error('Ошибка удаления: ' . $e->getMessage());
             return redirect()->back();
         }
     }
