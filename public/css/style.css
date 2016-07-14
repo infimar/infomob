@@ -1516,8 +1516,8 @@ footer .rights {
   height: 96px;
 }
 .category_name {
-  line-height: 1.6rem;
-  font-size: 1.4rem;
+  line-height: 1.3rem;
+  font-size: 1.2rem;
  }
 
 /*========================================================
@@ -2122,10 +2122,8 @@ ul.pagination li a:hover:not(.active) {background-color: #ddd;}
 }
 
 .breadcrumb {
-  width: 600px;
-  margin: 0 auto;
-  padding-top: 20px;
-
+  margin-top: 20px;
+  margin-left: 10%;
 }
 
 .breadcrumb li {
