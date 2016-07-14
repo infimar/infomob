@@ -4,7 +4,7 @@
         <div class="container">
             <div class="row">
 
-                <div class="col-md-3 col-sm-6 col-xs-6">
+                <div class="col-md-3 col-sm-6 col-xs-12">
                     <img src="{{ asset('images/logo.png') }}" alt="" class="img-full">
                     <h3 class="clr-white">
                         О нас
@@ -14,7 +14,7 @@
                     </p>
                 </div>
 
-                <div class="col-md-3 col-sm-6 col-xs-6">
+                <div class="col-md-3 col-sm-6 col-xs-12">
                     <h3 class="clr-white">
                         Последние добавленные
                     </h3>
@@ -33,7 +33,7 @@
                     @endforeach
                 </div>
 
-                <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-6 col-xs-clear">
+                <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-12 col-xs-clear">
                     <h3 class="clr-white">
                         Категории
                     </h3>
@@ -46,7 +46,7 @@
                     </ul>
                 </div>
 
-                <div class="col-md-3 col-sm-6 col-xs-6">
+                <div class="col-md-3 col-sm-6 col-xs-12">
                     <h3 class="clr-white">
                         Подпишитесь на нас
                     </h3>

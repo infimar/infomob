@@ -1410,7 +1410,7 @@ main {
 }
 @media (max-width: 479px) {
   [class*='col-xs-'] + [class*='col-xs-'] {
-    margin-top: 30px;
+    margin-top: 0px;
   }
 }
 /*==================      Well     ======================*/

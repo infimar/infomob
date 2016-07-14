@@ -47,7 +47,7 @@
             <div class="row">
                 @if (count($organizations) > 0)
                     @foreach ($organizations as $organization)
-                        <div class="organization_item col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                        <div class="organization_item col-lg-6 col-md-6 col-sm-6 col-xs-12">
                             <a href="/organization/{{ $organization->id}}/{{ $activeSubcategory->id }}">
                                 @if (!$organization->branches->isEmpty() && !$organization->branches[0]->photos->isEmpty())
                                     <div class="thumbnail_100">
