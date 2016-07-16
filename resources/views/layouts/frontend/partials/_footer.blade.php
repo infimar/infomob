@@ -38,7 +38,7 @@
                         Категории
                     </h3>
                     <ul class="marked-list marked-list__mod1">
-                        @foreach (App\Category::roots()->get() as $category)
+                        @foreach (App\Category::roots()->published()->get() as $category)
                         <li>
                             <a href="/category/{{ $category->slug }}"><span>{{ $category->name }} </span></a>
                         </li>

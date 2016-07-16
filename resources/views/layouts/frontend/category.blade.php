@@ -50,6 +50,8 @@
                     </div>
                 </div>
             </div>
+
+            @if (count($organizations) > 0)
             <div class="row">
                 @if (count($organizations) > 0)
                     @foreach ($organizations as $organization)
@@ -90,6 +92,9 @@
                     <span style="margin-left: 20px">Нет совпадений</span>
                 @endif
             </div>
+            @else
+            <div class="row">Организаций нет.</div>
+            @endif
         </div>
     </section>
 @endsection

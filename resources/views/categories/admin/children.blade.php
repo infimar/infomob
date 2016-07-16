@@ -1,7 +1,31 @@
 @extends('layouts.admin.template')
 
-@section('content')
 
+@section('styles')
+
+.select2-dropdown.select2-dropdown--below {
+	margin-left: 30px;
+	width: 300px !important;
+}
+
+.select2-container--default .select2-selection--single {
+    margin-left: 30px;
+    width: 300px !important;
+    position: relative;
+}
+
+.parentCategory {
+	display: none;
+}
+
+.show_categoryParent:hover {
+	cursor: pointer;
+}
+
+@endsection
+
+
+@section('content')
 
 <h1 class="page-header"><img src="{{ asset('images/icons/' . $category->icon ) }}" style="width:64px;height:64px"> {{ $category->name }} (подкатегории)</h1>
 
@@ -23,7 +47,17 @@
 					<tr>
 						<td>
 							<img style="width: 24px; height: 24px;" src="{{ asset('images/icons/' . $child->icon) }}"> 
-							{{ $child->name }}
+							{{ $child->name }} <a href="#" data-id="{{ $child->id }}" class="show_categoryParent"><i class="fa fa-arrow-circle-o-down"></i></a>
+
+							<div class="parentCategory" data-id="{{ $child->id }}">
+								<select style="margin-left: 28px;" data-id="{{ $child->id }}" class="js-categories-single-select change_parentCategory">
+									@foreach (App\Category::roots()->get() as $root)
+						                <option value="{{ $root->id }}" @if ($root->id == $child->parent_id) selected="selected" @endif>
+						                    {{ $root->name }}
+						                </option>
+						            @endforeach
+					      		</select>
+					      	</div>
 						</td>
 						<td>
 							<img src="{{ asset("images/imageloader.gif") }}" class="imageLoader gone" data-id="{{ $child->id }}">
@@ -57,6 +91,32 @@
 
 
 @section('scripts_body')
+	$('body').on('click', 'a.show_categoryParent', function(e) {
+		e.preventDefault();
+
+		var id = $(this).data('id');
+		$('.parentCategory[data-id=' + id + ']').toggle();
+	});
+	
+	$('body').on('change', '.change_parentCategory', function(e) {
+		e.preventDefault();
+		
+		var id = $(this).data('id');
+		var parentId = $(this).val();
+
+		$.post('/ajax/category/changeparent', { id: id, parentId: parentId }, function(response) {
+			console.log(response);
+
+			if (response.code == 200) {
+				location.reload();
+			} else {
+				alert(response.error);
+			}
+		});
+	});
+
+	$(".js-categories-single-select").select2();
+
 	$('#myTable').DataTable({
 		paging: false
 	});

@@ -42,12 +42,24 @@ class HomeController extends InfomobController
      */
     public function index()
     {
-        $categories = Category::published()
+        $categoriesDB = Category::roots()->published()
             ->where("parent_id", null)
             ->orderBy("name", "ASC")
             ->get();
 
-        return view('layouts.frontend.index', compact('categories'));
+        $categories = [];
+        foreach ($categoriesDB as $key => $category) 
+        {
+            if ($category->descendants()->limitDepth(1)->count() > 0)
+            {
+                $categories[] = $category;
+            }
+        }
+
+        $featured = Branch::with(['categories', 'photos'])->where("is_featured", 1)->get();
+        $latest = Branch::with(['categories'])->orderBy('created_at', 'DESC')->limit(16)->get();
+
+        return view('layouts.frontend.index', compact('categories', "featured", "latest"));
     }
 
     public function category(Request $request, $slug)

@@ -819,11 +819,11 @@ class SeedController extends Controller
 	    	$organization = Organization::create([
 	    		"name" 			=> $info['name'],
 	    		"type" 			=> $info['type'],
-				"category_id" 	=> $category->id,
-				"description" 	=> $info['description']
-			]);
+				  "category_id" 	=> $category->id,
+				  "description" 	=> $info['description']
+		    ]);
 
-			return $organization;
+		    return $organization;
    		}
    		catch (\Exception $e)
    		{
@@ -925,17 +925,17 @@ class SeedController extends Controller
   		try
    		{
    			$social = Social::create([
-				"branch_id"			=> $branch->id,
-				"type"				=> $info[0],
-				"name"				=> $info[1],
-				"contact_person"	=> $cp
-			]);
+  				"branch_id"			=> $branch->id,
+  				"type"				=> $info[0],
+  				"name"				=> $info[1],
+  				"contact_person"	=> $cp
+  			]);
 
-			return $social;
+		    return $social;
    		}
    		catch (\Exception $e)
    		{
-   			throw new \Exception("Social cannot be created: " . $e->getMessage());
+ 			  throw new \Exception("Social cannot be created: " . $e->getMessage());
    		}
    	}
 

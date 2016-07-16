@@ -151,6 +151,11 @@ class Category extends Node {
     return self::$statuses;
   }
 
+  public function branches()
+  {
+    return $this->belongsToMany(Branch::class, 'branch_category', 'category_id');
+  }
+
   public static function dropdown($all = false)
   {
     $dropdown = [];

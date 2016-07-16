@@ -22,7 +22,8 @@
 					<tr>
 						<td>
 							<img style="width: 24px; height: 24px;" src="{{ asset('images/icons/' . $category->icon) }}"> 
-							{{ $category->name }}
+							{{ $category->name }}<br>
+							<span style="margin-left: 28px; color: #aaa; font-size: smaller;">{{ $category->descendants()->limitDepth(1)->count() }} подкатегорий</span>
 						</td>
 						<td width="120px">
 							<img src="{{ asset("images/imageloader.gif") }}" class="imageLoader gone" data-id="{{ $category->id }}">

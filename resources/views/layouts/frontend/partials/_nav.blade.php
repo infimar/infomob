@@ -29,7 +29,7 @@
                 <li>
                     <a href="#">Категории</a>
                     <ul>
-                        @foreach (App\Category::roots()->get() as $category)                    
+                        @foreach (App\Category::roots()->published()->get() as $category)                    
                         <li>
                             <a href="/category/{{ $category->slug }}">{{ $category->name }}</a>
                         </li>

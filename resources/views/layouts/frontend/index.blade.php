@@ -59,6 +59,7 @@
         </div>
     </section>
 
+    @if (count($featured) > 0)
     <section class="well2 bg1 text-center">
         <div class="container">
             <h2>
@@ -66,149 +67,33 @@
             </h2>
 
             <div class="row text-left text-xs-center wow fadeIn" data-wow-duration='3s'>
+            @foreach ($featured as $branch)
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img1_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img1.jpg') }}" alt="">
+                        @if ($branch->photos->count() > 0)
+                        <a class="thumb featured_photo" href="{{ asset('images/photos/' . $branch->photos->first()->path) }}">
+                            <img src="{{ asset('images/photos/' . $branch->photos->first()->path) }}" alt="{{ $branch->name }}" width="270px" height="190px" class="">
                             <span class="thumb_overlay"></span>
                         </a>
+                        @endif
                         <div class="caption">
                             <p>
-                                Lorem ipsum dolor sit amet conse
+                                {{ $branch->name }}<br>
                             </p>
                             <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
+                                @foreach ($branch->categories as $category)
+                                    {{ $category->name }} 
+                                @endforeach
                             </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
+                            <a href="/branch/{{ $branch->id }}/{{ $branch->categories[0]->id }}" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img2_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img2.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
-                        <div class="caption">
-                            <p>
-                                Lorem ipsum dolor sit amet conse
-                            </p>
-                            <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
-                            </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-12">
-                    <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img3_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img3.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
-                        <div class="caption">
-                            <p>
-                                Lorem ipsum dolor sit amet conse
-                            </p>
-                            <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
-                            </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img4_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img4.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
-                        <div class="caption">
-                            <p>
-                                Lorem ipsum dolor sit amet conse
-                            </p>
-                            <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
-                            </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row text-left text-xs-center wow fadeIn" data-wow-duration='3s'>
-
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img5_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img5.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
-                        <div class="caption">
-                            <p>
-                                Lorem ipsum dolor sit amet conse
-                            </p>
-                            <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
-                            </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img6_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img6.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
-                        <div class="caption">
-                            <p>
-                                Lorem ipsum dolor sit amet conse
-                            </p>
-                            <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
-                            </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-12">
-                    <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img7_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img7.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
-                        <div class="caption">
-                            <p>
-                                Lorem ipsum dolor sit amet conse
-                            </p>
-                            <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
-                            </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img8_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img8.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
-                        <div class="caption">
-                            <p>
-                                Lorem ipsum dolor sit amet conse
-                            </p>
-                            <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
-                            </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
-                        </div>
-                    </div>
-                </div>
+            @endforeach
             </div>
         </div>
     </section>
+    @endif
 
     <section class="well3">
         <div class="container">
@@ -216,75 +101,23 @@
                 Недавно добавленные
             </h2>
             <div class="row text-left text-xs-center wow fadeIn" data-wow-duration='3s'>
-
+                @foreach ($latest as $branch)
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img1_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img1.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
                         <div class="caption">
                             <p>
-                                Lorem ipsum dolor sit amet conse
+                                {{ $branch->name }}<br>
                             </p>
                             <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
+                                @foreach ($branch->categories as $category)
+                                    {{ $category->name }} 
+                                @endforeach
                             </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
+                            <a href="/branch/{{ $branch->id }}/{{ $branch->categories[0]->id }}" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img2_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img2.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
-                        <div class="caption">
-                            <p>
-                                Lorem ipsum dolor sit amet conse
-                            </p>
-                            <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
-                            </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-12">
-                    <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img3_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img3.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
-                        <div class="caption">
-                            <p>
-                                Lorem ipsum dolor sit amet conse
-                            </p>
-                            <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
-                            </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="thumbnail">
-                        <a class="thumb" href="{{ asset('images/page-1_img4_original.jpg') }}">
-                            <img  src="{{ asset('images/page-1_img4.jpg') }}" alt="">
-                            <span class="thumb_overlay"></span>
-                        </a>
-                        <div class="caption">
-                            <p>
-                                Lorem ipsum dolor sit amet conse
-                            </p>
-                            <p class="price">
-                                150 ft<sup>2</sup>  <span>|</span> $2000 / <small>month</small>
-                            </p>
-                            <a href="#" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>

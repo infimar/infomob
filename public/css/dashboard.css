@@ -222,3 +222,7 @@ body {
 #sortable li:hover {
   cursor: move;
 }
+
+.change_parentCategory {
+  margin-left: 30px;
+}

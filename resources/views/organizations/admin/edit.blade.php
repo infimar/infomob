@@ -141,7 +141,9 @@
 					<a href="/admin/branches/{{ $branch->id }}/remove" class="btn_remove btn btn-sm btn-default" title="Удалить"><i class="fa fa-trash"></i></a>
 
 					<a href="/admin/branches/{{ $branch->id }}/gallery" class="btn btn-sm @if (count($branch->photos) > 0) btn-info @else btn-default @endif" title="Удалить"><i class="fa fa-picture-o"></i></a>
-					<a href="#" data-id="{{ $branch->id }}" @if ($branch->type == "main") class="btn btn-sm btn-warning btn_makeMain" @else class="btn btn-sm btn-default btn_makeMain" @endif title="Сделать главным филиалом"><i class="fa fa-star"></i></a>		
+					<a href="#" data-id="{{ $branch->id }}" @if ($branch->type == "main") class="btn btn-sm btn-warning btn_makeMain" @else class="btn btn-sm btn-default btn_makeMain" @endif title="Сделать главным филиалом"><i class="fa fa-star"></i></a>
+
+					<a href="#" data-id="{{ $branch->id }}" @if ($branch->is_featured == 1) class="btn btn-sm btn-info btn_makeFeatured" @else class="btn btn-sm btn-default btn_makeFeatured" @endif title="Добавить в популярные"><i class="fa fa-asterisk"></i></a>	
 				</td>
 			</tr>
 		@endforeach
@@ -161,6 +163,20 @@
 			if (response.code == 200) {
 				$('.btn_makeMain').removeClass().addClass('btn btn-sm btn-default btn_makeMain');
 				$('.btn_makeMain[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-warning btn_makeMain');
+			}
+		});
+	});
+
+	$('.btn_makeFeatured').click(function(e) {
+		e.preventDefault();
+	
+		var id = $(this).data('id');
+
+		$.post('/ajax/branches/makefeatured', { id: id }, function(response) {
+			if (response.code == 200 && response.is_featured == 1) {
+				$('.btn_makeFeatured[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-info btn_makeFeatured');
+			} else {
+				$('.btn_makeFeatured[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-default btn_makeFeatured');
 			}
 		});
 	});

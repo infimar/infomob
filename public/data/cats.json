@@ -1,0 +1,13 @@
+[
+	{
+		"name": "Безопасность",
+		"slug": "security",
+		"icon": "security.png",
+		"subcategories": [
+			{ "name": "Оборудование", "slug": "sec-oborudovanie", "icon": "noicon.png" },
+			{ "name": "Организации", "slug": "sec-organizacii", "icon": "noicon.png" }
+		]
+	},
+
+	
+]

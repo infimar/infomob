@@ -140,7 +140,7 @@ class ApiController extends Controller
 		
 		try
 		{
-			$branch = Branch::with([
+			$branch = Branch::published()->with([
 				"phones" => function ($query) {
 					$query
 						->select(["branch_id", "type", "code_country", "code_operator", "number", "contact_person"]);
@@ -227,7 +227,7 @@ class ApiController extends Controller
 			$organization = Organization::findOrFail($organizationId);
 			
 			// for the city
-			$branches = Branch::orderBy("name", "ASC")
+			$branches = Branch::published()->orderBy("name", "ASC")
 				->where("organization_id", $organization->id)
 				->whereHas("city", function ($query) use ($cityId) {
 					$query->where("id", $cityId);
@@ -241,7 +241,7 @@ class ApiController extends Controller
 				->get(["id", "name", "address", "type", "city_id"]);
 			
 			// other branches
-			$otherBranchesDB = Branch::orderBy("name", "ASC")
+			$otherBranchesDB = Branch::published()->orderBy("name", "ASC")
 				->where("organization_id", $organization->id)
 				->whereHas("city", function ($query) use ($cityId) {
 					$query->where("id", "!=", $cityId);
@@ -350,7 +350,7 @@ class ApiController extends Controller
 		try
 		{
 			$city = City::findOrFail($cityId);
-			$categories = Category::roots()->orderBy("name")->get(["id", "name", "slug", "icon"]);
+			$categories = Category::roots()->published()->orderBy("name")->get(["id", "name", "slug", "icon"]);
 			
 			foreach ($categories as $category)
 			{
@@ -403,7 +403,7 @@ class ApiController extends Controller
 		try
 		{
 			$city = City::findOrFail($cityId);
-			$categories = Category::whereParentId($parentId)->get(["id", "name", "slug", "icon"]);
+			$categories = Category::published()->whereParentId($parentId)->get(["id", "name", "slug", "icon"]);
 			
 			// TODO: what if there are no categories?
 			

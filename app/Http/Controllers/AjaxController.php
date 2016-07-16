@@ -14,6 +14,25 @@ use DB;
 
 class AjaxController extends InfomobController
 {
+    public function changeCategoryParent(Request $request)
+    {
+        // dd($request->all());
+
+        try
+        {
+            $root = Category::findOrFail($request->input('parentId'));
+            
+            $category = Category::findOrFail($request->input('id'));
+            $category->makeChildOf($root);
+
+            return response()->json(['code' => 200]);
+        } 
+        catch (Exception $e)
+        {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+
     public function removeFromTopTen(Request $request)
     {
         $input = $request->input('data');
@@ -80,6 +99,15 @@ class AjaxController extends InfomobController
 
             return response()->json(["code" => "removed"]);
         }
+    }
+
+    public function makeFeaturedBranch(Request $request)
+    {
+        $branch = Branch::findOrFail($request->input('id'));
+        $branch->is_featured = ($branch->is_featured == 0) ? 1 : 0;
+        $branch->save();
+
+        return response()->json(["code" => 200, "is_featured" => $branch->is_featured]);
     }
 
     public function makeMainBranch(Request $request)

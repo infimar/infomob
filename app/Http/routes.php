@@ -25,6 +25,7 @@ Route::get('/utils/changecategory/{category_id}', 'UtilsController@changeCategor
 Route::get('login', 'Auth\AuthController@showLoginForm');
 Route::post('login', 'Auth\AuthController@login');
 Route::get('logout', 'Auth\AuthController@logout');
+// Route::auth();
 
 // Password Reset Routes...
 Route::get('password/reset/{token?}', 'Auth\PasswordController@showResetForm');
@@ -48,6 +49,7 @@ Route::group(['prefix' => 'seed', 'middleware' => 'auth'], function()
 
 	Route::get('/excel/{filename}', "SeedController@excel");
 	Route::get('/parse', 'SeedController@parse');
+	Route::get('/parse2/{limit}', 'ParserController@parser');
 });
 
 /**
@@ -116,9 +118,11 @@ Route::group(['prefix' => 'ajax', 'middleware' => 'auth'], function()
 	Route::post('/togglestatus', 'AjaxController@toggleStatus');
 	Route::post('/topit', 'AjaxController@topIt');
 	Route::post('/branches/makemain', 'AjaxController@makeMainBranch');
+	Route::post('/branches/makefeatured', 'AjaxController@makeFeaturedBranch');
 	Route::post('/organizations/topten', 'AjaxController@addToTopTen');
 	Route::post('/topten/reorder', 'AjaxController@topTenReorder');
 	Route::post('/topten/remove', 'AjaxController@removeFromTopTen');
+	Route::post('/category/changeparent', 'AjaxController@changeCategoryParent');
 });
 
 /**

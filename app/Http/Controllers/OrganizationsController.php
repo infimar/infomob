@@ -38,7 +38,6 @@ class OrganizationsController extends AdminController
         	})
         	->get();
 
-
         $ids = [];
         foreach ($organizations as $organization)
         {
@@ -57,8 +56,37 @@ class OrganizationsController extends AdminController
             $topten_map[$topten->organization_id] = true;
         }
 
+        $count = [];
+        $catIds = [];
+        $categories = Category::where("parent_id", "!=", null)->get();
+        foreach ($categories as $category)
+        {
+            $catIds[] = $category->id;
+            $count[$category->id] = 0;
+        }
+        // dd($catIds);
+
+        $branches = Branch::where("city_id", $city->id)
+            ->with('categories')
+            ->whereHas('categories', function($q) use ($catIds)
+            {
+                $q->whereIn("category_id", $catIds);
+            })->get(['id', 'city_id']);
+        
+        foreach ($branches as $key => $branch) 
+        {
+            foreach ($branch->categories as $category)
+            {
+                if (isset($count[$category->id]))
+                {
+                    $count[$category->id] += 1;
+                }
+            }
+        }
+        // dd($count);
+        
         JavaScript::put(['activeLink' => 'organizations_index']);
-        return view('organizations.admin.index', compact("organizations", "topten_map"));
+        return view('organizations.admin.index', compact("organizations", "topten_map", 'count'));
     }
 
     /**
@@ -287,6 +315,7 @@ class OrganizationsController extends AdminController
             $organization->save();
 
             flash()->success("Организация успешно обновлена");
+            // return redirect()->back();
             return redirect()->action('OrganizationsController@index');
         }
         catch (Exception $e)

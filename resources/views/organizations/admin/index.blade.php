@@ -29,12 +29,13 @@
 		<div id="div_admin_citypicker">
 			<select id="admin_categorypicker" class="js-single-select">
 	            @foreach (App\Category::dropdown() as $section => $categories)
+	            	{{-- <option value="0">Все категории</option> --}}
 	            	<optgroup label="{{ $section }}">
 						@foreach ($categories as $key => $name)
 			                <option value="{{ $key }}"
 			                	@if ($chosenCategory->id == $key) selected @endif 
 			                >
-			                    {{ $name }}
+			                    {{ $name }} @if ($count[$key] > 0) ({{ $count[$key] }}) @endif
 			                </option>
 		                @endforeach
 	                </optgroup>

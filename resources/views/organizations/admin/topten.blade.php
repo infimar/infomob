@@ -8,7 +8,7 @@
 <div class="row">
 	<div class="col-md-12">
 		<div id="div_admin_citypicker">
-			<a class="btn btn-info" href="{{ $prevUrl }}">Назад</a>
+			<a class="btn btn-info" href="/admin/organizations">Назад</a>
 		</div>
 
 		{{-- City Picker --}}
