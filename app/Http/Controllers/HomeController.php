@@ -43,14 +43,13 @@ class HomeController extends InfomobController
     public function index()
     {
         $categoriesDB = Category::roots()->published()
-            ->where("parent_id", null)
             ->orderBy("name", "ASC")
             ->get();
 
         $categories = [];
         foreach ($categoriesDB as $key => $category) 
         {
-            if ($category->descendants()->limitDepth(1)->count() > 0)
+            if ($category->descendants()->limitDepth(1)->published()->count() > 0)
             {
                 $categories[] = $category;
             }

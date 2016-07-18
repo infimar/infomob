@@ -257,7 +257,7 @@ class CategoriesController extends AdminController
             }
 
             JavaScript::put(['activeLink' => 'categories_createchild']);
-            return view('categories.admin.createChild', compact("category", "icons"));
+            return view('categories.admin.createchild', compact("category", "icons"));
         }
         catch (Exception $e)
         {

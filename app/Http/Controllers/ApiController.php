@@ -56,6 +56,9 @@ class ApiController extends Controller
 	
 	public function searchAutoComplete(Request $request)
 	{
+		$noBranchesFound = false;
+		$noCategoriesFound = false;
+		
 		if (!$request->has("city_id"))
 		{
 			return response()->json([
@@ -78,8 +81,9 @@ class ApiController extends Controller
 		
 		// categories
 		$categoriesDb = DB::table("categories")
-			->orderBy("name", "ASC")
-			->where("name", "like", "%" . $query . "%");
+			->where("status", "published")
+			->where("name", "like", "%" . $query . "%")
+			->orderBy("name", "ASC");
 
 		$categories = $categoriesDb->get(["id", "name", "slug", "icon", "parent_id"]);
 		
@@ -91,6 +95,58 @@ class ApiController extends Controller
 		if (count($categories) > 0)
 		{
 			$result["categories"] = $categories;
+		}
+		else
+		{
+			$noCategoriesFound = true;
+		}
+		
+		// branches
+		
+		// by tags
+		$idsByTags = DB::table('tagging_tagged')
+			->where('taggable_type', 'App\Branch')
+			->where('tag_name', 'like', '%' . $query . '%')
+			->lists('taggable_id');
+		
+		$branchesByTags = Branch::published()
+			->where("city_id", $cityId)
+			->whereIn('id', $idsByTags)
+			->limit(25)
+			->orderBy('is_featured', 'DESC')
+			->orderBy('name', 'ASC')
+			->get(["id", "organization_id", "name", "city_id", "is_featured", "address"]);
+		//dd($branchesByTags);
+			
+		// by name & descriptions
+		$branches = Branch::published()
+			->where("city_id", $cityId)
+			->where(function ($q) use ($query) 
+			{
+                $q->where("description", "like", "%" . $query . "%")
+				  ->orWhere("name", "like", "%" . $query . "%");
+            })
+			->orderBy('is_featured', 'DESC')
+			->orderBy("name", "ASC")
+			->limit(25)
+			->get(["id", "organization_id", "name", "city_id", "is_featured", "address"]);
+		//dd($branches);
+			
+		if (count($branches) > 0)
+		{
+			$result['branches'] = $branchesByTags->merge($branches);
+		}
+		else
+		{
+			$noBranchesFound = true;
+		}
+		
+		// no results
+		if ($noBranchesFound && $noCategoriesFound)
+		{
+			return response()->json([
+				'status' => 'notfound'
+			]);
 		}
 		
 		return response()->json([
@@ -227,7 +283,8 @@ class ApiController extends Controller
 			$organization = Organization::findOrFail($organizationId);
 			
 			// for the city
-			$branches = Branch::published()->orderBy("name", "ASC")
+			$branches = Branch::published()
+				->orderBy("name", "ASC")
 				->where("organization_id", $organization->id)
 				->whereHas("city", function ($query) use ($cityId) {
 					$query->where("id", $cityId);
@@ -241,7 +298,8 @@ class ApiController extends Controller
 				->get(["id", "name", "address", "type", "city_id"]);
 			
 			// other branches
-			$otherBranchesDB = Branch::published()->orderBy("name", "ASC")
+			$otherBranchesDB = Branch::published()
+				->orderBy("name", "ASC")
 				->where("organization_id", $organization->id)
 				->whereHas("city", function ($query) use ($cityId) {
 					$query->where("id", "!=", $cityId);
@@ -350,10 +408,13 @@ class ApiController extends Controller
 		try
 		{
 			$city = City::findOrFail($cityId);
-			$categories = Category::roots()->published()->orderBy("name")->get(["id", "name", "slug", "icon"]);
+			$categories = Category::published()
+				->where("parent_id", null)
+				->orderBy("name", "ASC")
+				->get(["id", "name", "slug", "icon"]);
 			
 			foreach ($categories as $category)
-			{
+			{					
 				$names = explode("|", $category->name);
 				
 				if (count($names) > 1)				
@@ -403,7 +464,10 @@ class ApiController extends Controller
 		try
 		{
 			$city = City::findOrFail($cityId);
-			$categories = Category::published()->whereParentId($parentId)->get(["id", "name", "slug", "icon"]);
+			$categories = Category::published()
+				->whereParentId($parentId)
+				->orderBy("name", "ASC")
+				->get(["id", "name", "slug", "icon"]);
 			
 			// TODO: what if there are no categories?
 			
