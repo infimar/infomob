@@ -2153,3 +2153,7 @@ ul.pagination li a:hover:not(.active) {background-color: #ddd;}
           transform: translate(-50%,-50%);
 
 }
+
+.height_160 {
+  height: 160px;
+}

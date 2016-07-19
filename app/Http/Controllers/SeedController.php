@@ -32,6 +32,28 @@ class SeedController extends Controller
     $this->client = new Client(); 
 	}
 
+
+  public function index(Request $request)
+  {
+    $num = $request->input('num');
+    $total = 24604;
+
+    Branch::orderBy('id', 'DESC')->chunk($num, function($branches) use ($num, $total)
+    {
+      $time_start = microtime(true);
+
+      foreach ($branches as $key => $branch) 
+      {
+        $branch->description = trim(str_replace("/n", "", $branch->description));
+        $branch->save();
+      }
+
+      $time_end = microtime(true);
+
+      echo "Left: " . ($total - $num);
+    });
+  }
+
   public function parse()
   {
     $urls = [
@@ -248,11 +270,6 @@ class SeedController extends Controller
 
     return $db;
   }
-
-    public function index()
-    {
-    	return view('seed/index');
-    }
 
     /**
      * Search for query

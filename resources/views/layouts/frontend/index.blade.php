@@ -39,6 +39,7 @@
 @endsection
 
 @section('content')
+    @if (count($categories) > 0)
     <section class="well2">
         <div class="container">
             <h2 class="text-center">
@@ -58,6 +59,7 @@
             </div>
         </div>
     </section>
+    @endif
 
     @if (count($featured) > 0)
     <section class="well2 bg1 text-center">
@@ -70,9 +72,9 @@
             @foreach ($featured as $branch)
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="thumbnail">
-                        @if ($branch->photos->count() > 0)
-                        <a class="thumb featured_photo" href="{{ asset('images/photos/' . $branch->photos->first()->path) }}">
-                            <img src="{{ asset('images/photos/' . $branch->photos->first()->path) }}" alt="{{ $branch->name }}" width="270px" height="190px" class="">
+                        @if (isset($photos[$branch->id]))
+                        <a class="thumb featured_photo" href="{{ asset('images/photos/' . $photos[$branch->id]) }}">
+                            <img src="{{ asset('images/photos/' . $photos[$branch->id]) }}" alt="{{ $branch->name }}" width="270px" height="190px" class="">
                             <span class="thumb_overlay"></span>
                         </a>
                         @endif
@@ -81,11 +83,9 @@
                                 {{ $branch->name }}<br>
                             </p>
                             <p class="price">
-                                @foreach ($branch->categories as $category)
-                                    {{ $category->name }} 
-                                @endforeach
+                                {{ $subcatNames[$branch->category_id] }}
                             </p>
-                            <a href="/branch/{{ $branch->id }}/{{ $branch->categories[0]->id }}" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
+                            <a href="/branch/{{ $branch->id }}/{{ $branch->category_id }}" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                         </div>
                     </div>
                 </div>
@@ -95,6 +95,7 @@
     </section>
     @endif
 
+    @if (count($latest) > 0)
     <section class="well3">
         <div class="container">
             <h2 class="text-center">
@@ -103,17 +104,15 @@
             <div class="row text-left text-xs-center wow fadeIn" data-wow-duration='3s'>
                 @foreach ($latest as $branch)
                 <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="thumbnail">
+                    <div class="thumbnail height_160">
                         <div class="caption">
                             <p>
                                 {{ $branch->name }}<br>
                             </p>
                             <p class="price">
-                                @foreach ($branch->categories as $category)
-                                    {{ $category->name }} 
-                                @endforeach
+                                {{ $subcatNames[$branch->category_id] }}
                             </p>
-                            <a href="/branch/{{ $branch->id }}/{{ $branch->categories[0]->id }}" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
+                            <a href="/branch/{{ $branch->id }}/{{ $branch->category_id }}" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
                         </div>
                     </div>
                 </div>
@@ -121,4 +120,5 @@
             </div>
         </div>
     </section>
+    @endif
 @endsection

@@ -39,17 +39,17 @@ Route::group(['prefix' => 'seed', 'middleware' => 'auth'], function()
 {
 	Route::get('/', 'SeedController@index');
 	
-	Route::get('/search/{query}', 'SeedController@search');
-	Route::get('/compare/{category_id?}/{name?}', 'SeedController@compare');
-	Route::get('/check/{table}', 'SeedController@check');
+	// Route::get('/search/{query}', 'SeedController@search');
+	// Route::get('/compare/{category_id?}/{name?}', 'SeedController@compare');
+	// Route::get('/check/{table}', 'SeedController@check');
 	
-	Route::get('/category/{src}', 'SeedController@category');
-	Route::get('/city/{src}', 'SeedController@city');
-	Route::get('/organization/{src}', 'SeedController@organization');
+	// Route::get('/category/{src}', 'SeedController@category');
+	// Route::get('/city/{src}', 'SeedController@city');
+	// Route::get('/organization/{src}', 'SeedController@organization');
 
-	Route::get('/excel/{filename}', "SeedController@excel");
-	Route::get('/parse', 'SeedController@parse');
-	Route::get('/parse2/{limit}', 'ParserController@parser');
+	// Route::get('/excel/{filename}', "SeedController@excel");
+	// Route::get('/parse', 'SeedController@parse');
+	// Route::get('/parse2/{limit}', 'ParserController@parser');
 });
 
 /**

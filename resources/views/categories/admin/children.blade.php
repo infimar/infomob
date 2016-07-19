@@ -30,6 +30,7 @@
 <h1 class="page-header"><img src="{{ asset('images/icons/' . $category->icon ) }}" style="width:64px;height:64px"> {{ $category->name }} (подкатегории)</h1>
 
 <a href="/admin/categories/{{ $category->id }}/createchild" class="btn btn-lg btn-primary"><i class="fa fa-plus"></i> Добавить подкатегорию</a>
+<br><br>
 
 <div class="row">
 	<div class="col-md-8">
@@ -118,6 +119,6 @@
 	$(".js-categories-single-select").select2();
 
 	$('#myTable').DataTable({
-		paging: false
+		paging: true
 	});
 @stop

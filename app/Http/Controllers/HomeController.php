@@ -9,6 +9,7 @@ use App\Category;
 use App\Organization;
 use App\City;
 use App\Branch;
+use App\Photo;
 use View;
 use DB;
 
@@ -42,34 +43,152 @@ class HomeController extends InfomobController
      */
     public function index()
     {
-        $categoriesDB = Category::roots()->published()
+        $categoriesDB = Category::where("status", "published")
+            ->where("parent_id", null)
             ->orderBy("name", "ASC")
             ->get();
+        // dd($categoriesDB->toArray());
+            
+        $catIds = [];
+        foreach ($categoriesDB as $category)
+        {
+            $catIds[$category->id] = $category->id;
+        }
+        // dd($catIds);
+
+        $subcategoriesDB = Category::where("status", "published")
+            ->whereIn("parent_id", $catIds)
+            ->get(["id", "name", "parent_id"]);
+        // dd($subcategoriesDB->toArray());
+
+        $subcatIds = [];
+        $subcatParentIds = [];
+        $subcatNames = [];
+
+        foreach ($subcategoriesDB as $subcategory)
+        {
+            $subcatIds[$subcategory->id] = $subcategory->id;
+            $subcatParentIds[$subcategory->parent_id] = $subcategory->id;
+            $subcatNames[$subcategory->id] = $subcategory->name;
+        }
+        // dd($subcatIds);
+        
+        $branches = DB::table('branches as b')
+            ->join("branch_category as p", "b.id", "=", "p.branch_id")
+            // ->whereIn("p.category_id", $subcatIds)
+            ->where('b.status', 'published')
+            ->where("b.city_id", $this->city->id)
+            ->orderBy("b.created_at", "DESC")
+            ->select(["b.id", "b.name", "b.is_featured", "b.created_at", 'p.category_id'])
+            ->get();
+        // dd(count($branches));
 
         $categories = [];
-        foreach ($categoriesDB as $key => $category) 
+        $uniqueSubcatIds = [];
+        $featured = [];
+        $latest = [];
+        $maxLatests = 16;
+        
+        foreach ($branches as $key => $branch)
         {
-            if ($category->descendants()->limitDepth(1)->published()->count() > 0)
+            if (!in_array($branch->category_id, $subcatIds)) continue;
+
+            if ($branch->is_featured == 1) 
             {
-                $categories[] = $category;
+                $featured[] = $branch;
+            }
+            elseif ($maxLatests > 0)
+            {
+                $latest[] = $branch;
+                $maxLatests -= 1;
+            } 
+
+            if (!isset($uniqueSubcatIds[$branch->category_id]))
+            {
+                $uniqueSubcatIds[$branch->category_id] = $branch->category_id;
             }
         }
+        // dd($latest);
+        
+        $categories = [];
+        foreach ($categoriesDB as $category)
+        {
+            foreach ($subcatParentIds as $parentId => $subcatId)
+            {
+                if (in_array($subcatId, $uniqueSubcatIds) && $parentId == $category->id)
+                {
+                    $categories[$category->id] = $category;
+                }
+            }
+        }
+        // dd($categories);
 
-        $featured = Branch::with(['categories', 'photos'])->where("is_featured", 1)->get();
-        $latest = Branch::with(['categories'])->orderBy('created_at', 'DESC')->limit(16)->get();
+        // featured photos
+        $featuredIds = [];
+        foreach ($featured as $branch)
+        {
+            $featuredIds[$branch->id] = $branch->id;
+        }
+        // dd($featuredIds);
 
-        return view('layouts.frontend.index', compact('categories', "featured", "latest"));
+        $photos = Photo::whereIn("branch_id", $featuredIds)->distinct("branch_id")->lists("path", "branch_id");
+
+        return view('layouts.frontend.index', compact('categories', "featured", "latest", "photos", "subcategoriesDB", "subcatNames"));
     }
 
     public function category(Request $request, $slug)
     {
         $activeSubcategory = null;
-        $category = Category::published()->where("slug", $slug)->first(); 
-        // dd($category);
+        try
+        {
+            $category = Category::published()->where("slug", $slug)->first(); 
+            
+            if ($category == null) abort(404);
+
+            $subcategoriesDB = Category::where("status", "published")
+                ->where("parent_id", $category->id)
+                ->get(["id", "name", "parent_id"]);
+            // dd($subcategoriesDB->toArray());
+
+            $subcatIds = [];
+            $subcatParentIds = [];
+            $subcatNames = [];
+
+            foreach ($subcategoriesDB as $subcategory)
+            {
+                $subcatIds[$subcategory->id] = $subcategory->id;
+                $subcatParentIds[$subcategory->parent_id] = $subcategory->id;
+                $subcatNames[$subcategory->id] = $subcategory->name;
+            }
+
+            $branches = DB::table('branches as b')
+                ->join("branch_category as p", "b.id", "=", "p.branch_id")
+                // ->whereIn("p.category_id", $subcatIds)
+                ->where('b.status', 'published')
+                ->where("b.city_id", $this->city->id)
+                ->orderBy("b.created_at", "DESC")
+                ->select(["b.id", "b.name", "b.is_featured", "b.created_at", 'p.category_id'])
+                ->get();
+            dd(count($branches));
+
+        }
+        catch (Exception $e)
+        {
+            abort(404);
+        }
         
+
+
+
+
+
         $children = $category->descendants()->limitDepth(1)->published()->get();
 
-        // TODO: what if there are no subcategories?
+        // abort if no subcategories
+        if ($children->count() <= 0)
+        {
+            abort(404);
+        }
 
         // which subcategory to show?
         if ($request->has("subcategory"))
@@ -78,7 +197,9 @@ class HomeController extends InfomobController
             {
                 if ($child->slug == $request->input("subcategory")) $activeSubcategory = $child;
             }
-        } else {
+        } 
+        else 
+        {
             $activeSubcategory = $children[0];
         }
 
@@ -218,7 +339,6 @@ class HomeController extends InfomobController
 
             $categoryLabel = $parentCategory->name . " / " . $category->name;
             
-
             // other branches?
             $otherBranches = Branch::published()->where("organization_id", $branch->organization->id)
                 ->with([
@@ -242,6 +362,10 @@ class HomeController extends InfomobController
                 'viber' => 'Viber',
                 'telegram' => 'Telegram',
             ];
+
+            // inc hits
+            $branch->hits += 1;
+            $branch->save();
             
             return view("layouts.frontend.branch", compact('branch', 'otherBranches', 'categoryLabel', 'types', 'category', 'parentCategory'));
         }
