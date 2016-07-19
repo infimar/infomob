@@ -262,7 +262,8 @@ class OrganizationsController extends AdminController
                         $q->whereHas("categories", function ($query) use ($pickedCategoryId) {
                             $query->where("id", $pickedCategoryId);
                         });
-                }, "branches.city", "branches.categories", "branches.photos"])->findOrFail($id);
+                }, "branches.city", "branches.categories", "branches.photos"])
+                ->findOrFail($id);
 
             foreach ($organization->branches as $branch)
             {
@@ -278,13 +279,42 @@ class OrganizationsController extends AdminController
                 $branch->categoryLabel = $categoryLabel;
             }
 
+            $count = [];
+            $catIds = [];
+            $categories = Category::where("parent_id", "!=", null)->get();
+            foreach ($categories as $category)
+            {
+                $catIds[] = $category->id;
+                $count[$category->id] = 0;
+            }
+            // dd($catIds);
+
+            $branches = Branch::where("city_id", $this->city->id)
+                ->where("organization_id", $organization->id)
+                ->with('categories')
+                ->whereHas('categories', function($q) use ($catIds)
+                {
+                    $q->whereIn("category_id", $catIds);
+                })->get(['id', 'city_id']);
+            
+            foreach ($branches as $key => $branch) 
+            {
+                foreach ($branch->categories as $category)
+                {
+                    if (isset($count[$category->id]))
+                    {
+                        $count[$category->id] += 1;
+                    }
+                }
+            }
+
             JavaScript::put([
                 'activeLink' => 'organizations_edit',
                 'pickedCityId' => $pickedCityId,
                 'pickedCategoryId' => $pickedCategoryId
             ]);
 
-            return view('organizations.admin.edit', compact("organization", "backUrl", 'pickedCityId', 'pickedCategoryId'));
+            return view('organizations.admin.edit', compact("organization", "backUrl", 'pickedCityId', 'pickedCategoryId', 'count'));
         }
         catch (Exception $e)
         {

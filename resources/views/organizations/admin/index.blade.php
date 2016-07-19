@@ -32,11 +32,13 @@
 	            	{{-- <option value="0">Все категории</option> --}}
 	            	<optgroup label="{{ $section }}">
 						@foreach ($categories as $key => $name)
+							@if ($count[$key] > 0)
 			                <option value="{{ $key }}"
 			                	@if ($chosenCategory->id == $key) selected @endif 
 			                >
-			                    {{ $name }} @if ($count[$key] > 0) ({{ $count[$key] }}) @endif
+			                    {{ $name }} ({{ $count[$key] }}) 
 			                </option>
+			                @endif
 		                @endforeach
 	                </optgroup>
 	            @endforeach

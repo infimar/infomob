@@ -85,11 +85,13 @@
 	            @foreach (App\Category::dropdown() as $section => $categories)
 	            	<optgroup label="{{ $section }}">
 						@foreach ($categories as $key => $name)
+							@if ($count[$key] > 0)
 			                <option value="{{ $key }}"
 			                	@if ($pickedCategoryId == $key) selected @endif 
 			                >
-			                    {{ $name }}
+			                    {{ $name }} ({{ $count[$key] }})
 			                </option>
+			                @endif
 		                @endforeach
 	                </optgroup>
 	            @endforeach

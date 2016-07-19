@@ -9,6 +9,7 @@ use App\Http\Requests;
 use App\Category;
 use JavaScript;
 use Flash;
+use DB;
 
 class CategoriesController extends AdminController
 {
@@ -224,9 +225,16 @@ class CategoriesController extends AdminController
         {
             $category = Category::findOrFail($id);
             $children = $category->descendants()->limitDepth(1)->get();
+            $count = [];
+
+            foreach ($children as $child)
+            {
+                $branchIds = DB::table('branch_category')->where('category_id', $child->id)->lists("branch_id");
+                $count[$child->id] = count($branchIds);
+            }
 
             JavaScript::put(['activeLink' => 'categories_children']);
-            return view('categories.admin.children', compact("category", "children"));
+            return view('categories.admin.children', compact("category", "children", "count"));
         } 
         catch (Exception $e) 
         {

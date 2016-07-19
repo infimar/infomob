@@ -59,6 +59,8 @@
 						            @endforeach
 					      		</select>
 					      	</div>
+							<br>
+					      	<span style="margin-left: 28px; color: #aaa; font-size: smaller;">{{ $count[$child->id] }} организаций</span>
 						</td>
 						<td>
 							<img src="{{ asset("images/imageloader.gif") }}" class="imageLoader gone" data-id="{{ $child->id }}">
@@ -119,6 +121,7 @@
 	$(".js-categories-single-select").select2();
 
 	$('#myTable').DataTable({
-		paging: true
+		paging: true,
+		aaSorting:[]
 	});
 @stop

@@ -32,26 +32,40 @@ class SeedController extends Controller
     $this->client = new Client(); 
 	}
 
-
   public function index(Request $request)
   {
     $num = $request->input('num');
     $total = 24604;
+    $time_start = microtime(true);
 
-    Branch::orderBy('id', 'DESC')->chunk($num, function($branches) use ($num, $total)
+    $categories = Category::roots()->get();
+    // dd($categories->count());
+
+    foreach ($categories as $category)
     {
-      $time_start = microtime(true);
+      $children = $category->descendants()->limitDepth(1)->orderBy('name', 'ASC')->get();
+      
+      if (count($children) <= 0) continue;
 
-      foreach ($branches as $key => $branch) 
+      $firstChild = $children[0];
+
+      foreach ($children as $child)
       {
-        $branch->description = trim(str_replace("/n", "", $branch->description));
-        $branch->save();
+        $branchIds = DB::table('branch_category')->where('category_id', $child->id)->lists("branch_id");
+        DB::table('branch_category')->whereIn('branch_id', $branchIds)->update(['category_id' => $firstChild->id]);
       }
 
-      $time_end = microtime(true);
+      foreach ($children as $child)
+      {
+        $branchIds = DB::table('branch_category')->where('category_id', $child->id)->lists("branch_id");
+        echo $child->name . ": " . count($branchIds) . "<br>";
+      }
+    }
 
-      echo "Left: " . ($total - $num);
-    });
+    $time_end = microtime(true);
+
+    echo "<hr>";
+    echo "DONE: " . ($time_end - $time_start);
   }
 
   public function parse()
