@@ -1320,9 +1320,11 @@ class ParseIt extends Command
 
         // $this->removeDuplicates();
 
+      // $this->getOrgIds();
       $this->getBranches();
 
-      //$this->fixBranchCategory();
+
+      // $this->fixBranchCategory();
 
         $this->info("DONE");
     }
@@ -2712,21 +2714,45 @@ class ParseIt extends Command
         $this->info("DONE");
     }
 
-
-    private function getBranches()
+    private function getOrgIds()
     {
       $count = DB::table('organizations')->where('notes', '!=', '')->count();
       $bar = $this->output->createProgressBar($count);
+
       DB::table('organizations')
             ->where('notes', '!=', '')
             ->chunk(1000, function($orgs) use (&$bar)
       {
             foreach ($orgs as $org)
             {
+                  File::append(public_path() . '/data/org_ids.txt', $org->notes . "\n");
+                  $bar->advance();
+            }
+      });
+
+      $bar->finish();
+    }
+
+
+    private function getBranches()
+    {
+      // $file = File::get(public_path() . '/data/org_ids.txt');
+      // // dd($file);
+      $data = file(public_path() . '/data/org_ids.txt');
+      // dd($data);
+
+      $count = count($data);
+      $bar = $this->output->createProgressBar($count);
+      
+      foreach(array_chunk($data, 1000) as $chunk)
+      {
+            foreach ($chunk as $orgId)
+            {
+                  $orgId = trim($orgId);
                   $proxy = $this->getRandomProxy();
 
                     $path = public_path() . "/data/gis-branches/";
-                    $url = "https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=1&page_size=12&org_id=" . $org->notes . "&hash=f6275edd97161405&stat%5Bpr%5D=8&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Chash%2Csearch_attributes&key=ruczoy1743";
+                    $url = "https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=1&page_size=12&org_id=" . $orgId . "&hash=f6275edd97161405&stat%5Bpr%5D=8&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Chash%2Csearch_attributes&key=ruczoy1743";
 
                     $opts = array(
                         'https' => array(
@@ -2756,20 +2782,21 @@ class ParseIt extends Command
 
                   if ($numOfPages == 1)
                   {
-                      $this->downloadBranches($org->notes, 1);
+                      $this->downloadBranches($orgId, 1);
                   }
                   else
                   {
                       for ($i = 1; $i <= $numOfPages; $i++) 
                       {
-                          $this->downloadBranches($org->notes, $i);
+                          $this->downloadBranches($orgId, $i);
                       }
                   }
 
 
                   $bar->advance();
             }
-      });
+            
+      }
 
       $bar->finish();
     }
