@@ -15,7 +15,32 @@
 @endsection
 
 @section('slider')
-    class="parallax" data-url="{{ asset('images/parallax1.jpg') }}" data-mobile="true" data-speed="0.8"
+    <div id="carousel-example-generic" class="carousel slide" data-ride="carousel" style="position: absolute; top: 0; z-index: -1;">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+        </ol>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+
+            <div class="item active">
+                <img src="{{ asset('images/slider/shymkent1.jpg') }}" alt="" class="img-responsive">
+            </div>
+
+            <div class="item">
+                <img src="{{ asset('images/slider/shymkent2.jpg') }}" alt="" class="img-responsive">
+            </div>
+
+            <div class="item">
+                <img src="{{ asset('images/slider/shymkent3.jpg') }}" alt="" class="img-responsive">
+            </div>
+
+        </div>
+
+    </div>
 @endsection
 
 

@@ -11,11 +11,11 @@
     <link rel="stylesheet" href="{{ asset('css/grid.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/search.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('css/touch-touch.css') }}">
 
-    <script src="{{ asset('js/jquery.js') }}"></script>
-    <script src="{{ asset('js/jquery-migrate-1.2.1.js') }}"></script>
+
 
     <!--[if lt IE 9]>
     <html class="lt-ie9">
@@ -27,19 +27,19 @@
     </div>
     <script src="{{ asset('js/html5shiv.js') }}"></script>
     <![endif]-->
-
-    <script src='{{ asset('js/device.min.js') }}'></script>
 </head>
 <body>
 <div class="page">
     <!--========================================================
                               HEADER
     =========================================================-->
-    <header @yield('slider') >
+    <header>
+
 
         @include('layouts.frontend.partials._nav')
 
         @yield('search')
+        @yield('slider')
 
     </header>
 
@@ -59,6 +59,10 @@
 
 </div>
 
+<script src="{{ asset('js/jquery.js') }}"></script>
+<script src="{{ asset('js/jquery-migrate-1.2.1.js') }}"></script>
+<script src="{{ asset ('js/bootstrap.min.js') }}"></script>
+<script src='{{ asset('js/device.min.js') }}'></script>
 <script src="{{ asset('js/script.js') }}"></script>
 <script src="{{ asset ('js/core.min.js') }}"></script>
 
