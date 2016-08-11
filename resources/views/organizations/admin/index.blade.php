@@ -131,13 +131,15 @@
 			categoryId: categoryId
 		};
 
-		console.log(data);
+		//console.log(data);
 
 		$.post('/ajax/organizations/topten', { data: data }, function(response) {
-			console.log(response);
+			//console.log(response);
 
 			if (response.code == "added") {
 				$('.btn_topIt[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-warning btn_topIt');
+			} else if (response.code == "error") {
+				alert(response.msg);
 			} else {
 				$('.btn_topIt[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-default btn_topIt');
 			}

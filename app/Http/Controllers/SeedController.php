@@ -34,6 +34,36 @@ class SeedController extends Controller
 
   public function index(Request $request)
   {
+    
+  }
+
+  public function byCities(Request $request)
+  {
+    $branches = DB::table('branches as b')
+      ->join("branch_category as p", "p.branch_id", "=", "b.id")
+      ->join('cities as c', 'c.id', '=', 'b.city_id')
+      ->join('categories as cat', 'cat.id', '=', 'p.category_id')
+      ->where("b.status", "published")
+      ->where('c.status', 'published')
+      ->where('cat.status', 'published')
+      ->groupBy("b.organization_id")
+      ->select('b.name', 'b.status', 'b.organization_id', 'c.name as city', 'b.city_id', 'cat.name as category')
+      ->get();
+
+    $cities = [];
+
+    foreach ($branches as $branch)
+    {
+      if (isset($cities[$branch->city])) $cities[$branch->city] += 1;
+      else $cities[$branch->city] = 1;
+      // echo $branch->name . "[" . $branch->category . "] : " . $branch->status . "<br>";
+    }
+
+    dd($cities);
+  }
+
+  public function moveSubcategories(Request $request)
+  {
     $num = $request->input('num');
     $total = 24604;
     $time_start = microtime(true);
@@ -412,6 +442,7 @@ class SeedController extends Controller
     	echo "<pre>";
 
     	$data = $this->getJson($src);
+      // dd($data);
     	
     	if ($data === null)
     	{
@@ -424,10 +455,9 @@ class SeedController extends Controller
 	    	echo "\n\n";
 	    }
     	
-
 	    echo "\n-----\n";
 	    echo "DONE.";
-		echo "</pre>";
+		  echo "</pre>";
     }
 
     /**
@@ -484,8 +514,12 @@ class SeedController extends Controller
      */
     private function seedCategory($category)
     {
+      // dd($category);
+
+      $slug = $this->sluggify($category->name);
+
     	// check for existing root category		   
-	    if (Category::where("slug", $category->slug)->first())
+	    if (Category::where("slug", $slug)->first())
 	    {
 	    	// interrupt
 	    	echo "Category [" . $category->name . "] already exists.\n";
@@ -495,7 +529,7 @@ class SeedController extends Controller
 	    // create root category
 	    $root = Category::create([
         'name' => $category->name,
-        'slug' => $category->slug,
+        'slug' => $slug,
         'icon' => $category->icon,
       ]);
 
@@ -507,7 +541,7 @@ class SeedController extends Controller
 	    {
 	    	$root->children()->create([
           'name' => $subcategory->name,
-          'slug' => $subcategory->slug,
+          'slug' => $this->sluggify($subcategory->name),
           'icon' => $subcategory->icon,
         ]);
 	    	echo "\tsubcategory [" . $subcategory->name . "] created.\n";
@@ -996,8 +1030,40 @@ class SeedController extends Controller
    		}
    	}
 
-   	//
-   	// SEARCH
-   	// 
+   	private function sluggify($string, $gost = false)
+    {
+      if ($gost)
+      {
+        $replace = array("А"=>"A","а"=>"a","Б"=>"B","б"=>"b","В"=>"V","в"=>"v","Г"=>"G","г"=>"g","Д"=>"D","д"=>"d",
+            "Е"=>"E","е"=>"e","Ё"=>"E","ё"=>"e","Ж"=>"Zh","ж"=>"zh","З"=>"Z","з"=>"z","И"=>"I","и"=>"i",
+            "Й"=>"I","й"=>"i","К"=>"K","к"=>"k","Л"=>"L","л"=>"l","М"=>"M","м"=>"m","Н"=>"N","н"=>"n","О"=>"O","о"=>"o",
+            "П"=>"P","п"=>"p","Р"=>"R","р"=>"r","С"=>"S","с"=>"s","Т"=>"T","т"=>"t","У"=>"U","у"=>"u","Ф"=>"F","ф"=>"f",
+            "Х"=>"Kh","х"=>"kh","Ц"=>"Tc","ц"=>"tc","Ч"=>"Ch","ч"=>"ch","Ш"=>"Sh","ш"=>"sh","Щ"=>"Shch","щ"=>"shch",
+            "Ы"=>"Y","ы"=>"y","Э"=>"E","э"=>"e","Ю"=>"Iu","ю"=>"iu","Я"=>"Ia","я"=>"ia","ъ"=>"","ь"=>"");
+      }
+      else
+      {
+        $arStrES = array("ае","уе","ое","ые","ие","эе","яе","юе","ёе","ее","ье","ъе","ый","ий");
+        $arStrOS = array("аё","уё","оё","ыё","иё","эё","яё","юё","ёё","её","ьё","ъё","ый","ий");        
+        $arStrRS = array("а$","у$","о$","ы$","и$","э$","я$","ю$","ё$","е$","ь$","ъ$","@","@");
+                    
+        $replace = array("А"=>"A","а"=>"a","Б"=>"B","б"=>"b","В"=>"V","в"=>"v","Г"=>"G","г"=>"g","Д"=>"D","д"=>"d",
+            "Е"=>"Ye","е"=>"e","Ё"=>"Ye","ё"=>"e","Ж"=>"Zh","ж"=>"zh","З"=>"Z","з"=>"z","И"=>"I","и"=>"i",
+            "Й"=>"Y","й"=>"y","К"=>"K","к"=>"k","Л"=>"L","л"=>"l","М"=>"M","м"=>"m","Н"=>"N","н"=>"n",
+            "О"=>"O","о"=>"o","П"=>"P","п"=>"p","Р"=>"R","р"=>"r","С"=>"S","с"=>"s","Т"=>"T","т"=>"t",
+            "У"=>"U","у"=>"u","Ф"=>"F","ф"=>"f","Х"=>"Kh","х"=>"kh","Ц"=>"Ts","ц"=>"ts","Ч"=>"Ch","ч"=>"ch",
+            "Ш"=>"Sh","ш"=>"sh","Щ"=>"Shch","щ"=>"shch","Ъ"=>"","ъ"=>"","Ы"=>"Y","ы"=>"y","Ь"=>"","ь"=>"",
+            "Э"=>"E","э"=>"e","Ю"=>"Yu","ю"=>"yu","Я"=>"Ya","я"=>"ya","@"=>"y","$"=>"ye");
+                
+        $string = str_replace($arStrES, $arStrRS, $string);
+        $string = str_replace($arStrOS, $arStrRS, $string);
+      }
+      
+      $translated = iconv("UTF-8","UTF-8//IGNORE", strtr($string,$replace));
+      $translated = strtolower($translated);
+      $translated = str_replace(" ", "-", $translated);
+
+      return $translated;
+    }
 
 }

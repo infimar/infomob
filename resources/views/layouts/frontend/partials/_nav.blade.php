@@ -1,4 +1,4 @@
-<div id="stuck_container" class="stuck_container">
+<div id="" class="stuck_container">
     <div class="container">
 
         <div class="brand">
@@ -10,7 +10,7 @@
         @if (isset($chosenCity))
         <div id="div_citypicker">
             <select id="citypicker">
-                @foreach (App\City::dropdown() as $key => $value)
+                @foreach (App\City::dropdown(false) as $key => $value)
                     <option value="{{ $key }}"
                         @if ($chosenCity->id == $key) selected @endif 
                     >

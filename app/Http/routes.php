@@ -16,6 +16,8 @@ Route::get('/', 'HomeController@index');
 Route::get('/category/{slug}', 'HomeController@category');
 Route::get('/organization/{organizationId}/{categoryId}', 'HomeController@organization');
 Route::get('/branch/{id}/{category_id}', 'HomeController@branch');
+Route::get('/search', 'HomeController@search');
+
 
 // change city
 Route::get('/utils/changecity/{city_id}', 'UtilsController@changeCity');
@@ -37,13 +39,13 @@ Route::post('password/reset', 'Auth\PasswordController@reset');
  */
 Route::group(['prefix' => 'seed', 'middleware' => 'auth'], function() 
 {
-	Route::get('/', 'SeedController@index');
+	Route::get('/gis', 'ParserController@gis');
 	
 	// Route::get('/search/{query}', 'SeedController@search');
 	// Route::get('/compare/{category_id?}/{name?}', 'SeedController@compare');
 	// Route::get('/check/{table}', 'SeedController@check');
 	
-	// Route::get('/category/{src}', 'SeedController@category');
+	Route::get('/category/{src}', 'SeedController@category');
 	// Route::get('/city/{src}', 'SeedController@city');
 	// Route::get('/organization/{src}', 'SeedController@organization');
 
@@ -100,6 +102,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function()
 	Route::put('/organizations/{id}', 'OrganizationsController@update');
 	Route::get('/organizations/{id}/remove', 'OrganizationsController@destroy');
 
+	Route::get('/organizations-no-category', 'OrganizationsController@indexNoCategory');
+
 	// Media manager
 	Route::get('/mediamanager', 'MediaManagerController@index');
 	Route::post('/mediamanager/upload/icon', 'MediaManagerController@uploadIcon');
@@ -108,6 +112,16 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function()
 	Route::post('/mediamanager/update/photo', 'MediaManagerController@updatePhoto');
 	Route::post('/mediamanager/deletebyid/photo', 'MediaManagerController@deletePhotoById');
 	Route::post('/mediamanager/delete/photo', 'MediaManagerController@deletePhoto');
+});
+
+/**
+ * Optimizer
+ */
+Route::group(['prefix' => 'opt', 'middleware' => 'auth'], function()
+{
+	Route::get('/categories', 'OptimizerController@categories');
+	Route::get('/subcategories', 'OptimizerController@subcategories');
+	Route::get('/organizations', 'OptimizerController@organizations');
 });
 
 /**

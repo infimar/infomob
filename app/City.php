@@ -31,6 +31,6 @@ class City extends Model
 
     public function scopeCorrect($query)
     {
-        $query->where("id", ">", 0);
+        $query->where("id", "!=", 999999);
     }
 }

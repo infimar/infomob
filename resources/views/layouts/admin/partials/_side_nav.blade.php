@@ -1,6 +1,7 @@
 <ul class="nav nav-sidebar">
   <li id="organizations_index"><a href="/admin/organizations">Организации</a></li>
   <li id="organizations_create"><a href="/admin/organizations/create">Добавить организацию</a></li>
+  <li id="organizations_no_category"><a href="/admin/organizations-no-category">Организации без категорий</a></li>
   <li class="nav-divider"></li>
 </ul>
 

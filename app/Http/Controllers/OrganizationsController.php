@@ -400,6 +400,10 @@ class OrganizationsController extends AdminController
         }
     }
 
+    /**
+     * Top ten
+     * @return [type] [description]
+     */
     public function topTen()
     {
         $toptens = DB::table('toptens')
@@ -412,5 +416,24 @@ class OrganizationsController extends AdminController
 
         JavaScript::put(['activeLink' => 'organizations_topten']);
         return view('organizations.admin.topten', compact('toptens'));
+    }
+
+    /**
+     * Organizations with no categories
+     * @return response Http response
+     */
+    public function indexNoCategory()
+    {
+        $categoryIds = Category::published()->lists('id');
+        $branchIds = DB::table('branch_category')->whereIn('category_id', $categoryIds)->lists('branch_id');
+        $organizationIds = DB::table('branches')
+            ->whereNotIn('id', $branchIds)
+            ->where('city_id', $this->city->id)
+            ->lists('organization_id');
+        
+        $organizations = Organization::whereIn('id', $organizationIds)->get();
+
+        JavaScript::put(['activeLink' => 'organizations_no_category']);
+        return view('organizations.admin.nocategory', compact('organizations'));
     }
 }

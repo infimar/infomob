@@ -10,11 +10,15 @@ use App\Organization;
 use App\City;
 use App\Branch;
 use App\Photo;
+use App\Phone;
 use View;
 use DB;
 
 class HomeController extends InfomobController
 {
+    protected $query;
+
+
     /**
      * Create a new controller instance.
      *
@@ -25,6 +29,7 @@ class HomeController extends InfomobController
         // $this->middleware('auth');
         parent::__construct($request);
 
+        // city, cityId
         if ($this->cityId == 0)
         {
             $this->city = City::correct()->orderBy('order')->first();
@@ -32,7 +37,15 @@ class HomeController extends InfomobController
 
             View::share('chosenCity', $this->city);
             JavaScript::put(["chosenCity" => $this->city, "chosenCategory" => $this->category]);
-        } 
+        }
+
+        // query
+        $this->query = "";
+        if ($request->has('query'))
+        {
+            $this->query = $request->input('query');
+        }
+        View::share('query', $this->query);
     }
 
 
@@ -43,207 +56,84 @@ class HomeController extends InfomobController
      */
     public function index()
     {
-        $categoriesDB = Category::where("status", "published")
-            ->where("parent_id", null)
-            ->orderBy("name", "ASC")
+        $categories = DB::table('view_categories')
+            ->where('city_id', $this->city->id)
+            ->where('parent_id', 0)
+            ->orderBy('category_name', "ASC")
             ->get();
-        // dd($categoriesDB->toArray());
-            
-        $catIds = [];
-        foreach ($categoriesDB as $category)
-        {
-            $catIds[$category->id] = $category->id;
-        }
-        // dd($catIds);
 
-        $subcategoriesDB = Category::where("status", "published")
-            ->whereIn("parent_id", $catIds)
-            ->get(["id", "name", "parent_id"]);
-        // dd($subcategoriesDB->toArray());
+        // TODO: featured
 
-        $subcatIds = [];
-        $subcatParentIds = [];
-        $subcatNames = [];
+        // TODO: latest
 
-        foreach ($subcategoriesDB as $subcategory)
-        {
-            $subcatIds[$subcategory->id] = $subcategory->id;
-            $subcatParentIds[$subcategory->parent_id] = $subcategory->id;
-            $subcatNames[$subcategory->id] = $subcategory->name;
-        }
-        // dd($subcatIds);
-        
-        $branches = DB::table('branches as b')
-            ->join("branch_category as p", "b.id", "=", "p.branch_id")
-            // ->whereIn("p.category_id", $subcatIds)
-            ->where('b.status', 'published')
-            ->where("b.city_id", $this->city->id)
-            ->orderBy("b.created_at", "DESC")
-            ->select(["b.id", "b.name", "b.is_featured", "b.created_at", 'p.category_id'])
-            ->get();
-        // dd(count($branches));
-
-        $categories = [];
-        $uniqueSubcatIds = [];
-        $featured = [];
-        $latest = [];
-        $maxLatests = 16;
-        
-        foreach ($branches as $key => $branch)
-        {
-            if (!in_array($branch->category_id, $subcatIds)) continue;
-
-            if ($branch->is_featured == 1) 
-            {
-                $featured[] = $branch;
-            }
-            elseif ($maxLatests > 0)
-            {
-                $latest[] = $branch;
-                $maxLatests -= 1;
-            } 
-
-            if (!isset($uniqueSubcatIds[$branch->category_id]))
-            {
-                $uniqueSubcatIds[$branch->category_id] = $branch->category_id;
-            }
-        }
-        // dd($latest);
-        
-        $categories = [];
-        foreach ($categoriesDB as $category)
-        {
-            foreach ($subcatParentIds as $parentId => $subcatId)
-            {
-                if (in_array($subcatId, $uniqueSubcatIds) && $parentId == $category->id)
-                {
-                    $categories[$category->id] = $category;
-                }
-            }
-        }
-        // dd($categories);
-
-        // featured photos
-        $featuredIds = [];
-        foreach ($featured as $branch)
-        {
-            $featuredIds[$branch->id] = $branch->id;
-        }
-        // dd($featuredIds);
-
-        $photos = Photo::whereIn("branch_id", $featuredIds)->distinct("branch_id")->lists("path", "branch_id");
-
-        return view('layouts.frontend.index', compact('categories', "featured", "latest", "photos", "subcategoriesDB", "subcatNames"));
+        return view('layouts.frontend.index', compact('categories'));
     }
 
     public function category(Request $request, $slug)
     {
         $activeSubcategory = null;
+        $city = $this->city;
+        $perPage = 10;
+        $page = $request->input("page", 1);
+
         try
         {
-            $category = Category::published()->where("slug", $slug)->first(); 
+            $category = Category::published()->where("slug", $slug)->first();
             
             if ($category == null) abort(404);
 
-            $subcategoriesDB = Category::where("status", "published")
-                ->where("parent_id", $category->id)
-                ->get(["id", "name", "parent_id"]);
-            // dd($subcategoriesDB->toArray());
-
-            $subcatIds = [];
-            $subcatParentIds = [];
-            $subcatNames = [];
-
-            foreach ($subcategoriesDB as $subcategory)
+            // if child?
+            if ($category->parent_id != null)
             {
-                $subcatIds[$subcategory->id] = $subcategory->id;
-                $subcatParentIds[$subcategory->parent_id] = $subcategory->id;
-                $subcatNames[$subcategory->id] = $subcategory->name;
+                // get parent
+                $parent = Category::where('id', $category->parent_id)->first();
+                return redirect()->action('HomeController@category', ['slug' => $parent->slug, 'subcategory' => $category->slug]);
             }
 
-            $branches = DB::table('branches as b')
-                ->join("branch_category as p", "b.id", "=", "p.branch_id")
-                // ->whereIn("p.category_id", $subcatIds)
-                ->where('b.status', 'published')
-                ->where("b.city_id", $this->city->id)
-                ->orderBy("b.created_at", "DESC")
-                ->select(["b.id", "b.name", "b.is_featured", "b.created_at", 'p.category_id'])
+            $subcategories = DB::table('view_subcategories')
+                ->where('city_id', $this->city->id)
+                ->where('parent_id', $category->id)
+                ->where('orgs_count', '>', 0)
+                ->orderBy('order', 'ASC')
+                ->orderBy('category_name', 'ASC')
                 ->get();
-            dd(count($branches));
+            // dd($subcategories);
 
+            // what if subcategories are empty?
+            if (count($subcategories) > 0)
+            {
+                $activeSubcategorySlug = $request->get('subcategory', $subcategories[0]->category_slug);
+
+                // active subcategory
+                foreach ($subcategories as $subcategory)
+                {
+                    if ($subcategory->category_slug == $activeSubcategorySlug) $activeSubcategory = $subcategory;
+                }
+            }
+            
+            // there is no subcategories
+            // dd($activeSubcategory);
+            if (is_null($activeSubcategory))
+            {
+                return redirect()->action('HomeController@index');
+            }            
+
+            // TODO: orgs with order (topten), photo, phones
+            $organizations = DB::table('view_organizations')
+                ->where('city_id', $this->city->id)
+                ->where('cat_id', $activeSubcategory->category_id)
+                ->where('status', 'published')
+                ->orderBy('order', 'ASC')
+                ->orderBy('org_name', 'ASC')
+                ->paginate($perPage);
+            // dd($organizations);
+
+            return view('layouts.frontend.category', compact('category', 'activeSubcategory', 'subcategories', 'organizations'));
         }
         catch (Exception $e)
         {
             abort(404);
         }
-        
-
-
-
-
-
-        $children = $category->descendants()->limitDepth(1)->published()->get();
-
-        // abort if no subcategories
-        if ($children->count() <= 0)
-        {
-            abort(404);
-        }
-
-        // which subcategory to show?
-        if ($request->has("subcategory"))
-        {
-            foreach ($children as $child)
-            {
-                if ($child->slug == $request->input("subcategory")) $activeSubcategory = $child;
-            }
-        } 
-        else 
-        {
-            $activeSubcategory = $children[0];
-        }
-
-        // get organizations for activeSubcategory
-        $cityId = $this->city->id;
-        $categoryId = $activeSubcategory->id;
-        
-        // toptens
-        $toptens = DB::table('toptens')
-            ->where('city_id', $cityId)
-            ->where('category_id', $categoryId)
-            ->get();
-
-        $toptenIds = DB::table('toptens')
-            ->where('city_id', $cityId)
-            ->where('category_id', $categoryId)
-            ->lists('id');
-
-        // rest organizations
-        $organizations = Organization::published()
-            // ->orderBy("name", "ASC")
-            ->orderBy("order", "ASC")
-            ->whereHas("branches", function ($query) use ($cityId, $categoryId) {
-                $query->published();
-                $query->whereHas("city", function ($query) use ($cityId) {
-                    $query->where("id", $cityId);
-                });
-                $query->whereHas("categories", function ($query) use ($categoryId) {
-                    $query->published();
-                    $query->where("category_id", $categoryId); 
-                });
-            })
-            ->with(["branches" => function ($query) {
-                $query
-                    ->with(["phones", "photos"])
-                    ->where("type", "main")->get();
-            }])
-            ->whereNotIn('id', $toptenIds)
-            ->paginate(10);
-
-        // TODO: what if there is no main branch???
-        // dd($organizations);
-
-        return view('layouts.frontend.category', compact('category', 'children', 'activeSubcategory', "organizations"));
     }
 
     public function organization(Request $request, $organizationId, $categoryId)
@@ -374,5 +264,132 @@ class HomeController extends InfomobController
             dd($e->getMessage());
             // abort(404);   
         }
+    }
+
+    /**
+     * Search
+     * @return response Http response
+     */
+    public function search(Request $request)
+    {
+        $branches = [];
+        $query = $this->query;
+        $noQuery = ($query == "") ? true : false;
+
+        if (!$noQuery)
+        {
+            // categories
+            $categories = DB::table('categories')
+                ->where('status', 'published')
+                ->where('name', 'LIKE', '%' . $query . '%')
+                ->orderBy('name', 'ASC')
+                ->get(['id', 'name', 'slug']);
+
+            // by tags
+            $taggables = DB::table('tagging_tagged')
+                ->where('taggable_type', 'App\Branch')
+                ->where('tag_name', 'LIKE', '%' . $query . '%')
+                ->lists('taggable_id');
+
+            $branchesByTags = Branch::whereIn('id', $taggables)
+                ->published()
+                ->where('city_id', $this->city->id)
+                ->get(['id', 'name', 'organization_id']);
+
+            // by categories
+            $categoryIds = [];
+            foreach ($categories as $category)
+            {
+                $categoryIds[] = $category->id;
+            }
+
+            $branchIds = DB::table('branch_category')
+                ->whereIn('category_id', $categoryIds)
+                ->lists('branch_id');
+
+            $branchesByCategories = Branch::published()
+                ->whereIn('id', $branchIds)
+                ->where('city_id', $this->city->id)
+                ->orderBy('name', 'ASC')
+                ->get(['id', 'name', 'organization_id']);
+
+            $toptens = [];
+            if (count($branchesByCategories) > 0)
+            {
+                $toptens = DB::table('toptens')
+                    ->where('city_id', $this->city->id)
+                    ->whereIn('category_id', $categoryIds)
+                    ->lists('organization_id');
+            }
+
+            // by name
+            $branchesByName = Branch::published()
+                ->where('name', 'LIKE', '%' . $query . '%')
+                ->where('city_id', $this->city->id)
+                ->orderBy('name', 'ASC')
+                ->get(['id', 'name', 'organization_id']);
+
+            // by description
+            $branchesByDescription = Branch::published()
+                ->where('description', 'LIKE', '%' . $query . '%')
+                ->where('city_id', $this->city->id)
+                ->orderBy('name', 'ASC')
+                ->get(['id', 'name', 'organization_id']);
+
+            // merge results
+            $branches = [];
+
+            foreach ($branchesByTags as $branch)
+            {
+                $branches[$branch->id] = $branch->toArray();
+            }
+
+            foreach ($branchesByCategories as $branch)
+            {
+                $branches[$branch->id] = $branch->toArray();
+            }
+
+            foreach ($branchesByName as $branch)
+            {
+                $branches[$branch->id] = $branch->toArray();
+            }
+
+            foreach ($branchesByDescription as $branch)
+            {
+                $branches[$branch->id] = $branch->toArray();
+            }
+
+            // obey order
+            $sorted = [];
+            foreach ($toptens as $topten)
+            {
+                foreach ($branches as $key => $branch)
+                {
+                    if ($branch['organization_id'] == $topten)
+                    {
+                        $sorted[] = $branch;
+                        unset($branches[$key]);
+                        break;
+                    }
+                }
+            }
+
+            $branches = $sorted + $branches;
+
+            // dd([
+            //     'search' => $this->query,
+            //     'categories' => $categories,
+            //     'branches' => $branches,
+            //     'result' => 
+            //     [
+            //         'by tags' => $branchesByTags->toArray(),
+            //         'by categories' => $branchesByCategories->toArray(),
+            //         'by name' => $branchesByName->toArray(),
+            //         'by description' => $branchesByDescription->toArray()
+            //     ]
+            // ]);
+        }        
+
+        return view('layouts.frontend.search', compact('query', 'branches', 'categories', 'noQuery'));
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Organization extends Model
 {
-    protected $fillable = ["name", "type", "description", "order", "status"];
+    protected $fillable = ["name", "type", "description", "order", "status", "notes"];
 
     /**
 	 * Relationships

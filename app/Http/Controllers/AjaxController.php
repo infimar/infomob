@@ -71,6 +71,12 @@ class AjaxController extends InfomobController
     {
         $input = $request->input('data');
 
+        $organization = Organization::findOrFail($input['id']);
+        if ($organization->status != "published")
+        {
+            return response()->json(["code" => "error", "msg" => "Ошибка: сначала опубликуйте организацию"]);
+        }
+
         $topTen = DB::table('toptens')
             ->where('city_id', $input['cityId'])
             ->where('category_id', $input['categoryId'])
@@ -311,26 +317,34 @@ class AjaxController extends InfomobController
         {
             $organization = Organization::findOrFail($id);
 
-            if ($organization->order != 9999)
+            if ($organization->status != "published")
             {
-                $organization->order = 9999;
-                $class = "btn btn-sm btn-default";
+                $result["status"] = "error";
+                $result["response"] = "Сначала опубликуйте организацию";
             }
             else
             {
-                $lastTopOrganization = Organization::where("order", "!=", 9999)->orderBy("order", "DESC")->first();
+                if ($organization->order != 9999)
+                {
+                    $organization->order = 9999;
+                    $class = "btn btn-sm btn-default";
+                }
+                else
+                {
+                    $lastTopOrganization = Organization::where("order", "!=", 9999)->orderBy("order", "DESC")->first();
 
-                $organization->order = $lastTopOrganization->order + 1;
-                $class = "btn btn-sm btn-warning";
-            }
+                    $organization->order = $lastTopOrganization->order + 1;
+                    $class = "btn btn-sm btn-warning";
+                }
 
-            $organization->save();
+                $organization->save();
 
-            $result["status"] = "success";
-            $result["response"] = [
-                "class" => $class,
-                "order" => $organization->order
-            ];
+                $result["status"] = "success";
+                $result["response"] = [
+                    "class" => $class,
+                    "order" => $organization->order
+                ];
+            }            
         }
         catch (Exception $e)
         {

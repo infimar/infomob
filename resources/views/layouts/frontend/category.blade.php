@@ -15,21 +15,7 @@
 @endsection
 
 @section('search')
-    <section class="well_search bg1">
-        <div class="container">
-            <div class="h1 clr-black text-center">
-                Найдите то, что искали
-            </div>
-
-            {!! Form::open(array('url' => '', 'class' => 'search-form-all')) !!}
-            <label class="search-form_label">
-                {{ Form::text('s', $first_name = null, array('class' => 'search-form_input', 'placeholder' => 'Компании,  Сервисы,  Банкоматы')) }}
-                <span class="search-form_liveout"></span>
-            </label>
-            {{ Form::submit('Поиск', array('class' => 'search-form_submit btn btn-primary')) }}
-            {!! Form::close() !!}
-        </div>
-    </section>
+    @include('layouts.frontend.partials._search')
 @endsection
 
 @section('content')
@@ -38,13 +24,13 @@
             <div class="row">
                 <div class="subcategories_links col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="row">
-                    @foreach ($children as $child)
+                    @foreach ($subcategories as $subcategory)
                         <div class="col-xs-6 col-sm-4">
-                            <a href="/category/{{ $category->slug }}?subcategory={{ $child->slug }}"
-                                @if ($activeSubcategory->slug == $child->slug)
+                            <a href="/category/{{ $category->slug }}?subcategory={{ $subcategory->category_slug }}"
+                                @if (!is_null($activeSubcategory) && $activeSubcategory->category_slug == $subcategory->category_slug)
                                     style="color: red"
                                 @endif
-                            >{{ $child->name }}</a> ({{ DB::table('branch_category')->where('category_id', $child->id)->count() }})
+                            >{{ $subcategory->category_name }}</a> ({{ $subcategory->orgs_count }})
                         </div>
                     @endforeach
                     </div>
@@ -53,47 +39,45 @@
 
             @if (count($organizations) > 0)
             <div class="row">
-                @if (count($organizations) > 0)
-                    @foreach ($organizations as $organization)
-                        <div class="organization_item col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                            <a href="/organization/{{ $organization->id}}/{{ $activeSubcategory->id }}">
-                                @if (!$organization->branches->isEmpty() && !$organization->branches[0]->photos->isEmpty())
-                                    <div class="thumbnail_100">
-                                        <img src="{{ asset('images/photos/' . $organization->branches[0]->photos[0]->path) }}">
-                                    </div>
+                @foreach ($organizations as $organization)
+                    <div class="organization_item col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <a href="/organization/{{ $organization->org_id}}/{{ $activeSubcategory->category_id }}">
+                            <div class="thumbnail_100">
+                                @if (!empty($organization->org_photo))
+                                    <img src="{{ asset('images/photos/' . $organization->org_photo) }}">
                                 @else
-                                    <div class="thumbnail_100">
-                                        <img src="{{ asset('images/photos/nologo.png') }}">
+                                    <img src="{{ asset('images/photos/nologo.png') }}">
+                                @endif
+                            </div>
+                        </a>
+
+                        <div class="organization_item_text">
+                            <div class="organization_name_title">
+                                <a href="/organization/{{ $organization->org_id }}/{{ $activeSubcategory->category_id }}">{{ $organization->org_name }}</a>
+                            </div>
+                            <div class="organization_short_description">
+                                <div>{{ str_limit($organization->org_description, 100) }}</div>
+
+                                {{-- phones --}}
+                                @if (!empty($organization->org_phones))
+                                    <div>Контакты: 
+                                    <?php $phones = explode(';', $organization->org_phones); ?>
+                                    @foreach ($phones as $key => $phone)
+                                    <?php if ($key > 1) break; ?>
+                                        {{ $phone }}
+                                    @endforeach
                                     </div>
                                 @endif
-                            </a>
-
-                            <div class="organization_item_text">
-                                <div class="organization_name_title">
-                                    <a href="/organization/{{ $organization->id }}/{{ $activeSubcategory->id }}">{{ $organization->name }}</a>
-                                </div>
-                                <div class="organization_short_description">
-                                    <div>{{ str_limit($organization->description, 100) }}</div>
-
-                                    @if (!$organization->branches->isEmpty() && !$organization->branches[0]->phones->isEmpty())
-                                        <div>Контакты: |
-                                        @foreach ($organization->branches[0]->phones as $phone)
-                                            {{ $phone->code_country }} ({{ $phone->code_operator }}) {{ $phone->number }} @if (!empty($phone->contact_person)) - {{ $phone->contact_person }} @endif |
-                                        @endforeach
-                                            </div>
-                                    @endif
-                                </div>
                             </div>
                         </div>
-                    @endforeach
+                    </div>
+                @endforeach
 
-                    {{ $organizations->appends(['subcategory' => $activeSubcategory->slug])->links() }}
-                @else
-                    <span style="margin-left: 20px">Нет совпадений</span>
-                @endif
+                <div style="clear:both"></div> 
+                {{ $organizations->appends(['subcategory' => $activeSubcategory->category_slug])->links() }}
             </div>
             @else
-            <div class="row">Организаций нет.</div>
+                <div class="row">Организаций нет.</div>
             @endif
         </div>
     </section>
