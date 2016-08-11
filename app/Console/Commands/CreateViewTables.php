@@ -61,6 +61,10 @@ class CreateViewTables extends Command
             case 'phones':
                 $this->phones();
                 break;
+
+            case 'featured':
+                $this->featured();
+                break;
             
             default:
                 $this->info("Wrong action name");
@@ -213,7 +217,7 @@ class CreateViewTables extends Command
             foreach ($phones as $phone)
             {
                 if ($phone->code_operator == "fix") continue;
-                
+
                 if ($phone->code_operator == "short_numb") $orgPhones[] = $phone->number;
                 else $orgPhones[] = $phone->code_country . "(" . $phone->code_operator . ")" . " " . $phone->number;
             }
@@ -222,6 +226,51 @@ class CreateViewTables extends Command
 
             $bar->advance();
         }
+
+        $bar->finish();
+    }
+
+    private function featured()
+    {
+        DB::table('view_featured')->delete();
+
+        $count = DB::table('branches')->where('is_featured', 1)->where('status', 'published')->count();
+        $bar = $this->output->createProgressBar($count);
+
+        DB::table('branches')
+            ->where('is_featured', 1)
+            ->where('status', 'published')
+            ->chunk(1000, function($branches) use (&$bar)
+        {
+            foreach ($branches as $branch)
+            {
+                // categories
+                $categoriesIds = DB::table('branch_category')->where('branch_id', $branch->id)->limit(2)->lists('category_id');
+                $categoriesDB = DB::table('categories')->whereIn('id', $categoriesIds)->get();
+
+                $categories = [];
+                foreach ($categoriesDB as $category)
+                {
+                    $categories[] = $category->name;
+                }
+
+                // photo
+                $photoPath = "";
+                $photo = DB::table('photos')->where('branch_id', $branch->id)->limit(1)->first();
+                if (!is_null($photo)) $photoPath = $photo->path;
+
+                DB::table('view_featured')->insert([
+                    'city_id' => $branch->city_id,
+                    'branch_id' => $branch->id,
+                    'name' => $branch->name,
+                    'org_id' => $branch->organization_id,
+                    'categories' => implode(', ', $categories),
+                    'photo' => $photoPath
+                ]);
+
+                $bar->advance();
+            }
+        });
 
         $bar->finish();
     }

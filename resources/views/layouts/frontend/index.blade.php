@@ -46,5 +46,65 @@
     </section>
     @endif
 
-    
+    @if (count($featured) > 0)
+    <section class="well2 bg1 text-center">
+        <div class="container">
+            <h2>
+                Популярные
+            </h2>
+
+            <div class="row text-left text-xs-center wow fadeIn" data-wow-duration='3s'>
+            @foreach ($featured as $branch)
+                <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="thumbnail">
+                        @if (!empty($branch->photo))
+                        <a class="thumb featured_photo" href="{{ asset('images/photos/' . $branch->photo) }}">
+                            <img src="{{ asset('images/photos/' . $branch->photo) }}" alt="{{ $branch->name }}" width="270px" height="190px" class="">
+                            <span class="thumb_overlay"></span>
+                        </a>
+                        @endif
+                        <div class="caption">
+                            <p>
+                                {{ $branch->name }}<br>
+                            </p>
+                            <p class="price">
+                                {{ $branch->categories }}
+                            </p>
+                            <a href="/branch/{{ $branch->branch_id }}/" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    @if (count($latest) > 0)
+    <section class="well3">
+        <div class="container">
+            <h2 class="text-center">
+                Недавно добавленные
+            </h2>
+            <div class="row text-left text-xs-center wow fadeIn" data-wow-duration='3s'>
+                @foreach ($latest as $branch)
+                <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="thumbnail height_160">
+                        <div class="caption">
+                            <p>
+                                {{ $branch->name }}<br>
+                            </p>
+                            <p class="price">
+                                
+                            </p>
+                            <a href="/branch/{{ $branch->id }}" class="btn btn-primary">Подробнее <span class='fa fa-angle-double-right'></span></a>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
 @endsection

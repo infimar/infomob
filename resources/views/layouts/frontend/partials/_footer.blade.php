@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="col-md-3 col-sm-6 col-xs-12">
-                    <h3 class="clr-white">
+                    {{-- <h3 class="clr-white">
                         Последние добавленные
                     </h3>
                     
@@ -30,11 +30,11 @@
                                 </a>
                             </p>
                         </article>
-                    @endforeach
+                    @endforeach --}}
                 </div>
 
                 <div class="col-md-3 col-md-release col-sm-6 col-sm-clear col-xs-12 col-xs-clear">
-                    <h3 class="clr-white">
+                    {{-- <h3 class="clr-white">
                         Категории
                     </h3>
                     <ul class="marked-list marked-list__mod1">
@@ -43,7 +43,7 @@
                             <a href="/category/{{ $category->slug }}"><span>{{ $category->name }} </span></a>
                         </li>
                         @endforeach
-                    </ul>
+                    </ul> --}}
                 </div>
 
                 <div class="col-md-3 col-sm-6 col-xs-12">

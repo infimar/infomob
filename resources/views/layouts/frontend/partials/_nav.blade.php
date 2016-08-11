@@ -26,7 +26,7 @@
                 <li class="active">
                     <a href="/">Главная</a>
                 </li>
-                <li>
+                {{-- <li>
                     <a href="#">Категории</a>
                     <ul>
                         @foreach (App\Category::roots()->published()->get() as $category)                    
@@ -35,7 +35,7 @@
                         </li>
                         @endforeach
                     </ul>
-                </li>
+                </li> --}}
                 {{-- <li>
                     <a href="index-2.html">Our listings</a>
                 </li>

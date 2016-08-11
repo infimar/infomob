@@ -1320,7 +1320,9 @@ class ParseIt extends Command
 
         // $this->removeDuplicates();
 
-      $this->fixBranchCategory();
+      $this->getBranches();
+
+      //$this->fixBranchCategory();
 
         $this->info("DONE");
     }
@@ -1767,7 +1769,8 @@ class ParseIt extends Command
         ];
 
         $allCategories = [];
-        // $total = 45000;
+        $total = 42293;
+        $bar = $this->output->createProgressBar($total);
         $inc = 0;
 
         foreach ($pathes as $path)
@@ -1782,9 +1785,9 @@ class ParseIt extends Command
                 {
                     // dd($object);
                     // if ($key < 4) continue;
-                    $inc += 1;
+                    // $inc += 1;
 
-                    if ($inc <= 21194) continue;
+                    // if ($inc <= 21194) continue;
 
                     try
                     {
@@ -1976,7 +1979,7 @@ class ParseIt extends Command
                                 "branch_id"      => $branch->id,
                                 "type"           => $type,
                                 "code_country"   => "+7",
-                                "code_operator"  => "",
+                                "code_operator"  => "fix",
                                 "number"         => $number,
                                 "contact_person" => isset($phone->comment) ? $phone->comment : ""
                             ]);
@@ -2002,13 +2005,15 @@ class ParseIt extends Command
                     {
                         $this->error("Error: " . $e->getMessage());
                     }
+                    
+                    $bar->advance();
                 }
             }
 
             // dd("DONE PART 1");
         }
 
-        $this->info("DONE");
+        $bar->finish();
     }
 
     private function seed()
@@ -2706,6 +2711,92 @@ class ParseIt extends Command
 
         $this->info("DONE");
     }
+
+
+    private function getBranches()
+    {
+      $count = DB::table('organizations')->where('notes', '!=', '')->count();
+      $bar = $this->output->createProgressBar($count);
+      DB::table('organizations')
+            ->where('notes', '!=', '')
+            ->chunk(1000, function($orgs) use (&$bar)
+      {
+            foreach ($orgs as $org)
+            {
+                  $proxy = $this->getRandomProxy();
+
+                    $path = public_path() . "/data/gis-branches/";
+                    $url = "https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=1&page_size=12&org_id=" . $org->notes . "&hash=f6275edd97161405&stat%5Bpr%5D=8&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Chash%2Csearch_attributes&key=ruczoy1743";
+
+                    $opts = array(
+                        'https' => array(
+                            'method'=>"GET",
+                            'proxy' => $proxy,
+                        ),
+                        "ssl" => array(
+                            "verify_peer"=>false,
+                            "verify_peer_name"=>false,
+                        )
+                    );
+                    $context = stream_context_create($opts);
+
+                    $data = file_get_contents($url, false, $context);
+
+                  $data = json_decode($data);
+                  // dd($data);
+
+                  if ($data->meta->code == 404) 
+                  {
+                      $this->info("no results for " . $rubric['id']);
+                      continue;
+                  }
+
+                  $total = $data->result->total;
+                  $numOfPages = intval(ceil($total / 50.0));
+
+                  if ($numOfPages == 1)
+                  {
+                      $this->downloadBranches($org->notes, 1);
+                  }
+                  else
+                  {
+                      for ($i = 1; $i <= $numOfPages; $i++) 
+                      {
+                          $this->downloadBranches($org->notes, $i);
+                      }
+                  }
+
+
+                  $bar->advance();
+            }
+      });
+
+      $bar->finish();
+    }
+
+    private function downloadBranches($orgId, $pageNum)
+    {
+      $proxy = $this->getRandomProxy();
+
+        $path = public_path() . "/data/gis-branches/";
+        $url = "https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=" . $pageNum . "&page_size=50&org_id=" . $orgId . "&hash=f6275edd97161405&stat%5Bpr%5D=8&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Chash%2Csearch_attributes&key=ruczoy1743";
+
+        $opts = array(
+            'https' => array(
+                'method'=>"GET",
+                'proxy' => $proxy,
+            ),
+            "ssl" => array(
+                "verify_peer"=>false,
+                "verify_peer_name"=>false,
+            )
+        );
+        $context = stream_context_create($opts);
+
+        $data = file_get_contents($url, false, $context);
+        file_put_contents($path . $orgId . "-" . $pageNum . ".json", $data);
+    }
+
 
     private function decodeUnicode($str)
     {

@@ -30,8 +30,17 @@ Breadcrumbs::register('organization', function($breadcrumbs, $category, $subcate
 });
 
 // Branch
-Breadcrumbs::register('branch', function($breadcrumbs, $category, $subcategory, $organization, $branch)
+Breadcrumbs::register('branch', function($breadcrumbs, $categories, $category, $subcategory, $organization, $branch)
 {
-	$breadcrumbs->parent('organization', $category, $subcategory, $organization);
-    $breadcrumbs->push(" / " . "Филиал: " . $branch->name, action('HomeController@branch', ['branch_id' => $branch->id, 'category_id' => $subcategory->id]));
+    if (!is_null($categories))
+    {
+        $breadcrumbs->parent('home');
+        $breadcrumbs->push(' / ' . $organization->name, action('HomeController@organization', ['organization_id' => $organization->id, 'category_id' => 0]));
+    }
+    else
+    {
+        $breadcrumbs->parent('organization', $category, $subcategory, $organization);
+
+        $breadcrumbs->push(" / " . "Филиал: " . $branch->name, action('HomeController@branch', ['branch_id' => $branch->id, 'category_id' => $subcategory->id]));
+    }
 });

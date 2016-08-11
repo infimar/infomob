@@ -63,10 +63,19 @@ class HomeController extends InfomobController
             ->get();
 
         // TODO: featured
+        $featured = DB::table('view_featured')
+            ->where('city_id', $this->city->id)
+            ->get();
 
         // TODO: latest
+        $latest = DB::table('branches')
+            ->where('status', 'published')
+            ->where('city_id', $this->city->id)
+            ->orderBy('created_at', 'DESC')
+            ->limit(12)
+            ->get();
 
-        return view('layouts.frontend.index', compact('categories'));
+        return view('layouts.frontend.index', compact('categories', 'featured', 'latest'));
     }
 
     public function category(Request $request, $slug)
@@ -194,7 +203,7 @@ class HomeController extends InfomobController
         }
     }
 
-    public function branch($id, $categoryId)
+    public function branch($id, $categoryId = 0)
     {        
         $cityId = $this->city->id;
 
@@ -224,10 +233,21 @@ class HomeController extends InfomobController
                 ->findOrFail($id);
                 
             // category
-            $category = Category::findOrFail($categoryId);
-            $parentCategory = $category->parent()->first();
+            $category = $parentCategory = $categories = null;
+            $categoryLabel = ""; 
+            
+            if ($categoryId)
+            {
+                $category = Category::findOrFail($categoryId);
+                $parentCategory = $category->parent()->first();
 
-            $categoryLabel = $parentCategory->name . " / " . $category->name;
+                $categoryLabel = $parentCategory->name . " / " . $category->name;
+            }
+            else
+            {
+                $categoriesIds = DB::table('branch_category')->where('branch_id', $branch->id)->lists('category_id');
+                $categories = Category::whereIn('id', $categoriesIds)->get();
+            }
             
             // other branches?
             $otherBranches = Branch::published()->where("organization_id", $branch->organization->id)
@@ -257,7 +277,7 @@ class HomeController extends InfomobController
             $branch->hits += 1;
             $branch->save();
             
-            return view("layouts.frontend.branch", compact('branch', 'otherBranches', 'categoryLabel', 'types', 'category', 'parentCategory'));
+            return view("layouts.frontend.branch", compact('branch', 'otherBranches', 'categoryLabel', 'types', 'category', 'parentCategory', 'categories'));
         }
         catch (Exception $e)
         {
