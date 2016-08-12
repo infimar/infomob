@@ -1320,8 +1320,8 @@ class ParseIt extends Command
 
         // $this->removeDuplicates();
 
-      // $this->getOrgIds();
-      $this->getBranches();
+      $this->getOrgIds();
+      // $this->getBranches();
 
 
       // $this->fixBranchCategory();
@@ -2716,16 +2716,17 @@ class ParseIt extends Command
 
     private function getOrgIds()
     {
-      $count = DB::table('organizations')->where('notes', '!=', '')->count();
+      $count = DB::table('organizations')->where('notes', '!=', '')->where('id', '>', 137839)->count();
       $bar = $this->output->createProgressBar($count);
 
       DB::table('organizations')
             ->where('notes', '!=', '')
+            ->where('id', '>', 137839)
             ->chunk(1000, function($orgs) use (&$bar)
       {
             foreach ($orgs as $org)
             {
-                  File::append(public_path() . '/data/org_ids.txt', $org->notes . "\n");
+                  File::append(public_path() . '/data/org_astana.txt', $org->notes . "\n");
                   $bar->advance();
             }
       });
