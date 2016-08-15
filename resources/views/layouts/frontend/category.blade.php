@@ -56,7 +56,7 @@
                                 <a href="/organization/{{ $organization->org_id }}/{{ $activeSubcategory->category_id }}">{{ $organization->org_name }}</a>
                             </div>
                             <div class="organization_short_description">
-                                <div>{{ str_limit($organization->org_description, 100) }}</div>
+                                <div>{{ str_limit($organization->org_description, 200) }}</div>
 
                                 {{-- phones --}}
                                 @if (!empty($organization->org_phones))

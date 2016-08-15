@@ -14,7 +14,7 @@
 // index
 Route::get('/', 'HomeController@index');
 Route::get('/category/{slug}', 'HomeController@category');
-Route::get('/organization/{organizationId}/{categoryId}', 'HomeController@organization');
+Route::get('/organization/{organizationId}/{categoryId?}', 'HomeController@organization');
 Route::get('/branch/{id}/{category_id?}', 'HomeController@branch');
 Route::get('/search', 'HomeController@search');
 

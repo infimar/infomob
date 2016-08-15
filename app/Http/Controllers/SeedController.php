@@ -121,10 +121,13 @@ class SeedController extends Controller
     {
       foreach ($items as $item)
       {
+        // append to a file
+
+
         // dd($item);
-        $isCreated = $this->seedOrganization($item);
+        // $isCreated = $this->seedOrganization($item);
         
-        if ($isCreated) $i++;
+        // if ($isCreated) $i++;
       }
     }
 

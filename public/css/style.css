@@ -2099,7 +2099,7 @@ ul.pagination li a:hover:not(.active) {background-color: #ddd;}
  * city picker
  */
 #div_citypicker {
-  margin-left: 20px;
+  margin-left: 55px;
   line-height: 59px;
   float: left;
 }
@@ -2156,4 +2156,34 @@ ul.pagination li a:hover:not(.active) {background-color: #ddd;}
 
 .height_160 {
   height: 160px;
+}
+
+.links {
+  margin: 20px 20px;
+  padding: 0;
+  list-style-type: none;
+}
+
+.links li {
+  display: inline-block;
+  border: 1px solid #ccc;
+  width: 40px;
+  text-align: center;
+  /*min-height: 40px;*/
+  margin: 2px;
+}
+
+.links a {
+  display: inline-block;
+  padding: 10px;
+}
+
+.links li.active {
+  border: 1px solid blue;
+  color: blue;
+}
+
+.links li:hover {
+  border: 1px solid blue;
+  color: blue;
 }

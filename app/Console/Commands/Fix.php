@@ -40,28 +40,463 @@ class Fix extends Command
      */
     public function handle()
     {
+        $time_start = microtime(true);
         $action = $this->argument('name');
 
         switch ($action) 
         {
+            case 'orgs':
+                $this->orgs(50000);
+                break;
+
+            case 'orgsMark':
+                $this->orgsMarkDelete();
+                break;
+
+            case 'branches':
+                $this->branches();
+                break;
+
+            case 'branch-category':
+                $this->branchCategory();
+                break;
+
+            case 'branchesMark':
+                $this->branchesMarkAsDelete();
+                break;
+
             case 'phones':
                 $this->phones();
                 break;
+
+            case 'phonesMark':
+                $this->phonesMarkAsDelete();
+                break;
+
+            case 'socials':
+                $this->socials();
+                break;
+
+            case 'socialsMark':
+                $this->socialsMarksAsDelete();
+                break;
+
+            case 'removeDuplicates':
+                $this->removeDuplicates();
+                break;
+
+            case 'phone-numbers':
+                $this->phoneNumbers();
+                break;
             
+            case 'phone-codes':
+                $this->phoneCodes();
+                break;
+
+            case 'orgpages':
+                $this->orgpages();
+                break;
+
             default:
                 $this->info("Wrong action name");
                 break;
         }
 
-        $this->info("Done");
+        $time_end = microtime(true);
+        $this->info("Done in " . ($time_end - $time_start) . " seconds");
+    }
+
+    private function orgpages()
+    {
+        $branchesDB = DB::table('branches')->where('description', 'like', '%' . '/n' . '%')->get();
+        $bar = $this->output->createProgressBar(count($branchesDB));
+        // dd(count($branchesDB));
+
+        foreach ($branchesDB as $branch)
+        {
+            $description = str_replace("/n", "\n", trim($branch->description));
+            DB::table('branches')->where('id', $branch->id)->update(['description' => $description]);
+            $bar->advance();
+        }
+
+        $bar->finish();
+    }
+
+
+    private function removeDuplicates()
+    {
+        $bar = $this->output->createProgressBar(4);
+
+        DB::table('organizations')->where('notes', 'delete')->delete();
+        $this->line("organizations done");
+        $bar->advance();
+
+        DB::table('branches')->where('name', 'delete')->delete();
+        $this->line("branches done");
+        $bar->advance();
+
+        DB::table('phones')->where('contact_person', 'delete')->delete();
+        $this->line("phones done");
+        $bar->advance();
+
+        DB::table('socials')->where('contact_person', 'delete')->delete();
+        $this->line("socials done");
+        $bar->advance();
+
+        $bar->finish();
+    }
+
+    private function phonesMarkAsDelete()
+    {
+        $path = public_path() . "/data/phones/";
+        $files = File::allFiles($path);
+
+        $inc = 0;
+        $total = count($files);
+        $bar = $this->output->createProgressBar($total);
+
+        foreach ($files as $key => $file)
+        {
+            $inc += 1;
+            $phones = json_decode(File::get($file));
+
+            DB::table('phones')->whereIn('id', $phones)->update(['contact_person' => 'delete']);
+
+            $this->info($total - $inc . " left");
+            $bar->advance();
+        }
+
+        $bar->finish();
     }
 
     private function phones()
     {
+        $inc = 0;
+        $count = DB::table('branches')->where('name', 'delete')->count();
+        $bar = $this->output->createProgressBar($count);
+
+        DB::table('branches')
+            ->where('name', 'delete')
+            ->chunk(1000, function($branches) use (&$inc, &$bar) 
+        {
+            $dataPhones = [];
+
+            // dd($organizations);
+            foreach ($branches as $branch)
+            {
+                $inc += 1;
+                  
+                $phones = DB::table('phones')
+                    ->where('branch_id', $branch->id)
+                    ->lists('id');
+                // dd($phones);
+
+                if (empty($phones)) continue;
+
+                foreach ($phones as $phone)
+                {
+                    $dataPhones[] = $phone;
+                }
+                // dd($dataPhones);
+                  
+                $bar->advance();
+            }
+
+            File::put(public_path() . "/data/phones/" . uniqid() . ".txt", json_encode($dataPhones));
+            $this->info($inc);
+        });
+
+        $bar->finish();
+    }
+
+    private function socialsMarksAsDelete()
+    {
+        $path = public_path() . "/data/socials/";
+        $files = File::allFiles($path);
+
+        $inc = 0;
+        $total = count($files);
+        $bar = $this->output->createProgressBar($total);
+
+        foreach ($files as $key => $file)
+        {
+            $inc += 1;
+            $socials = json_decode(File::get($file));
+
+            DB::table('socials')->whereIn('id', $socials)->update(['contact_person' => 'delete']);
+
+            $this->info($total - $inc . " left");
+            $bar->advance();
+        }
+
+        $bar->finish();
+    }
+
+    private function socials()
+    {
+        $inc = 0;
+        $count = DB::table('branches')->where('name', 'delete')->count();
+        $bar = $this->output->createProgressBar($count);
+
+        DB::table('branches')
+            ->where('name', 'delete')
+            ->chunk(1000, function($branches) use (&$inc, &$bar) 
+        {
+            $dataSocials = [];
+
+            // dd($organizations);
+            foreach ($branches as $branch)
+            {
+                $inc += 1;
+                  
+                $socials = DB::table('socials')
+                    ->where('branch_id', $branch->id)
+                    ->lists('id');
+                // dd($socials);
+
+                if (empty($socials)) continue;
+
+                foreach ($socials as $social)
+                {
+                    $dataSocials[] = $social;
+                }
+                // dd($dataPhones);
+                
+                $bar->advance();
+            }
+
+            File::put(public_path() . "/data/socials/" . uniqid() . ".txt", json_encode($dataSocials));
+            $this->info($inc);
+        });
+
+        $bar->finish();
+    }
+
+    private function branchesMarkAsDelete()
+    {
+        $path = public_path() . "/data/branches/";
+        $files = File::allFiles($path);
+
+        $inc = 0;
+        $total = count($files);
+        $bar = $this->output->createProgressBar($total);
+
+        foreach ($files as $key => $file)
+        {
+            $inc += 1;
+            $branches = json_decode(File::get($file));
+
+            DB::table('branches')->whereIn('id', $branches)->update(['name' => 'delete']);
+
+            $this->info($total - $inc . " left");
+            $bar->advance();
+        }
+
+        $bar->finish();
+    }
+
+    private function branchCategory()
+    {
+        $path = public_path() . "/data/branches/";
+        $files = File::allFiles($path);
+
+        $inc = 0;
+        $total = count($files);
+        $bar = $this->output->createProgressBar($total);
+
+        foreach ($files as $key => $file)
+        {
+            $inc += 1;
+            $branches = json_decode(File::get($file));
+            // dd(count($branches));
+
+            $entries = DB::table('branch_category')->whereIn('branch_id', $branches)->delete();
+            // dd(count($entries));
+
+            $this->info($total - $inc . " left");
+            $bar->advance();
+        }
+
+        $bar->finish();
+    }
+
+    private function branches()
+    {
+        $dataBranches = [];
+        $inc = 0;
+        $count = DB::table('organizations')->where('notes', 'delete')->count();
+        $bar = $this->output->createProgressBar($count);
+
+        DB::table('organizations')
+            ->where('notes', 'delete')
+            ->chunk(1000, function($organizations) use (&$dataBranches, &$inc, &$bar) 
+        {
+            // dd($organizations);
+            foreach ($organizations as $organization)
+            {
+                $inc += 1;
+                $bar->advance();
+                  
+                $branches = DB::table('branches')
+                    ->where('organization_id', $organization->id)
+                    ->lists('id');
+
+                if (empty($branches)) continue;
+
+                foreach ($branches as $branch)
+                {
+                    $dataBranches[] = $branch;
+                }
+            }
+
+            File::put(public_path() . "/data/branches/" . uniqid() . ".txt", json_encode($dataBranches));
+            $this->info($inc);
+        });
+
+        $bar->finish();
+    }
+
+    private function orgs($chunkSize = 10000)
+    {
+        $inc = 0;
+        $dataOrgs = [];
+
+        $count = DB::table('organizations')
+                // ->where('city_id', 3)
+                ->where('id', '>=', 100000)
+                ->where('notes', '!=', 'delete')
+                ->count();
+
+        $bar = $this->output->createProgressBar($count);
+
+        $orgs = DB::table('organizations')
+            // ->where('city_id', 3)
+            ->where('id', '>=', 100000)
+            ->where('notes', '!=', 'delete')
+            ->orderBy('id')
+            // ->orderBy('name')
+            ->chunk($chunkSize, function($orgs) use (&$inc, &$bar)
+            {
+                $dataOrgs = [];
+                
+                foreach ($orgs as $key => $org)
+                {
+                    $inc += 1;
+
+                    if (!isset($dataOrgs[$org->notes]))
+                    {
+                        $dataOrgs[$org->notes] = [];
+                    }
+                      
+                    $dataOrgs[$org->notes][$org->id] = $org;
+                    $bar->advance();
+                }
+
+                $toWrite = [];
+                foreach ($dataOrgs as $key => $org)
+                {
+                    if (count($org) <= 1) continue;
+                    $toWrite[$key] = $org;
+                }
+
+                File::put(public_path() . '/data/orgs/' . uniqid() . ".txt", json_encode($toWrite));
+                $this->info($inc);
+            });
+
+        $bar->finish();
+    }
+
+    private function orgsMarkDelete()
+    {
+        $path = public_path() . "/data/orgs/";
+        $files = File::allFiles($path);
+
+        $inc = 0;
+        $total = count($files);
+        $bar = $this->output->createProgressBar($total);
+
+        foreach ($files as $key => $file)
+        {
+            $inc += 1;
+            // if ($key < 5) continue;
+
+            $data = json_decode(File::get($file));
+            if (empty($data)) continue;
+
+            // dd($data);
+            $test = [];
+
+            // $nextDD = false;
+            foreach ($data as $key => $item)
+            {                
+                $orgs = [];
+
+                foreach ($item as $orgId => $org)
+                {
+                    $orgs[] = $org;
+                }
+
+                $toDelete = [];
+                foreach ($orgs as $key => $org)
+                {
+                    if ($key == 0) continue;
+                    $toDelete[] = $org->id;
+                }
+
+                // update organizations
+                DB::table('organizations')->whereIn('id', $toDelete)->update(['notes' => 'delete']);
+                // dd("DONE");
+            }
+
+            $this->info($total - $inc . " left");
+            $bar->advance();
+        }
+
+        $bar->finish();
+    }
+
+    private function phoneCodes()
+    {
+        $this->line('Fixing phone codes...');
+
+        $count = DB::table('phones')->where('type', 'work')->count();
+        $bar = $this->output->createProgressBar($count);
+
+        DB::table('phones')->where('type', 'work')->chunk(1000, function($phones) use (&$bar)
+        {
+            foreach ($phones as $phone)
+            {
+                if (strlen($phone->code_operator) == 5)
+                {
+                    if (substr($phone->code_operator, 0, 1) == "7")
+                    {
+                        if (substr($phone->code_operator, 0, 4) == "7172")
+                        {
+                            DB::table('phones')->where('id', $phone->id)->update(['code_operator' => '7172']);
+                        }
+                        else
+                        {
+                            DB::table('phones')->where('id', $phone->id)->update([
+                                'type' => 'mobile',
+                                'code_operator' => substr($phone->code_operator, 0, 3)
+                            ]);
+                        }
+                    }
+                }
+
+                $bar->advance();
+            }
+        });
+        
+        $bar->finish();   
+    }
+
+    private function phoneNumbers()
+    {
         $phones = DB::table('phones')->where('code_operator', 'fix')->get();
         $bar = $this->output->createProgressBar(count($phones));
 
-        $code = '727';
+        $code = '7172';
 
         foreach ($phones as $phone)
         {   
@@ -75,14 +510,14 @@ class Fix extends Command
             }
             else
             {
-                // work phone
-                if (substr($phone->number, 2, 5) != $code)
+                // not work phone
+                if (substr($phone->number, 2, 6) != $code)
                 {
                     // dd([$phone->number, substr($phone->number, 5)]);
 
                     DB::table('phones')->where('id', $phone->id)->update([
                         'type' => $phone->type,
-                        'code_operator' => $code,
+                        'code_operator' => substr($phone->number, 2, 5),
                         'number' => substr($phone->number, 5)
                     ]);
                 }
@@ -90,8 +525,8 @@ class Fix extends Command
                 {
                     DB::table('phones')->where('id', $phone->id)->update([
                         'type' => 'work',
-                        'code_operator' => substr($phone->number, 2, 5),
-                        'number' => substr($phone->number, 5)
+                        'code_operator' => $code,
+                        'number' => substr($phone->number, 6)
                     ]);
                 }
             }

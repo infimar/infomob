@@ -145,7 +145,7 @@ class HomeController extends InfomobController
         }
     }
 
-    public function organization(Request $request, $organizationId, $categoryId)
+    public function organization(Request $request, $organizationId, $categoryId = 0)
     {
         try
         {
@@ -153,8 +153,21 @@ class HomeController extends InfomobController
             $cityId = $this->city->id;
             
             // category
-            $subcategory = Category::findOrFail($categoryId);
-            $category = $subcategory->parent()->first();
+            $subcategory = $category = null;
+            if ($categoryId != 0)
+            {
+                $subcategory = Category::findOrFail($categoryId);
+                $category = $subcategory->parent()->first();
+            }
+            else
+            {
+                $branchIds = Branch::published()->where('organization_id', $organization->id)->lists('id');
+                $categories = DB::table('branch_category')->where('branch_id', $branchIds)->lists('category_id');
+                $categoryId = $categories[0];
+
+                $subcategory = Category::findOrFail($categoryId);
+                $category = $subcategory->parent()->first();
+            }
 
             // for the city
             $branches = Branch::published()
@@ -231,7 +244,13 @@ class HomeController extends InfomobController
                     $query->select(["id", "name", "parent_id"]);
                 }])
                 ->findOrFail($id);
-                
+            
+            // check city
+            if ($branch->city_id != $cityId)
+            {
+                return redirect()->action('HomeController@index');
+            }
+
             // category
             $category = $parentCategory = $categories = null;
             $categoryLabel = ""; 
@@ -240,13 +259,16 @@ class HomeController extends InfomobController
             {
                 $category = Category::findOrFail($categoryId);
                 $parentCategory = $category->parent()->first();
-
                 $categoryLabel = $parentCategory->name . " / " . $category->name;
             }
             else
             {
                 $categoriesIds = DB::table('branch_category')->where('branch_id', $branch->id)->lists('category_id');
                 $categories = Category::whereIn('id', $categoriesIds)->get();
+                
+                $category = $categories[0];
+                $parentCategory = $category->parent()->first();
+                $categoryLabel = $parentCategory->name . " / " . $category->name;
             }
             
             // other branches?
@@ -295,6 +317,7 @@ class HomeController extends InfomobController
         $branches = [];
         $query = $this->query;
         $noQuery = ($query == "") ? true : false;
+        $perPage = 25;
 
         if (!$noQuery)
         {
@@ -395,6 +418,29 @@ class HomeController extends InfomobController
             }
 
             $branches = $sorted + $branches;
+            $result = [];
+
+            $pageNum = $request->get('page', 1);
+            $start = ($pageNum - 1) * $perPage;
+            $end = ($pageNum - 1) * $perPage + $perPage;
+            $idx = 0;
+            $length = count($branches);
+
+            foreach ($branches as $key => $branch)
+            {
+                // if ($idx > $length - 1) break;
+                $idx += 1;
+
+                if ($idx < $start + 1) continue;
+                else if ($idx > $end) break;
+
+                $result[] = $branch;
+            }
+            
+            $links = [];
+            $pagesCount = intval(ceil($length / $perPage)); 
+
+            // dd([$pageNum, $start, $end, $result, $length, $pagesCount]);
 
             // dd([
             //     'search' => $this->query,
@@ -410,6 +456,6 @@ class HomeController extends InfomobController
             // ]);
         }        
 
-        return view('layouts.frontend.search', compact('query', 'branches', 'categories', 'noQuery'));
+        return view('layouts.frontend.search', compact('query', 'branches', 'result', 'pagesCount', 'pageNum', 'categories', 'noQuery'));
     }
 }

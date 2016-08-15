@@ -8,7 +8,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                {!! Breadcrumbs::render('branch', $categories, $parentCategory, $category, $branch->organization, $branch) !!}
+                {!! Breadcrumbs::render('branch_category', $parentCategory, $category, $branch->organization, $branch) !!}
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             {{-- <h4>Деятельность</h4> --}}
-                            <p>{{ nl2br($branch->description) }}</p>
+                            <p>{!! nl2br($branch->description) !!}</p>
                         </div>
                     </div>
                     <br>

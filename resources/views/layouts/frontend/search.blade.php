@@ -33,20 +33,28 @@
 
             @if ($noQuery)
                 <div class="row">Введите запрос</div>
-            @elseif (count($branches) > 0 || count($categories) > 0)
+            @elseif (count($result) > 0 || count($categories) > 0)
                 <div class="row">
                     {{-- Филиалы --}}
                     <div class="col-md-8">
                         <h3>Организации и филиалы ({{ count($branches) }})</h3>
-                        @if (count($branches) > 0)
+                        @if (count($result) > 0)
                         <ul>
-                            @foreach ($branches as $branch)
+                            @foreach ($result as $branch)
                             <li>
                                 <a href="/branch/{{ $branch['id'] }}">
                                     {{ $branch['name'] }}
                                 </a>
                             </li>
                             @endforeach
+                            
+                            <ul class="links">
+                            @for ($i = 1; $i <= $pagesCount; $i++)
+                                <li @if ($i == $pageNum) class="active" @endif>
+                                    <a href="?query={{ $query }}&page={{ $i }}">{{ $i }}</a>
+                                </li>
+                            @endfor
+                            </ul>
                         </ul>
                         @else
                             Ничего не найдено

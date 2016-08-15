@@ -39,7 +39,7 @@
                                 <ul class="list-group">
                                     @foreach ($branches as $branch)
                                         <li class="list-group-item">
-                                            <a href="/branch/{{ $branch->id }}/{{ $subcategory->id }}">{{ $branch->name }}</a>
+                                            <a href="/branch/{{ $branch->id }}/{{ $subcategory->id }}">{{ $branch->address }}</a>
                                         </li>
                                     @endforeach
                                 </ul>
@@ -54,7 +54,7 @@
                                 <ul class="list-group">
                                     @foreach ($otherBranches as $branch)
                                         <li class="list-group-item">
-                                            <a href="/branch/{{ $branch->id }}/{{ $subcategory->id }}">{{ $branch->name }}</a>
+                                            <a href="/branch/{{ $branch->id }}/{{ $subcategory->id }}">{{ $branch->address }} ({{ $branch->city->name }})</a>
                                         </li>
                                     @endforeach
                                 </ul>
