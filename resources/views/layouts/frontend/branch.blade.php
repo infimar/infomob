@@ -37,14 +37,14 @@
                         <div class="carousel-slider slider">
                             @foreach ($branch->photos as $photo)
                                 <div class="item">
-                                    <img src="{{ asset ('images/photos/' . $photo->path) }}" alt="" width="770" height="520">
+                                    <img src="{{ asset ('images/photos/' . $photo->path) }}" alt="" class="img-responsive">
                                 </div>
                             @endforeach
                         </div>
                         <div class="carousel-thumbnail slider">
                             @foreach ($branch->photos as $photo)
                                 <div class="item">
-                                    <img src="{{ asset ('images/photos/' . $photo->path) }}" alt="" width="770" height="520">
+                                    <img src="{{ asset ('images/photos/' . $photo->path) }}" alt="">
                                 </div>
                             @endforeach
                         </div>
@@ -93,8 +93,27 @@
                             </div>
 
                             <!-- RD Google Map-->
-                            <div class="rd-google-map rd-google-map-mod-1">
+                            <div class="rd-google-map rd-google-map-mod-1" id="map">
+                                <script>
 
+                                    var map;
+                                    function initMap() {
+                                        //Координаты точки
+                                        var position = {lat: 42.325681, lng: 69.590750};
+
+                                        map = new google.maps.Map(document.getElementById('map'), {
+                                            center: {lat: 42.325681, lng: 69.590750},
+                                            zoom: 14
+                                        });
+                                        var marker = new google.maps.Marker({
+                                            map: map,
+                                            position: position,
+                                            icon: "" //Смена иконки маркера, указать путь к иконке
+                                        });
+                                    }
+
+                                </script>
+                                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWHECcodIoJcQKStYSpRkfwrG9R7xRgYQ&callback=initMap" async defer></script>
                             </div>
                         </div>
                     </div>
