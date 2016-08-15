@@ -320,7 +320,7 @@ class HomeController extends InfomobController
             $branch->hits += 1;
             $branch->save();
 
-            JavaScript::put(['lat' => $branch->lat, 'lng' => $branch->lng]);
+            JavaScript::put(['pointLat' => $branch->lat, 'pointLng' => $branch->lng]);
             
             return view("layouts.frontend.branch", compact('branch', 'otherBranches', 'categoryLabel', 'types', 'category', 'parentCategory', 'categories'));
         }

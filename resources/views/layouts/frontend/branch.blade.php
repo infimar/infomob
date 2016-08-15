@@ -101,29 +101,7 @@
 
                             <!-- RD Google Map-->
                             @if ($branch->lat != "0.00" && $branch->lng != "0.00" || $branch->lat != "0.0" && $branch->lng != "0.0")
-                            <div class="rd-google-map rd-google-map-mod-1" id="map">
-                                <script>
-
-                                    var map;
-                                    function initMap() {
-                                        //Координаты точки
-                                        var position = {lat: parseFloat(lat), lng: parseFloat(lng)};
-
-                                        map = new google.maps.Map(document.getElementById('map'), {
-                                            center: position,
-                                            zoom: 14
-                                        });
-
-                                        var marker = new google.maps.Marker({
-                                            map: map,
-                                            position: position,
-                                            icon: "" //Смена иконки маркера, указать путь к иконке
-                                        });
-                                    }
-
-                                </script>
-                                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWHECcodIoJcQKStYSpRkfwrG9R7xRgYQ&callback=initMap" async defer></script>
-                            </div>
+                            <div class="rd-google-map rd-google-map-mod-1" id="map"></div>
                             @endif
                         </div>
                     </div>
@@ -132,4 +110,35 @@
             </div>
         </div>
     </section>
+@endsection
+
+@section('scripts_import')
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWHECcodIoJcQKStYSpRkfwrG9R7xRgYQ&callback=initMap" async defer></script>
+@endsection
+
+
+@section('scripts_global')
+
+    var map;
+    function initMap() {
+        //Координаты точки
+        var position = {lat: parseFloat(pointLat), lng: parseFloat(pointLng)};
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: position,
+            zoom: 14
+        });
+
+        var marker = new google.maps.Marker({
+            map: map,
+            position: position,
+            icon: "" //Смена иконки маркера, указать путь к иконке
+        });
+    }
+
+@endsection
+
+@section('scripts')
+    console.log(pointLat);
+    console.log(pointLng);
 @endsection

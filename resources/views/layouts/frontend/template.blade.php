@@ -70,6 +70,12 @@
 
 @include ('layouts.js')
 
+@yield('scripts_import')
+
+<script type="text/javascript">
+    @yield('scripts_global')
+</script>
+
 <script>
 $(document).ready(function() {
     @yield('scripts')
