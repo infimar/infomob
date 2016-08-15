@@ -107,7 +107,7 @@
                                     var map;
                                     function initMap() {
                                         //Координаты точки
-                                        var position = {lat: lat, lng: lng};
+                                        var position = {lat: parseFloat(lat), lng: parseFloat(lng)};
 
                                         map = new google.maps.Map(document.getElementById('map'), {
                                             center: position,
