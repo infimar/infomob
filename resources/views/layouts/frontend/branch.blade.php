@@ -113,7 +113,7 @@
 @endsection
 
 @section('scripts_import')
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWHECcodIoJcQKStYSpRkfwrG9R7xRgYQ&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr1TQ9L73IATFwL8o8Y1syg-Rc8FsUpNA&callback=initMap" async defer></script>
 @endsection
 
 
