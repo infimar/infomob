@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('css/touch-touch.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/responsiveslides.css') }}">
 
 
 
@@ -65,6 +66,17 @@
 <script src='{{ asset('js/device.min.js') }}'></script>
 <script src="{{ asset('js/script.js') }}"></script>
 <script src="{{ asset ('js/core.min.js') }}"></script>
+<script src="{{ asset ('js/responsiveslides.min.js') }}"></script>
+
+@include ('layouts.js')
+
+<script>
+$(document).ready(function() {
+    @yield('scripts')
+});
+
+</script>
+
 
 <!-- Google Analytics -->
 <script>

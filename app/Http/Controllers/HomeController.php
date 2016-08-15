@@ -13,6 +13,7 @@ use App\Photo;
 use App\Phone;
 use View;
 use DB;
+use JavaScript;
 
 class HomeController extends InfomobController
 {
@@ -62,12 +63,12 @@ class HomeController extends InfomobController
             ->orderBy('category_name', "ASC")
             ->get();
 
-        // TODO: featured
+        // featured
         $featured = DB::table('view_featured')
             ->where('city_id', $this->city->id)
             ->get();
 
-        // TODO: latest
+        // latest
         $latest = DB::table('branches')
             ->where('status', 'published')
             ->where('city_id', $this->city->id)
@@ -75,7 +76,25 @@ class HomeController extends InfomobController
             ->limit(12)
             ->get();
 
-        return view('layouts.frontend.index', compact('categories', 'featured', 'latest'));
+        // TODO: from db
+        $slider = [
+            1 => ['shymkent_01.jpg', 'shymkent_02.jpg', 'shymkent_03.jpg'],
+            2 => ['astana_01.jpg', 'astana_02.jpg', 'astana_03.jpg'],
+            3 => ['almaty_01.jpg', 'almaty_02.jpg', 'almaty_03.jpg'],
+            4 => ['kyzylorda_01.jpg', 'kyzylorda_02.jpg', 'kyzylorda_03.jpg'],
+            5 => ['karagandy_01.jpg', 'karagandy_02.jpg', 'karagandy_03.jpg'],
+            6 => ['taraz_01.jpg', 'taraz_02.jpg', 'taraz_03.jpg'],
+            7 => ['ustkaman_01.jpg', 'ustkaman_02.jpg', 'ustkaman_03.jpg'],
+            8 => ['semei_01.jpg', 'semei_02.jpg', 'semei_03.jpg'],
+            9 => ['kokshetau_01.jpg', 'kokshetau_02.jpg', 'kokshetau_03.jpg'],
+            10 => ['kostanai_01.jpg', 'kostanai_02.jpg', 'kostanai_03.jpg'],
+            11 => ['aktobe_01.jpg', 'aktobe_02.jpg', 'aktobe_03.jpg'],
+            12 => ['uralsk_01.jpg', 'uralsk_02.jpg', 'uralsk_03.jpg'],
+            13 => ['atyrau_01.jpg', 'atyrau_02.jpg', 'atyrau_03.jpg'],
+            14 => ['aktau_01.jpg', 'aktau_02.jpg', 'aktau_03.jpg'],
+        ];
+
+        return view('layouts.frontend.index', compact('categories', 'featured', 'latest', 'slider'));
     }
 
     public function category(Request $request, $slug)
@@ -266,6 +285,8 @@ class HomeController extends InfomobController
                 $categoriesIds = DB::table('branch_category')->where('branch_id', $branch->id)->lists('category_id');
                 $categories = Category::whereIn('id', $categoriesIds)->get();
                 
+                if ($categories->count() == 0) { abort(404); }
+
                 $category = $categories[0];
                 $parentCategory = $category->parent()->first();
                 $categoryLabel = $parentCategory->name . " / " . $category->name;
@@ -298,6 +319,8 @@ class HomeController extends InfomobController
             // inc hits
             $branch->hits += 1;
             $branch->save();
+
+            JavaScript::put(['lat' => $branch->lat, 'lng' => $branch->lng]);
             
             return view("layouts.frontend.branch", compact('branch', 'otherBranches', 'categoryLabel', 'types', 'category', 'parentCategory', 'categories'));
         }
@@ -433,6 +456,8 @@ class HomeController extends InfomobController
 
                 if ($idx < $start + 1) continue;
                 else if ($idx > $end) break;
+
+                if (!DB::table('branch_category')->where('branch_id', $branch['id'])->first()) continue;
 
                 $result[] = $branch;
             }

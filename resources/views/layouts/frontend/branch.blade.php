@@ -71,6 +71,13 @@
                                         <td>{{ $branch->address }}</td>
                                     </tr>
 
+                                    @if (!empty($branch->working_hours))
+                                    <tr>
+                                        <td>Часы работы</td>
+                                        <td>{!! nl2br($branch->working_hours) !!}</td>
+                                    </tr>
+                                    @endif
+
                                     @if (!$branch->phones->isEmpty())
                                         @foreach ($branch->phones as $phone)
                                             <tr>
@@ -93,18 +100,20 @@
                             </div>
 
                             <!-- RD Google Map-->
+                            @if ($branch->lat != "0.00" && $branch->lng != "0.00" || $branch->lat != "0.0" && $branch->lng != "0.0")
                             <div class="rd-google-map rd-google-map-mod-1" id="map">
                                 <script>
 
                                     var map;
                                     function initMap() {
                                         //Координаты точки
-                                        var position = {lat: 42.325681, lng: 69.590750};
+                                        var position = {lat: lat, lng: lng};
 
                                         map = new google.maps.Map(document.getElementById('map'), {
-                                            center: {lat: 42.325681, lng: 69.590750},
+                                            center: position,
                                             zoom: 14
                                         });
+
                                         var marker = new google.maps.Marker({
                                             map: map,
                                             position: position,
@@ -115,6 +124,7 @@
                                 </script>
                                 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWHECcodIoJcQKStYSpRkfwrG9R7xRgYQ&callback=initMap" async defer></script>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>

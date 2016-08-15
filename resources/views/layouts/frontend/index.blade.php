@@ -15,32 +15,13 @@
 @endsection
 
 @section('slider')
-    <div id="carousel-example-generic" class="carousel slide" data-ride="carousel" style="position: absolute; top: 0; z-index: -1;">
-        <!-- Indicators -->
-        <ol class="carousel-indicators">
-            <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
-            <li data-target="#carousel-example-generic" data-slide-to="1"></li>
-            <li data-target="#carousel-example-generic" data-slide-to="2"></li>
-        </ol>
+    
+    <ul class="rslides" style="position: absolute; top: 0; left: 0; z-index: -1">
+    @foreach($slider[$chosenCity->id] as $slide)
+        <li><img src="{{ asset('/images/slider/' . $slide) }}" alt=""></li>
+    @endforeach
+    </ul>
 
-        <!-- Wrapper for slides -->
-        <div class="carousel-inner" role="listbox">
-
-            <div class="item active">
-                <img src="{{ asset('images/slider/shymkent1.jpg') }}" alt="" class="img-responsive">
-            </div>
-
-            <div class="item">
-                <img src="{{ asset('images/slider/shymkent2.jpg') }}" alt="" class="img-responsive">
-            </div>
-
-            <div class="item">
-                <img src="{{ asset('images/slider/shymkent3.jpg') }}" alt="" class="img-responsive">
-            </div>
-
-        </div>
-
-    </div>
 @endsection
 
 
@@ -131,5 +112,16 @@
         </div>
     </section>
     @endif
+
+@endsection
+
+
+@section('scripts')
+
+$(".rslides").responsiveSlides({
+    auto: true,            
+    speed: 500,
+    timeout: 4000,
+});
 
 @endsection

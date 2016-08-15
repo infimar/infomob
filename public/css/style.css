@@ -288,6 +288,10 @@ h2 + img {
   font-weight: 700;
   color: #FFFFFF;
   line-height: 59px;
+  margin: 0;
+}
+.brand_name a {
+  color: #fff;
 }
 
 /*==================  Backgrounds  ======================*/
@@ -2042,7 +2046,7 @@ table {
 
 
 /* INFOMOB */
-ul.pagination {
+/*ul.pagination {
     display: inline-block;
     padding: 0;
     margin: 0 auto;
@@ -2055,7 +2059,7 @@ ul.pagination li a, ul.pagination li.disabled {
     float: left;
     padding: 8px 16px;
     text-decoration: none;
-    /*border: 1px solid #ddd;*/
+    border: 1px solid #ddd;
 }
 
 ul.pagination li.disabled {
@@ -2068,10 +2072,10 @@ ul.pagination li.active {
     padding: 8px 16px;
     text-decoration: none;
     float: left;
-    /*border: 1px solid #ddd;*/
+    border: 1px solid #ddd;
 }
 
-ul.pagination li a:hover:not(.active) {background-color: #ddd;}
+ul.pagination li a:hover:not(.active) {background-color: #ddd;}*/
 
 .thumbnail_100 {
   position: relative;
@@ -2157,13 +2161,13 @@ ul.pagination li a:hover:not(.active) {background-color: #ddd;}
   height: 160px;
 }
 
-.links {
+.search_links {
   margin: 20px 20px;
   padding: 0;
   list-style-type: none;
 }
 
-.links li {
+.search_links li {
   display: inline-block;
   border: 1px solid #ccc;
   width: 40px;
@@ -2172,17 +2176,26 @@ ul.pagination li a:hover:not(.active) {background-color: #ddd;}
   margin: 2px;
 }
 
-.links a {
+.search_links a {
   display: inline-block;
   padding: 10px;
 }
 
-.links li.active {
+.search_links li.active {
   border: 1px solid blue;
   color: blue;
 }
 
-.links li:hover {
+.search_links li:hover {
   border: 1px solid blue;
   color: blue;
+}
+
+.container a {
+  color: inherit;
+  font-size: 16px;
+}
+
+.subcategories_links a {
+  color: #2196F3;
 }

@@ -48,7 +48,7 @@
                             </li>
                             @endforeach
                             
-                            <ul class="links">
+                            <ul class="search_links">
                             @for ($i = 1; $i <= $pagesCount; $i++)
                                 <li @if ($i == $pageNum) class="active" @endif>
                                     <a href="?query={{ $query }}&page={{ $i }}">{{ $i }}</a>

@@ -19,7 +19,7 @@ class City extends Model
     	$cities = City::orderBy("order", "ASC");
 
     	if (!$all)
-    		$cities->correct();
+    		$cities->published()->correct();
 
     	return $cities->lists("name", "id");
     }
