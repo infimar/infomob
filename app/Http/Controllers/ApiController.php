@@ -405,6 +405,12 @@ class ApiController extends Controller
 		$sections = ["Категории"];
 		$list = [];
 		
+		if ($cityId == 0)
+		{
+			$city = City::published()->first();
+			$cityId = $city->id;
+		}
+
 		try
 		{
 			$city = City::findOrFail($cityId);
