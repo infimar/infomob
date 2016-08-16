@@ -17,7 +17,7 @@ class ApiController extends Controller
 {
     public function __construct()
 	{
-		//header('Content-Type: application/json; charset=utf-8');
+		header('Content-Type: application/json; charset=utf-8');
 		
 		// TODO: check for api key!
 	}
@@ -50,7 +50,6 @@ class ApiController extends Controller
 				"message" => $e->getMessage()
 			]);
 		}
-		
 	}
 
 	
@@ -375,7 +374,6 @@ class ApiController extends Controller
 		return response()->json(["status" => "success", "result" => $result]);
 	}
 	
-	
 	// TODO: get only favs branches
 	public function getFavorites($favs)
 	{
@@ -499,7 +497,7 @@ class ApiController extends Controller
 	}
 	
 	
-	public function getServices($cityId)
+	public function getServices($cityId = 1)
 	{
 		$result = [];
 		
@@ -572,9 +570,9 @@ class ApiController extends Controller
 			}
 	
 			return response()->json([
-				"status" => "success",
-				"city" => $city,
-				"result" => $result
+				"status" 	=> "success",
+				"city" 		=> $city,
+				"result" 	=> $result
 			]);
 		}
 		catch (Exception $e)

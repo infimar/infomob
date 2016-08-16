@@ -159,7 +159,7 @@ Route::group(['prefix' => 'api'], function()
 	Route::get('/categories/{city_id?}', 'ApiController@getCategories');
 	Route::get('/subcategories/{parent_id}/{city_id?}', 'ApiController@getSubcategories');
 	
-	Route::get('/services/{city_id}', 'ApiController@getServices');
+	Route::get('/services/{city_id?}', 'ApiController@getServices');
 	
 	// TODO: remove before deployment
 	//Route::get('/seed', 'ApiController@seed');
