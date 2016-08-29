@@ -76,6 +76,7 @@ class HomeController extends InfomobController
             ->limit(12)
             ->get();
 
+
         // TODO: from db
         $slider = [
             1 => ['shymkent_01.jpg', 'shymkent_02.jpg', 'shymkent_03.jpg'],
@@ -166,10 +167,12 @@ class HomeController extends InfomobController
 
     public function organization(Request $request, $organizationId, $categoryId = 0)
     {
+        $cityId = $this->city->id;
+        
         try
         {
             $organization = Organization::published()->findOrFail($organizationId);
-            $cityId = $this->city->id;
+            // dd($organization);
             
             // category
             $subcategory = $category = null;
@@ -182,10 +185,17 @@ class HomeController extends InfomobController
             {
                 $branchIds = Branch::published()->where('organization_id', $organization->id)->lists('id');
                 $categories = DB::table('branch_category')->where('branch_id', $branchIds)->lists('category_id');
-                $categoryId = $categories[0];
+                
+                if ($categories)
+                {
+                    $categoryId = $categories[0];
+                    $subcategory = Category::findOrFail($categoryId);
+                    $category = $subcategory->parent()->first();
+                }
+                else
+                {
 
-                $subcategory = Category::findOrFail($categoryId);
-                $category = $subcategory->parent()->first();
+                }
             }
 
             // for the city
@@ -202,6 +212,8 @@ class HomeController extends InfomobController
                 ->with(["city"])
                 ->get(["id", "name", "address", "type", "city_id"]);
             
+            // dd($branches);
+
             // if one branch
             // redirect
             if (count($branches) == 1)
@@ -263,6 +275,8 @@ class HomeController extends InfomobController
                     $query->select(["id", "name", "parent_id"]);
                 }])
                 ->findOrFail($id);
+
+            // dd($branch);
             
             // check city
             if ($branch->city_id != $cityId)
@@ -285,11 +299,12 @@ class HomeController extends InfomobController
                 $categoriesIds = DB::table('branch_category')->where('branch_id', $branch->id)->lists('category_id');
                 $categories = Category::whereIn('id', $categoriesIds)->get();
                 
-                if ($categories->count() == 0) { abort(404); }
-
-                $category = $categories[0];
-                $parentCategory = $category->parent()->first();
-                $categoryLabel = $parentCategory->name . " / " . $category->name;
+                if ($categories->count() != 0) 
+                { 
+                    $category = $categories[0];
+                    $parentCategory = $category->parent()->first();
+                    $categoryLabel = $parentCategory->name . " / " . $category->name;
+                }
             }
             
             // other branches?
