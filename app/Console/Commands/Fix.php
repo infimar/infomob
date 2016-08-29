@@ -97,6 +97,10 @@ class Fix extends Command
                 $this->orgpages();
                 break;
 
+            case 'clear':
+                $this->clearBranches();
+                break;
+
             default:
                 $this->info("Wrong action name");
                 break;
@@ -104,6 +108,15 @@ class Fix extends Command
 
         $time_end = microtime(true);
         $this->info("Done in " . ($time_end - $time_start) . " seconds");
+    }
+
+    private function clearBranches()
+    {
+        $orgIds = DB::table('organizations')->whereNotNull('notes')->lists('id');
+
+        DB::table('branches')
+            ->whereIn('organization_id', $orgIds)
+            ->update(['description' => '']);
     }
 
     private function orgpages()
