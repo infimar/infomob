@@ -2199,3 +2199,19 @@ ul.pagination li a:hover:not(.active) {background-color: #ddd;}*/
 .subcategories_links a {
   color: #2196F3;
 }
+
+.contacts {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.contacts img {
+  width: 36px;
+  height: 36px;
+}
+
+.contacts li {
+  font-size: 18px;
+  line-height: 36px;
+}

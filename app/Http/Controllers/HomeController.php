@@ -498,4 +498,31 @@ class HomeController extends InfomobController
 
         return view('layouts.frontend.search', compact('query', 'branches', 'result', 'pagesCount', 'pageNum', 'categories', 'noQuery'));
     }
+
+
+    /**
+     * Contacts
+     */
+    public function contacts()
+    {
+        // TODO: from db
+        switch ($this->city->id) {
+            default:
+                $address = "город Шымкент, улица Алдиярова, дом 12а, кв №15";
+                $contacts = [
+                    ['work', '8 (7252) 540 992'], 
+                    ['mobile', '+7 (778) 577 2225'], 
+                    ['mobile', '+7 (778) 577 2226'],
+                ];
+                $socials = [
+                    ['facebook', 'https://www.facebook.com/infomob.kazakhstan'],
+                    ['vk', 'https://vk.com/infomobkaz'],
+                    ['instagram', 'https://www.instagram.com/infomobkz'],
+                ];
+
+                break;
+        }
+
+        return view('layouts.frontend.contacts', compact('address', 'contacts', 'socials'));
+    }
 }

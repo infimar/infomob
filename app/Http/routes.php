@@ -17,7 +17,7 @@ Route::get('/category/{slug}', 'HomeController@category');
 Route::get('/organization/{organizationId}/{categoryId?}', 'HomeController@organization');
 Route::get('/branch/{id}/{category_id?}', 'HomeController@branch');
 Route::get('/search', 'HomeController@search');
-
+Route::get('/contacts', 'HomeController@contacts');
 
 // change city
 Route::get('/utils/changecity/{city_id}', 'UtilsController@changeCity');

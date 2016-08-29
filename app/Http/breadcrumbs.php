@@ -6,6 +6,13 @@ Breadcrumbs::register('home', function($breadcrumbs)
     $breadcrumbs->push('Главная', action('HomeController@index'));
 });
 
+// Contacts
+Breadcrumbs::register('contacts', function($breadcrumbs)
+{
+    $breadcrumbs->parent('home');
+    $breadcrumbs->push(" / " . 'Наши контакты', action('HomeController@contacts'));
+});
+
 // Search
 Breadcrumbs::register('search', function($breadcrumbs)
 {
