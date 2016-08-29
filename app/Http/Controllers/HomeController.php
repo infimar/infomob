@@ -516,7 +516,7 @@ class HomeController extends InfomobController
                 ];
                 $socials = [
                     ['facebook', 'https://www.facebook.com/infomob.kazakhstan'],
-                    ['vk', 'https://vk.com/infomobkaz'],
+                    ['vk', 'https://vk.com/infomobkz'],
                     ['instagram', 'https://www.instagram.com/infomobkz'],
                 ];
 
