@@ -22,7 +22,42 @@ class ApiController extends Controller
 		// TODO: check for api key!
 	}
 
+	// contacts
+	public function getContacts(Request $request)
+	{
+		if (!$request->has("city_id"))
+		{
+			return response()->json(["status" => "error", "result" => "No city id"]);
+		}
+		
+		$cityId = $request->input("city_id");
 
+		switch ($cityId) {
+            default:
+                $address = "город Шымкент, улица Алдиярова, дом 12а, кв №15";
+                $contacts = [
+                    ['type' => 'work', 'name' => '8 (7252) 540 992'], 
+                    ['type' => 'mobile', 'name' => '+7 (778) 577 2225'], 
+                    ['type' => 'mobile', 'name' => '+7 (778) 577 2226'],
+                ];
+                $socials = [
+                    ['type' => 'facebook', 'name' => 'https://www.facebook.com/infomob.kazakhstan'],
+                    ['type' => 'vk', 'name' => 'https://vk.com/infomobkz'],
+                    ['type' => 'instagram', 'name' => 'https://www.instagram.com/infomobkz'],
+                ];
+
+                break;
+        }
+
+        return response()->json([
+        	'status' => 'success',
+        	'address' => $address,
+        	'contacts' => $contacts,
+        	'socials' => $socials
+    	]);
+	}
+
+	// cities
 	public function getCities(Request $request)
 	{
 		try
@@ -184,6 +219,7 @@ class ApiController extends Controller
 		}
 	}
 	
+	// TODO: hit increase
 	public function getBranch(Request $request)
 	{
 		if (!$request->has("branch_id"))
@@ -241,6 +277,17 @@ class ApiController extends Controller
 				->where("id", "!=", $branch->id)
 				->get(["id", "name", "address", "city_id"]);
 			
+
+			// fix phones (exclude short_numb)
+			foreach ($branch->phones as $phone)
+			{
+				if ($phone->code_operator == "short_numb")
+				{
+					$phone->code_country = "";
+					$phone->code_operator = "";
+				}
+			}
+
 			return response()->json([
 				"status" => "success",
 				"branch" => $branch->toArray(),

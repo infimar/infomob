@@ -397,10 +397,10 @@ class SeedController extends Controller
     		foreach ($roots as $root)
     		{
     			$countParents++;
-          echo "<img src='" . asset("images/icons/" . $root->icon) . "'>";
+          // echo "<img src='" . asset("images/icons/" . $root->icon) . "'>";
     			echo $root->name . ":\n";
 
-    			foreach ($root->descendants()->get() as $child)
+    			foreach ($root->descendants()->orderBy("name", "ASC")->get() as $child)
     			{
     				$countChildren++;
     				echo "\t- " . $child->name . "\n";

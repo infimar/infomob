@@ -43,7 +43,7 @@ Route::group(['prefix' => 'seed', 'middleware' => 'auth'], function()
 	
 	// Route::get('/search/{query}', 'SeedController@search');
 	// Route::get('/compare/{category_id?}/{name?}', 'SeedController@compare');
-	// Route::get('/check/{table}', 'SeedController@check');
+	Route::get('/check/{table}', 'SeedController@check');
 	
 	Route::get('/category/{src}', 'SeedController@category');
 	// Route::get('/city/{src}', 'SeedController@city');
@@ -144,6 +144,8 @@ Route::group(['prefix' => 'ajax', 'middleware' => 'auth'], function()
  */
 Route::group(['prefix' => 'api'], function() 
 {
+	Route::get('/contacts', 'ApiController@getContacts');
+
 	Route::get('/cities', 'ApiController@getCities');
 	Route::get('/searchautocomplete', 'ApiController@searchAutoComplete');
 	
