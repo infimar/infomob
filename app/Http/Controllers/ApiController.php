@@ -367,6 +367,8 @@ class ApiController extends Controller
 	
 	public function getOrganization(Request $request)
 	{
+		$noCategory = false;
+
 		if (!$request->has('city_id'))
 		{
 			return response()->json(["status" => "error", "result" => "No city id"]);
@@ -374,7 +376,8 @@ class ApiController extends Controller
 		
 		if (!$request->has('category_id'))
 		{
-			return response()->json(["status" => "error", "result" => "No category id"]);
+			$noCategory = true;
+			// return response()->json(["status" => "error", "result" => "No category id"]);
 		}
 		
 		if (!$request->has('organization_id'))
@@ -383,30 +386,44 @@ class ApiController extends Controller
 		}
 		
 		$cityId = $request->input('city_id');
-		$categoryId = $request->input('category_id');
 		$organizationId = $request->input("organization_id");
+		$categoryId = $request->input('category_id', 0);
 		
 		try
 		{
 			$city = City::findOrFail($cityId);
-		
 			$organization = Organization::findOrFail($organizationId);
 			
-			// for the city
-			$branches = Branch::published()
-				->orderBy("name", "ASC")
-				->where("organization_id", $organization->id)
-				->whereHas("city", function ($query) use ($cityId) {
-					$query->where("id", $cityId);
-				})
-				->whereHas("categories", function($query) use ($categoryId) {
-					$query->where("category_id", $categoryId);
-				})
-				->with(["photos" => function ($query) {
-					$query->where("type", "logo")->take(1);				
-				}, "city"])
-				->get(["id", "name", "address", "type", "city_id"]);
-			
+			if ($noCategory || $categoryId == 0)
+			{
+				$branches = Branch::published()
+					->orderBy("name", "ASC")
+					->where('organization_id', $organization->id)
+					->whereHas("city", function ($query) use ($cityId) {
+						$query->where("id", $cityId);
+					})
+					->with(["photos" => function ($query) {
+						$query->where("type", "logo")->take(1);				
+					}, "city"])
+					->get(["id", "name", "address", "type", "city_id"]);
+			}
+			else
+			{
+				$branches = Branch::published()
+					->orderBy("name", "ASC")
+					->where("organization_id", $organization->id)
+					->whereHas("city", function ($query) use ($cityId) {
+						$query->where("id", $cityId);
+					})
+					->whereHas("categories", function($query) use ($categoryId) {
+						$query->where("category_id", $categoryId);
+					})
+					->with(["photos" => function ($query) {
+						$query->where("type", "logo")->take(1);				
+					}, "city"])
+					->get(["id", "name", "address", "type", "city_id"]);
+			}
+
 			// other branches
 			$otherBranchesDB = Branch::published()
 				->orderBy("name", "ASC")
@@ -417,18 +434,19 @@ class ApiController extends Controller
 				->with(["photos" => function ($query) {
 					$query->where("type", "logo")->take(1);				
 				}, "city"])
-				->get(["id", "name", "address", "type", "city_id"]);
-			
-			$result = $branches->toArray();
-			
-			// if there is no -> notfound
-			if (count($result) <= 0) {
-				return response()->json(["status" => "notfound", "result" => "No branches found"]);
-			}
+				->get(["id", "name", "address", "type", "city_id"]);			
 			
 			// other branches
 			$otherBranches = $otherBranchesDB->toArray();
-				
+
+			// result
+			$result = $branches->toArray();
+			
+			// if there is no -> notfound
+			if (count($branches) <= 0 && count($otherBranches) <= 0) {
+				return response()->json(["status" => "notfound", "result" => "No branches found"]);
+			}
+			
 			return response()->json([
 				"status" => "success",
 				"city" => $city->name,
