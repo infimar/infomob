@@ -17,7 +17,8 @@
         "laracasts/flash": "^2.0",
         "barryvdh/laravel-debugbar": "^2.2",
         "davejamesmiller/laravel-breadcrumbs": "^3.0",
-        "orchestra/parser": "~3.0"
+        "orchestra/parser": "~3.0",
+        "gbrock/laravel-table": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

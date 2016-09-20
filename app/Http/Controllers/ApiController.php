@@ -11,7 +11,9 @@ use App\Raion;
 use App\Branch;
 use App\Category;
 use App\Organization;
+use App\Offer;
 use DB;
+use Carbon\Carbon;
 
 class ApiController extends Controller
 {
@@ -20,6 +22,45 @@ class ApiController extends Controller
 		header('Content-Type: application/json; charset=utf-8');
 		
 		// TODO: check for api key!
+	}
+
+	// offer
+	public function getOffer(Request $request)
+	{
+		if (!$request->has("offer_id"))
+		{
+			return response()->json(["status" => "error", "result" => "No offer id"]);
+		}
+
+		$offerId = $request->get('offer_id');
+		$offer = Offer::with('organization', 'cities')->findOrFail($offerId);
+
+		return response()->json([
+			'status' => 200,
+			'result' => $offer->toArray()
+		]);
+	}
+
+	// offers
+	public function getOffers(Request $request)
+	{
+		if (!$request->has("city_id"))
+		{
+			return response()->json(["status" => "error", "result" => "No city id"]);
+		}
+		
+		$cityId = $request->input("city_id");
+		$today = Carbon::now();
+
+		$offers = Offer::with('organization')->whereHas('cities', function($q) use ($cityId) 
+		{
+			$q->where('id', $cityId);	
+		})->where('date_end', '>=', $today->format('Y-m-d'))->get();
+
+		return response()->json([
+			'status' => 200,
+			'result' => $offers->toArray()
+		]);
 	}
 
 	// contacts

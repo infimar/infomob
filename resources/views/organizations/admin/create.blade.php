@@ -6,7 +6,7 @@
 
 <div class="row">
 	<div class="col-md-12">
-		<form class="form-horizontal" method="POST" action="/admin/organizations">
+		<form class="form-horizontal" method="POST" action="/admin/organizations" enctype="multipart/form-data">
 			{{ csrf_field() }}
 
 			<fieldset>
@@ -16,6 +16,13 @@
 			    	<label for="inputName" class="col-sm-2 control-label">Наименование организации</label>
 			    	<div class="col-sm-10">
 			      		<input type="text" class="form-control" id="inputName" name="name" placeholder="Наименование организации">
+			    	</div>
+			  	</div>
+
+			  	<div class="form-group">
+			    	<label for="logo" class="col-sm-2 control-label">Логотип</label>
+			    	<div class="col-sm-10">
+			      		<input type="file" class="form-control" id="logo" name="logo">
 			    	</div>
 			  	</div>
 
@@ -107,6 +114,13 @@
 			    	<label for="inputWorkingHours" class="col-sm-2 control-label">Часы работы</label>
 			    	<div class="col-sm-4">
 			      		<input type="text" class="form-control" id="inputWorkingHours" name="branch_workingHours" placeholder="Часы работы">
+			    	</div>
+			  	</div>
+
+			  	<div class="form-group">
+			    	<label for="inputPricingfile" class="col-sm-2 control-label">Прайслист</label>
+			    	<div class="col-sm-4">
+			      		<input type="file" class="form-control" id="inputPricingfile" name="branch_pricingfile" placeholder="Прайслист">
 			    	</div>
 			  	</div>
 

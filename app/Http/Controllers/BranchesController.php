@@ -66,6 +66,21 @@ class BranchesController extends AdminController
             $lng = (empty($input['branch_lng'])) ? "0.00" : $input['branch_lng'];
 
             // branch info
+
+            // pricingfile
+            $pricingfile = $request->file('branch_pricingfile');
+            $pricingFilename = '';
+
+            if ($pricingfile && $pricingfile->isValid()) 
+            {
+                $destinationPath = public_path() . '/docs/pricingfiles/';
+                $filename = uniqid() . '.' . $pricingfile->getClientOriginalExtension();
+                $pricingfile->move($destinationPath, $filename);
+
+                $pricingFilename = $filename;
+            }
+
+            // create
             $branch = Branch::create([
                 'organization_id' => $organization->id,
                 'city_id' => $input['branch_cityId'],
@@ -78,7 +93,8 @@ class BranchesController extends AdminController
                 'lng' => $lng,
                 'working_hours' => $input['branch_workingHours'],
                 'status' => $input['branch_status'],
-                'type' => 'custom'
+                'type' => 'custom',
+                'pricingfile' => $pricingFilename
             ]);
             // dd($branch);
 
@@ -214,7 +230,26 @@ class BranchesController extends AdminController
             $branch = Branch::findOrFail($id);
             // dd($branch);
 
-            // branch
+            // pricing was changed ?
+            $pricingWasChanged = false;
+            $newPricing = null;
+            $pricing = $request->file('branch_pricingfile');
+
+            if ($pricing && $pricing->isValid()) 
+            {   
+                // remove old
+                $oldPricing = public_path() . '/docs/pricingfiles/' . $branch->pricingfile;
+                if (File::exists($oldPricing)) { File::delete($oldPricing); }
+
+                // upload new
+                $destinationPath = public_path() . '/docs/pricingfiles/';
+                $filename = uniqid() . '.' . $pricing->getClientOriginalExtension();
+                $pricing->move($destinationPath, $filename);
+
+                $pricingWasChanged = true;
+                $newPricing = $filename;
+            }
+
             // lat, lng
             $lat = (empty($input['branch_lat'])) ? "0.00" : $input['branch_lat'];
             $lng = (empty($input['branch_lng'])) ? "0.00" : $input['branch_lng'];
@@ -230,6 +265,9 @@ class BranchesController extends AdminController
             $branch->lng = $lng;
             $branch->working_hours = $input['branch_workingHours'];
             $branch->status = $input['branch_status'];
+
+            if ($pricingWasChanged) { $branch->pricingfile = $newPricing; }
+
             $branch->save();
             // dd($branch);
 

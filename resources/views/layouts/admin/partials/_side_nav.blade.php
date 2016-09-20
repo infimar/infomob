@@ -19,6 +19,12 @@
 </ul>
 
 <ul class="nav nav-sidebar">
+  <li id="offers_index"><a href="/admin/offers">Акции</a></li>
+  <li id="offers_create"><a href="/admin/offers/create">Добавить акцию</a></li>
+  <li class="nav-divider"></li>
+</ul>
+
+<ul class="nav nav-sidebar">
   <li><a href="/admin/cityservices">Специальные службы</a></li>
   <li><a href="/admin/cityservices/create">Добавить cлужбу</a></li>
   <li class="nav-divider"></li>

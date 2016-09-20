@@ -95,7 +95,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function()
 	 
 	// Organizations
 	Route::get('/topten', 'OrganizationsController@topTen');
-	Route::get('/organizations', 'OrganizationsController@index');
+	Route::get('/organizations', 'OrganizationsController@index')->name('admin.organizations.index');
 	Route::get('/organizations/create', 'OrganizationsController@create');
 	Route::post('/organizations', 'OrganizationsController@store');
 	Route::get('/organizations/{id}/edit', 'OrganizationsController@edit');
@@ -112,6 +112,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function()
 	Route::post('/mediamanager/update/photo', 'MediaManagerController@updatePhoto');
 	Route::post('/mediamanager/deletebyid/photo', 'MediaManagerController@deletePhotoById');
 	Route::post('/mediamanager/delete/photo', 'MediaManagerController@deletePhoto');
+
+	// Offers 
+	Route::resource('offers', 'OffersController');
 });
 
 /**
@@ -133,10 +136,13 @@ Route::group(['prefix' => 'ajax', 'middleware' => 'auth'], function()
 	Route::post('/topit', 'AjaxController@topIt');
 	Route::post('/branches/makemain', 'AjaxController@makeMainBranch');
 	Route::post('/branches/makefeatured', 'AjaxController@makeFeaturedBranch');
-	Route::post('/organizations/topten', 'AjaxController@addToTopTen');
 	Route::post('/topten/reorder', 'AjaxController@topTenReorder');
 	Route::post('/topten/remove', 'AjaxController@removeFromTopTen');
 	Route::post('/category/changeparent', 'AjaxController@changeCategoryParent');
+
+	// organizations
+	Route::post('/organizations/topten', 'AjaxController@addToTopTen');
+	Route::get('/organizations/by_name', 'AjaxController@getOrganizationsByName')->name('ajax.organizations.by_name');
 });
 
 /**
@@ -163,6 +169,10 @@ Route::group(['prefix' => 'api'], function()
 	
 	Route::get('/services/{city_id?}', 'ApiController@getServices');
 	
+	Route::get('/offers', 'ApiController@getOffers');
+	Route::get('/offer', 'ApiController@getOffer');
+
+
 	// TODO: remove before deployment
 	//Route::get('/seed', 'ApiController@seed');
 });

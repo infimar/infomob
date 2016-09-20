@@ -12,7 +12,8 @@ class Branch extends Model
     	"organization_id", "status",
     	"name", "type", "description", 
     	"city_id", "address", "post_index",
-    	"email", "hits", "lat", "lng", "working_hours"
+    	"email", "hits", "lat", "lng", "working_hours",
+    	"pricingfile"
 	];
 
 

@@ -14,6 +14,24 @@ use DB;
 
 class AjaxController extends InfomobController
 {
+    public function getOrganizationsByName(Request $request)
+    {
+        $searchTerm = $request->input('q');
+        $pageNum = $request->input('page');
+        $perPage = 30;  // like in select2
+
+        $organizations = Organization::where('name', 'LIKE', '%' . $searchTerm . '%')
+                            ->skip(($pageNum - 1) * $perPage)
+                            ->take($perPage)
+                            ->orderBy('name', 'ASC')
+                            ->get(['id', 'name']);
+
+        return response()->json([
+            'items' => $organizations->toArray(),
+            'total_count' => Organization::where('name', 'LIKE', '%' . $searchTerm . '%')->count()
+        ]);
+    }
+
     public function changeCategoryParent(Request $request)
     {
         // dd($request->all());

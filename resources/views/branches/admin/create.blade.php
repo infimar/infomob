@@ -97,6 +97,13 @@
 			  	</div>
 
 			  	<div class="form-group">
+			    	<label for="inputPricingfile" class="col-sm-2 control-label">Прайслист</label>
+			    	<div class="col-sm-4">
+			      		<input type="file" class="form-control" id="inputPricingfile" name="branch_pricingfile" placeholder="Прайслист">
+			    	</div>
+			  	</div>
+
+			  	<div class="form-group">
 					<label for="inputBranchStatus" class="col-sm-2 control-label">Статус</label>
 			    	<div class="col-sm-4">
 			      		<select id="inputBranchStatus" name="branch_status" class="form-control">

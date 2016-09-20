@@ -5,11 +5,11 @@
 <h1 class="page-header">Редактирование организации</h1>
 
 <div class="row">
-	<div class="col-md-8">
-		<form class="form-horizontal" method="POST" action="/admin/organizations/{{ $organization->id }}">
-			<input type="hidden" name="_method" value="PUT">
-			{{ csrf_field() }}
-
+	<form class="form-horizontal" method="POST" action="/admin/organizations/{{ $organization->id }}" enctype="multipart/form-data">
+		<input type="hidden" name="_method" value="PUT">
+		{{ csrf_field() }}
+		
+		<div class="col-md-8">
 		  	<fieldset>
    				<legend>Организация</legend>
 
@@ -42,13 +42,30 @@
 				<legend>&nbsp;</legend>
 		  		<div class="form-group">
 			    	<div class="col-sm-offset-2 col-sm-10">
-			    		<a href="{{ $backUrl }}" class="btn btn-default">Отмена</a>
+			    		<a href="{{ route('admin.organizations.index') }}" class="btn btn-default">Отмена</a>
 			      		<button type="submit" class="btn btn-primary">Сохранить изменения</button>
 			    	</div>
 		  		</div>
 		  	</fieldset>
-		</form>
-	</div>
+		</div>
+		<div class="col-md-4">
+			<div class="form-group">
+		    	<label for="logo" class="col-sm-2 control-label">Логотип</label>
+				<br><br>
+
+				{{-- logo if exists --}}
+				<div style="padding-left: 15px;">
+					<img src="{{ asset('images/logos/' . $organization->logo) }}" alt="" style="width:128px;">
+				</div>
+
+		    	{{-- file input --}}
+		    	<div class="col-sm-10" style="margin-top: 16px;">
+		      		<input type="file" class="form-control" id="logo" name="logo">
+		    	</div>
+		  	</div>
+		</div>
+
+	</form>
 </div>
 
 

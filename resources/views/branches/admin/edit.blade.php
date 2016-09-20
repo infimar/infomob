@@ -6,7 +6,7 @@
 
 <div class="row">
 	<div class="col-md-12">
-		<form class="form-horizontal" method="POST" action="/admin/branches/{{ $branch->id }}">
+		<form class="form-horizontal" method="POST" action="/admin/branches/{{ $branch->id }}" enctype="multipart/form-data">
 			<input type="hidden" name="_method" value="PUT">
 			{{ csrf_field() }}
 
@@ -97,6 +97,14 @@
 			    	<label for="inputWorkingHours" class="col-sm-2 control-label">Часы работы</label>
 			    	<div class="col-sm-4">
 			      		<input type="text" class="form-control" id="inputWorkingHours" name="branch_workingHours" placeholder="Часы работы" value="{{ $branch->working_hours }}">
+			    	</div>
+			  	</div>
+
+			  	<div class="form-group">
+			    	<label for="inputPricingfile" class="col-sm-2 control-label">Прайслист</label>
+			    	<div class="col-sm-4">
+			    		@if (!empty($branch->pricingfile)) <a href="{{ asset('/docs/pricingfiles/' . $branch->pricingfile) }}">Прайс лист</a>  @endif
+			      		<input type="file" class="form-control" id="inputPricingfile" name="branch_pricingfile" placeholder="Прайслист">
 			    	</div>
 			  	</div>
 

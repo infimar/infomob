@@ -190,6 +190,9 @@ return [
 
         // XML
         Orchestra\Parser\XmlServiceProvider::class,
+
+        // Laravel Tables
+        Gbrock\Table\Providers\TableServiceProvider::class,
     ],
 
     /*
@@ -240,11 +243,12 @@ return [
 
         //
 
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        'Flash' => Laracasts\Flash\Flash::class,
-        'Debugbar' => Barryvdh\Debugbar\Facade::class,
-        'Breadcrumbs' => DaveJamesMiller\Breadcrumbs\Facade::class,
-        'XmlParser' => Orchestra\Parser\Xml\Facade::class, 
+        'Excel'         => Maatwebsite\Excel\Facades\Excel::class,
+        'Flash'         => Laracasts\Flash\Flash::class,
+        'Debugbar'      => Barryvdh\Debugbar\Facade::class,
+        'Breadcrumbs'   => DaveJamesMiller\Breadcrumbs\Facade::class,
+        'XmlParser'     => Orchestra\Parser\Xml\Facade::class,
+        'Table'         => 'Gbrock\Table\Facades\Table',
     ],
 
 ];

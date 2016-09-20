@@ -118,10 +118,23 @@ class OrganizationsController extends AdminController
         try 
         {
             // organization
+            
+            // logo
+            $logo = $request->file('logo');
+            $filename = "nologo.png";
+
+            if ($logo && $logo->isValid()) 
+            {
+                $destinationPath = public_path() . '/images/logos';
+                $filename = uniqid() . '.' . $logo->getClientOriginalExtension();
+                $logo->move($destinationPath, $filename);
+            }
+
             $organization = Organization::create([
                 'name' => $input['name'],
                 'description' => $input['description'],
                 'status' => $input['status'],
+                'logo' => $filename
             ]);
             // dd($organization);
 
@@ -131,6 +144,21 @@ class OrganizationsController extends AdminController
             $lng = (empty($input['branch_lng'])) ? "0.00" : $input['branch_lng'];
 
             // branch info
+            
+            // pricingfile
+            $pricingfile = $request->file('branch_pricingfile');
+            $pricingFilename = '';
+
+            if ($pricingfile && $pricingfile->isValid()) 
+            {
+                $destinationPath = public_path() . '/docs/pricingfiles/';
+                $filename = uniqid() . '.' . $pricingfile->getClientOriginalExtension();
+                $pricingfile->move($destinationPath, $filename);
+
+                $pricingFilename = $filename;
+            }
+
+            // create branch
             $branch = Branch::create([
                 'organization_id' => $organization->id,
                 'city_id' => $input['branch_cityId'],
@@ -142,7 +170,8 @@ class OrganizationsController extends AdminController
                 'lat' => $lat,
                 'lng' => $lng,
                 'working_hours' => $input['branch_workingHours'],
-                'status' => $input['branch_status']
+                'status' => $input['branch_status'],
+                'pricingfile' => $pricingFilename
             ]);
             // dd($branch);
 
@@ -333,20 +362,46 @@ class OrganizationsController extends AdminController
     public function update(Request $request, $id)
     {
         // TODO: validation
-        // dd($request->all());
         $input = $request->all();
+        // dd($input);
 
         try
         {
+            // get organization
             $organization = Organization::findOrFail($id);
+
+            // logo is changed?
+            $logoWasChanged = false;
+            $newLogo = null;
+            $logo = $request->file('logo');
+
+            if ($logo && $logo->isValid()) 
+            {   
+                // remove old
+                $oldLogo = public_path() . '/images/logos/' . $organization->logo;
+                if (File::exists($oldLogo) && $organization->logo != "nologo.png") { File::delete($oldLogo); }
+
+                // upload new
+                $destinationPath = public_path() . '/images/logos';
+                $filename = uniqid() . '.' . $logo->getClientOriginalExtension();
+                $logo->move($destinationPath, $filename);
+
+                $logoWasChanged = true;
+                $newLogo = $filename;
+            }
+
+            // update new data
             $organization->name = $input['name'];
             $organization->description = $input['description'];
             $organization->status = $input['status'];
+
+            if ($logoWasChanged) { $organization->logo = $newLogo; }
+
             $organization->save();
 
             flash()->success("Организация успешно обновлена");
             // return redirect()->back();
-            return redirect()->action('OrganizationsController@index');
+            return redirect()->action('OrganizationsController@edit', ['id' => $organization->id]);
         }
         catch (Exception $e)
         {
@@ -389,6 +444,10 @@ class OrganizationsController extends AdminController
             }
 
             $organization->delete();
+
+            // delete logo
+            $logo = public_path() . '/images/logos/' . $organization->logo;
+            if ($organization->logo != "nologo.png") File::delete($logo);
 
             flash()->info("Организация удалена");
             return redirect()->back();
