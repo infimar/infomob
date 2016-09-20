@@ -63,10 +63,14 @@ class ApiController extends Controller
 		$cityId = $request->input("city_id");
 		$today = Carbon::now();
 
-		$offers = Offer::with('organization')->whereHas('cities', function($q) use ($cityId) 
-		{
-			$q->where('id', $cityId);	
-		})->where('date_end', '>=', $today->format('Y-m-d'))->get();
+		$offers = Offer::with('organization')
+			->whereHas('cities', function($q) use ($cityId) 
+			{
+				$q->where('id', $cityId);	
+			})
+			->where('date_end', '>=', $today->format('Y-m-d'))
+			->orderBy('id', 'DESC')
+			->get();
 
 		foreach ($offers as $offer) {
 			$result[] = [
