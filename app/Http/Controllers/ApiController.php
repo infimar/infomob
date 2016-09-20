@@ -43,7 +43,7 @@ class ApiController extends Controller
 			'image' => $offer->image,
 			'description' => $offer->description,
 			'date_end' => $offer->date_end,
-		]
+		];
 
 		return response()->json([
 			'status' => 200,
