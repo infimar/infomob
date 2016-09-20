@@ -35,9 +35,19 @@ class ApiController extends Controller
 		$offerId = $request->get('offer_id');
 		$offer = Offer::with('organization', 'cities')->findOrFail($offerId);
 
+		$result = [
+			'id' => $offer->id,
+			'organization_id' => $offer->organization->id,
+			'organization_name' => $offer->organization->name,
+			'organization_logo' => $offer->organization->logo,
+			'image' => $offer->image,
+			'description' => $offer->description,
+			'date_end' => $offer->date_end,
+		]
+
 		return response()->json([
 			'status' => 200,
-			'result' => $offer->toArray()
+			'result' => $result
 		]);
 	}
 
