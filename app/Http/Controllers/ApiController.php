@@ -59,7 +59,8 @@ class ApiController extends Controller
 
 		return response()->json([
 			'status' => 200,
-			'result' => $offers->toArray()
+			'result' => $offers->toArray(),
+			'total_count' => $offers->count()
 		]);
 	}
 
