@@ -49,6 +49,7 @@ class ApiController extends Controller
 			return response()->json(["status" => "error", "result" => "No city id"]);
 		}
 		
+		$result = [];
 		$cityId = $request->input("city_id");
 		$today = Carbon::now();
 
@@ -57,9 +58,20 @@ class ApiController extends Controller
 			$q->where('id', $cityId);	
 		})->where('date_end', '>=', $today->format('Y-m-d'))->get();
 
+		foreach ($offers as $offer) {
+			$result[] = [
+				'id' => $offer->id,
+				'organization_id' => $offer->organization_id,
+				'organization_name' => $offer->organization->name,
+				'organization_logo' => $offer->organization->logo,
+				'description' => $offer->description,
+				'image' => $offer->image,
+			];
+		}
+
 		return response()->json([
 			'status' => 200,
-			'result' => $offers->toArray(),
+			'result' => $result,
 			'total_count' => $offers->count()
 		]);
 	}
