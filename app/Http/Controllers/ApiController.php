@@ -498,7 +498,7 @@ class ApiController extends Controller
 					$query->where("category_id", $categoryId); 
 				});
 			})
-			->get(["id", "name"]);
+			->get(["id", "name", "logo"]);
 		
 		// init
 		$result = [];
@@ -507,6 +507,7 @@ class ApiController extends Controller
 			$result[] = [
 				'id' => $org->id,
 				'name' => $org->name,
+				'logo' => $org->logo,
 				'type' => isset($org->subscription) ? $org->subscription->type : 'none'
 			];
 		}
