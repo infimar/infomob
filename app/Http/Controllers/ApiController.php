@@ -248,7 +248,9 @@ class ApiController extends Controller
 		if ($noBranchesFound && $noCategoriesFound)
 		{
 			return response()->json([
-				'status' => 'notfound'
+				'query' => $query,
+				'city_id' => $city->id,
+				'status' => 'notfound',
 			]);
 		}
 		
@@ -257,7 +259,8 @@ class ApiController extends Controller
 				"result" => $result
 			]);
 	}
-	
+
+	// photos
 	public function getPhotos(Request $request)
 	{
 		if (!$request->has("branch_id"))
