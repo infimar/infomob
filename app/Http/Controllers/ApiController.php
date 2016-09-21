@@ -501,7 +501,7 @@ class ApiController extends Controller
 					$query->where("category_id", $categoryId); 
 				});
 			})
-			->get(["id", "name", "logo"]);
+			->get(["id", "name", "logo", "order"]);
 		
 		// init
 		$result = [];
@@ -511,11 +511,20 @@ class ApiController extends Controller
 				'id' => $org->id,
 				'name' => $org->name,
 				'logo' => $org->logo,
-				'type' => isset($org->subscription) ? $org->subscription->type : 'none'
+				'type' => isset($org->subscription) ? $org->subscription->type : 'none',
+				'order' => $org->order,
 			];
 		}
 
-		// sort
+		// sort by order
+		usort($result, function ($org1, $org2) 
+		{
+		    if ($org1['order'] == $org2['order']) return 0;
+
+		    return $org1['order'] < $org2['order'] ? -1 : 1;
+		});
+
+		// sort by type
 		usort($result, function ($org1, $org2) 
 		{
 		    if ($org1['type'] == $org2['type']) return 0;
