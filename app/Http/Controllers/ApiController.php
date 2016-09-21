@@ -568,8 +568,9 @@ class ApiController extends Controller
 			$city = City::findOrFail($cityId);
 			$categories = Category::published()
 				->where("parent_id", null)
+				->orderBy('order', 'DESC')
 				->orderBy("name", "ASC")
-				->get(["id", "name", "slug", "icon"]);
+				->get(["id", "name", "slug", "icon", "order"]);
 			
 			foreach ($categories as $category)
 			{					
