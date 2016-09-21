@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Subscription;
 
 class Organization extends Model
 {
@@ -15,6 +16,11 @@ class Organization extends Model
     public function branches()
     {
     	return $this->hasMany(Branch::class);
+    }
+
+    public function subscription()
+    {
+    	return $this->hasOne(Subscription::class);
     }
 
 

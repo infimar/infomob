@@ -115,6 +115,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function()
 
 	// Offers 
 	Route::resource('offers', 'OffersController');
+
+	// Subscriptions
+	Route::resource('subscriptions', 'SubscriptionsController');
 });
 
 /**

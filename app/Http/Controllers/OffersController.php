@@ -94,7 +94,7 @@ class OffersController extends InfomobController
 
         // delete btns
         $table->addColumn('action', '', function($model) {
-            return '<form action="' . route('admin.offers.destroy', ['id' => $model->id]) . '" method="POST">' . csrf_field() . method_field('DELETE') . '<input type="submit" class="btn btn-small btn-danger" value="Удалить"></form>';
+            return '<form action="' . route('admin.offers.destroy', ['id' => $model->id]) . '" method="POST">' . csrf_field() . method_field('DELETE') . '<input type="submit" class="sure btn btn-small btn-danger" value="Удалить"></form>';
         });
 
         JavaScript::put(['activeLink' => 'offers_index']);

@@ -2,9 +2,9 @@
 
 @section('content')
 
-<h1 class="page-header">Акции</h1>
+<h1 class="page-header">Подписки</h1>
 
-<a href="{{ route('admin.offers.create') }}" class="btn btn-lg btn-primary"><i class="fa fa-plus"></i> Добавить акцию</a>
+<a href="{{ route('admin.subscriptions.create') }}" class="btn btn-lg btn-primary"><i class="fa fa-plus"></i> Новая подписка</a>
 <br><br>
 
 <hr>
@@ -23,7 +23,7 @@
 @section('scripts_body')
 
 	$('.sure').click(function(e) {
-		var yesNo = confirm("Вы действительно хотите удалить эту акцию?");
+		var yesNo = confirm("Вы действительно хотите удалить эту подписку?");
 		if (yesNo == true) {
 			return true;
 		}

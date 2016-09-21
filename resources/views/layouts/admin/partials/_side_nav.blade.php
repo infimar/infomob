@@ -32,6 +32,13 @@
 
 <ul class="nav nav-sidebar">
   <li><a href="/admin/mediamanager">Медиа менеджер</a></li>
+  <li class="nav-divider"></li>
+  {{-- <li><a href="">One more nav</a></li>
+  <li><a href="">Another nav item</a></li> --}}
+</ul>
+
+<ul class="nav nav-sidebar">
+  <li id="subscriptions_index"><a href="/admin/subscriptions">Подписки</a></li>
   {{-- <li><a href="">One more nav</a></li>
   <li><a href="">Another nav item</a></li> --}}
 </ul>

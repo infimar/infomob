@@ -11,6 +11,7 @@ use App\Raion;
 use App\Branch;
 use App\Category;
 use App\Organization;
+use App\Subscription;
 use App\Offer;
 use DB;
 use Carbon\Carbon;
@@ -487,6 +488,7 @@ class ApiController extends Controller
 		
 		$organizations = Organization::published()
 			//->orderBy("name", "ASC")
+			->with('subscription')
 			->orderBy("order", "ASC")
 			->whereHas("branches", function ($query) use ($cityId, $categoryId) {
 				$query->whereHas("city", function ($query) use ($cityId) {
@@ -498,7 +500,25 @@ class ApiController extends Controller
 			})
 			->get(["id", "name"]);
 		
-		$result = $organizations->toArray();
+		// init
+		$result = [];
+		foreach ($organizations as $org)
+		{
+			$result[] = [
+				'id' => $org->id,
+				'name' => $org->name,
+				'type' => isset($org->subscription) ? $org->subscription->type : 'none'
+			];
+		}
+
+		// sort
+		usort($result, function ($org1, $org2) 
+		{
+		    if ($org1['type'] == $org2['type']) return 0;
+
+		    $points = Subscription::points();
+		    return $points[$org1['type']] > $points[$org2['type']] ? -1 : 1;
+		});
 		
 		if (count($result) <= 0) {
 			return response()->json(["status" => "notfound", "result" => "No organizations found"]);
