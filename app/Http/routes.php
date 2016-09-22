@@ -197,40 +197,49 @@ Route::group(['prefix' => 'api'], function()
 Route::get('/test/{minId?}', function($minId = 180346) {
 	$result = [];
 
-	// 180245
-	// 180346 - local
-	$phones = App\Phone::where('branch_id', '>=', $minId)->orderBy('number')->get();
-
-	$prevPhone = null;
-
-	foreach ($phones as $phone)
+	$branches = App\Branch::with('categories')->where('id', '>=', $minId)->get();
+	foreach ($branches as $branch)
 	{
-		if (empty($phone->number))
+		if (count($branch->categories) > 1)
 		{
-			$phone->delete();
-			continue;
+			$result[] = $branch->id;
 		}
-
-		if (is_null($prevPhone))
-		{
-			$prevPhone = $phone;
-			continue;
-		}
-
-		if ($prevPhone->number == $phone->number 
-			&& $prevPhone->code_operator == $phone->code_operator 
-			&& $prevPhone->branch_id == $phone->branch_id)
-		{
-			$phone->delete();
-			continue;
-		}
-
-		echo "Phone [" . $phone->id . "] - (" . $phone->code_operator . ") " . $phone->number . "<br>";
-
-		// update prevPhone
-		$prevPhone = $phone;
 	}
 
+	return response()->json($result);
 
-	// return response()->json($result);
+	// 180245
+	// 180346 - local
+	// $phones = App\Phone::where('branch_id', '>=', $minId)->orderBy('number')->get();
+
+	// $prevPhone = null;
+
+	// foreach ($phones as $phone)
+	// {
+	// 	if (empty($phone->number))
+	// 	{
+	// 		$phone->delete();
+	// 		continue;
+	// 	}
+
+	// 	if (is_null($prevPhone))
+	// 	{
+	// 		$prevPhone = $phone;
+	// 		continue;
+	// 	}
+
+	// 	if ($prevPhone->number == $phone->number 
+	// 		&& $prevPhone->code_operator == $phone->code_operator 
+	// 		&& $prevPhone->branch_id == $phone->branch_id)
+	// 	{
+	// 		$phone->delete();
+	// 		continue;
+	// 	}
+
+	// 	echo "Phone [" . $phone->id . "] - (" . $phone->code_operator . ") " . $phone->number . "<br>";
+
+	// 	// update prevPhone
+	// 	$prevPhone = $phone;
+	// }
+
 });
