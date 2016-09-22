@@ -221,7 +221,8 @@ Route::get('/test/{minId?}', function($minId = 180346) {
 			&& $prevPhone->code_operator == $phone->code_operator 
 			&& $prevPhone->branch_id == $phone->branch_id)
 		{
-			echo "*** SAME *** ";
+			$phone->delete();
+			continue;
 		}
 
 		echo "Phone [" . $phone->id . "] - (" . $phone->code_operator . ") " . $phone->number . "<br>";
