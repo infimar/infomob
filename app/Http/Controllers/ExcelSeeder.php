@@ -60,7 +60,7 @@ class ExcelSeeder extends Controller
     	// dd($input);
     	
     	// upload file first
-    	$destinationPath = public_path() . '/dosc/excels/';
+    	$destinationPath = public_path() . '/docs/excels/';
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         $file->move($destinationPath, $filename);
 
