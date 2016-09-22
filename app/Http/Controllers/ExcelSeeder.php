@@ -128,8 +128,11 @@ class ExcelSeeder extends Controller
     		// dd($phones);
 
     		// and socials
-    		$socials = $this->createSocials($item['socials'], $branch);
-    		// dd($socials);
+    		if (!empty($item['socials']) || !is_null($item['socials']))
+    		{
+    			$socials = $this->createSocials($item['socials'], $branch);
+    			// dd($socials);	
+    		}
     	}
 
     	DB::commit();
