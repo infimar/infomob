@@ -117,22 +117,11 @@ class ExcelSeeder extends Controller
     		$branch = $this->createBranch($item, $organization, $categoryId);
     		// dd($branch);
 
-			// attach to category
-			DB::table('branch_category')->insert([
-				'branch_id' => $branch->id,
-				'category_id' => $categoryId
-			]);
-
-    		// with phones
-    		$phones = $this->createPhones($item['contacts'], $branch);
-    		// dd($phones);
-
-    		// and socials
-    		if (!empty($item['socials']) || !is_null($item['socials']))
-    		{
-    			$socials = $this->createSocials($item['socials'], $branch);
-    			// dd($socials);	
-    		}
+  			// attach to category
+  			DB::table('branch_category')->insert([
+  				'branch_id' => $branch->id,
+  				'category_id' => $categoryId
+  			]);
     	}
 
     	DB::commit();
@@ -175,42 +164,53 @@ class ExcelSeeder extends Controller
    		try
    		{
    			// clear name
-			$name = str_replace("*", "", $info['name']);
+	      $name = str_replace("*", "", $info['name']);
 
-			// check for existence
+			  // check for existence
 	    	$branchInDb = Branch::whereName($name)->first();
 	    	if (!is_null($branchInDb) && $branchInDb->organization->id == $organization->id)
 	    	{
 	    		return $branchInDb;
 	    	}
 
-			// city
-			$city = City::where('name', $info['city'])->first();
-			if (is_null($city))
-			{
-				// wrong city, raise error
-				throw new Exception("Wrong city name: " . $info['city']);	
-			}
+  			// city
+  			$city = City::where('name', $info['city'])->first();
+  			if (is_null($city))
+  			{
+  				// wrong city, raise error
+  				throw new Exception("Wrong city name: " . $info['city']);	
+  			}
 
-			// create branch
-			$branch = Branch::create([
-				"organization_id" 	=> $organization->id,
-				"city_id"			=> $city->id,
-				"type" 				=> 'main',
-				"name" 				=> $name,
-				"description" 		=> $info['description'],
-				"address" 			=> $info['address'],
-				"post_index" 		=> '',
-				"email"				=> $info['email'],
-				"hits"				=> 0,
-				"lat"				=> '0.00',
-				"lng"				=> '0.00',
-				'pricingfile'		=> '',
-				'status'			=> 'published',
-				'working_hours'		=> $info['working_hours'],
-			]);
+  			// create branch
+  			$branch = Branch::create([
+  				"organization_id" 	=> $organization->id,
+  				"city_id"			=> $city->id,
+  				"type" 				=> 'main',
+  				"name" 				=> $name,
+  				"description" 		=> $info['description'],
+  				"address" 			=> $info['address'],
+  				"post_index" 		=> '',
+  				"email"				=> $info['email'],
+  				"hits"				=> 0,
+  				"lat"				=> '0.00',
+  				"lng"				=> '0.00',
+  				'pricingfile'		=> '',
+  				'status'			=> 'published',
+  				'working_hours'		=> $info['working_hours'],
+  			]);
 
-			return $branch;
+        // with phones
+        $phones = $this->createPhones($item['contacts'], $branch);
+        // dd($phones);
+
+        // and socials
+        if (!empty($item['socials']) || !is_null($item['socials']))
+        {
+          $socials = $this->createSocials($item['socials'], $branch);
+          // dd($socials);  
+        }
+
+			  return $branch;
    		}
    		catch (\Exception $e)
    		{

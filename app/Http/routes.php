@@ -191,3 +191,45 @@ Route::group(['prefix' => 'api'], function()
 	// TODO: remove before deployment
 	//Route::get('/seed', 'ApiController@seed');
 });
+
+
+
+Route::get('/test/{minId?}', function($minId = 180346) {
+	$result = [];
+
+	// 180245
+	// 180346 - local
+	$phones = App\Phone::where('branch_id', '>=', $minId)->orderBy('number')->get();
+
+	$prevPhone = null;
+
+	foreach ($phones as $phone)
+	{
+		if (empty($phone->number))
+		{
+			$phone->delete();
+			continue;
+		}
+
+		if (is_null($prevPhone))
+		{
+			$prevPhone = $phone;
+			continue;
+		}
+
+		if ($prevPhone->number == $phone->number 
+			&& $prevPhone->code_operator == $phone->code_operator 
+			&& $prevPhone->branch_id == $phone->branch_id)
+		{
+			echo "*** SAME *** ";
+		}
+
+		echo "Phone [" . $phone->id . "] - (" . $phone->code_operator . ") " . $phone->number . "<br>";
+
+		// update prevPhone
+		$prevPhone = $phone;
+	}
+
+
+	// return response()->json($result);
+});
