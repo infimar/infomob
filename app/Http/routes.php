@@ -120,6 +120,18 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function()
 	Route::resource('subscriptions', 'SubscriptionsController');
 });
 
+
+/**
+ * Seeder
+ */
+Route::group(['prefix' => 'seeders', 'middleware' => 'auth'], function()
+{
+	Route::get('/excel', 'ExcelSeeder@index');
+	Route::post('/excel/seed', 'ExcelSeeder@seed')->name('seeders.excel.seed');
+});
+
+
+
 /**
  * Optimizer
  */
