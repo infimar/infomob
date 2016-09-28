@@ -18,6 +18,8 @@ class InfomobController extends Controller
     protected $categoryId;
     protected $category;
 
+    protected $perPage = 25;
+
 	public function __construct(Request $request)
     {
         // $request->session()->forget('city_id');

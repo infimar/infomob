@@ -104,6 +104,11 @@ body {
   border-radius: 50%;
 }
 
+
+#js-data-organizations-ajax {
+  width: 300px;
+}
+
 #admin_citypicker {
   width: 150px;
 }
@@ -122,7 +127,7 @@ body {
   font-size: 16px;
 }
 
-#div_admin_citypicker, #div_organization_citypicker,  #div_admin_topten {
+#div_admin_citypicker, #div_organization_citypicker, #div_admin_organization_search, #div_admin_topten {
   float: left;
   margin-left: 20px;
   line-height: 59px;

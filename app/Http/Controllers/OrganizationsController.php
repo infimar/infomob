@@ -15,6 +15,7 @@ use JavaScript;
 use Flash;
 use DB;
 use File;
+use Debugbar;
 
 class OrganizationsController extends AdminController
 {
@@ -28,6 +29,7 @@ class OrganizationsController extends AdminController
     	$city = $this->city;
         $category = $this->category;
 
+        Debugbar::startMeasure('organizations_fetch','Time for fetching organizations - ' . $this->perPage);
         $organizations = Organization::orderBy("id", "DESC")
         	->whereHas("branches", function($query) use ($city, $category) 
         	{
@@ -36,57 +38,12 @@ class OrganizationsController extends AdminController
                     $q->where("category_id", $category->id);
                 });
         	})
-        	->get();
+            ->orderBy('created_at', 'DESC')
+        	->paginate($this->perPage);
+        Debugbar::stopMeasure('organizations_fetch');    
 
-        $ids = [];
-        foreach ($organizations as $organization)
-        {
-            $ids[] = $organization->id;
-        }
-
-        $toptens = DB::table('toptens')
-            ->where("city_id", $city->id)
-            ->where('category_id', $category->id)
-            ->whereIn('organization_id', $ids)
-            ->get();
-        
-        $topten_map = [];
-        foreach ($toptens as $key => $topten) 
-        {
-            $topten_map[$topten->organization_id] = true;
-        }
-
-        $count = [];
-        $catIds = [];
-        $categories = Category::where("parent_id", "!=", null)->get();
-        foreach ($categories as $category)
-        {
-            $catIds[] = $category->id;
-            $count[$category->id] = 0;
-        }
-        // dd($catIds);
-
-        $branches = Branch::where("city_id", $city->id)
-            ->with('categories')
-            ->whereHas('categories', function($q) use ($catIds)
-            {
-                $q->whereIn("category_id", $catIds);
-            })->get(['id', 'city_id']);
-        
-        foreach ($branches as $key => $branch) 
-        {
-            foreach ($branch->categories as $category)
-            {
-                if (isset($count[$category->id]))
-                {
-                    $count[$category->id] += 1;
-                }
-            }
-        }
-        // dd($count);
-        
         JavaScript::put(['activeLink' => 'organizations_index']);
-        return view('organizations.admin.index', compact("organizations", "topten_map", 'count'));
+        return view('organizations.admin.index', compact("organizations"));
     }
 
     /**

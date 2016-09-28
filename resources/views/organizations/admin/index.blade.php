@@ -10,6 +10,11 @@
 <hr>
 <div class="row">
 	<div class="col-md-12">
+		{{-- Organization search --}}
+		<div id="div_admin_organization_search">
+			<select id="js-data-organizations-ajax" name="organization_id" class=""></select>
+		</div>
+
 		{{-- City Picker --}}
 		@if (isset($chosenCity))
 		<div id="div_admin_citypicker">
@@ -32,23 +37,16 @@
 	            	{{-- <option value="0">Все категории</option> --}}
 	            	<optgroup label="{{ $section }}">
 						@foreach ($categories as $key => $name)
-							@if ($count[$key] > 0)
 			                <option value="{{ $key }}"
 			                	@if ($chosenCategory->id == $key) selected @endif 
 			                >
-			                    {{ $name }} ({{ $count[$key] }}) 
+			                    {{ $name }}
 			                </option>
-			                @endif
 		                @endforeach
 	                </optgroup>
 	            @endforeach
 	        </select>
 	    </div>
-
-		{{-- TOP Organizations --}}
-		<div id="div_admin_topten">
-			<a href="/admin/topten" class="btn btn-default"><i class="fa fa-star"></i> ТОП организации</a>
-		</div>
 	</div>
 </div>
 <hr>
@@ -56,7 +54,7 @@
 <div class="row">
 	<div class="col-md-12">
 		
-		<table id="myTable" class="display" cellspacing="0" width="100%">
+		<table id="myTable" class="table table-stripped table-hover table-condensed" cellspacing="0" width="100%">
 			<thead>
 				<tr>
 					<th>NAME</th>
@@ -69,13 +67,13 @@
 			<tbody>
 				@foreach ($organizations as $organization)
 					<tr>
-						<td>
+						<td width="33%">
 							<a href="/admin/organizations/{{ $organization->id }}/edit">
 								{{ $organization->name }}
 							</a>
 						</td>
 						<td>{{ $organization->description }}</td>
-						<td width="120px">
+						<td width="160px">
 							<img src="{{ asset("images/imageloader.gif") }}" class="imageLoader gone" data-id="{{ $organization->id }}">
 							
 							<span data-id="{{ $organization->id }}" data-model="organization" 
@@ -97,14 +95,13 @@
 
 							<a href="/admin/organizations/{{ $organization->id }}/edit#tableBranches" class="btn btn-sm btn-default" title="Филиалы"><i class="fa fa-bars"></i></a>
 							<a href="/admin/organizations/{{ $organization->id }}/createbranch" class="btn btn-sm btn-default" title="Добавить филиал"><i class="fa fa-plus"></i></a>
-							
-							<a href="#" data-id="{{ $organization->id }}" @if (isset($topten_map[$organization->id])) class="btn btn-sm btn-warning btn_topIt" @else class="btn btn-sm btn-default btn_topIt" @endif title="В ТОП!"><i class="fa fa-star"></i></a>
 						</td>
 					</tr>
 				@endforeach
 			</tbody>
 		</table>
-
+		
+		{{ $organizations->links() }}
 	</div>
 </div>
 
@@ -113,36 +110,54 @@
 
 
 @section('scripts_body')
-	$('#myTable').DataTable({
-		paging: true,
-		aaSorting:[]
-	});
+// TODO: DRY!
+// ORGANIZATIONS
+function formatOrganization (org) {
+  	var markup = org.name;
 
-	$('body').on('click', 'a.btn_topIt', function(e) {
-		e.preventDefault();
+  	return markup;
+}
 
-		var id = $(this).data('id');
-		var cityId = chosenCity.id;
-		var categoryId = chosenCategory.id;
+function formatOrganizationSelection (org) {
+	return org.name;
+}
 
-		var data = {
-			id: id,
-			cityId: cityId,
-			categoryId: categoryId
-		};
+var select2 = $("#js-data-organizations-ajax");
 
-		//console.log(data);
+$("#js-data-organizations-ajax").select2({
+  	placeholder: 'Выберите организацию',
+  	ajax: {
+	    url: "{{ route('ajax.organizations.by_name') }}",
+	    dataType: 'json',
+	    delay: 250,
+	    data: function (params) {
+	  		return {
+	        	q: params.term, // search term
+	        	page: params.page
+	      	};
+	    },
+	    processResults: function (data, params) {
+	      // parse the results into the format expected by Select2
+	      // since we are using custom formatting functions we do not need to
+	      // alter the remote JSON data, except to indicate that infinite
+	      // scrolling can be used
+	     	params.page = params.page || 1;
 
-		$.post('/ajax/organizations/topten', { data: data }, function(response) {
-			//console.log(response);
-
-			if (response.code == "added") {
-				$('.btn_topIt[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-warning btn_topIt');
-			} else if (response.code == "error") {
-				alert(response.msg);
-			} else {
-				$('.btn_topIt[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-default btn_topIt');
-			}
-		});
-	});
+	      	return {
+	        	results: data.items,
+	        	pagination: {
+	          		more: (params.page * 30) < data.total_count
+	        	}
+	      	};
+	    },
+	    cache: true,
+  	},
+  	minimumInputLength: 2,
+  	escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+  	templateResult: formatOrganization, // omitted for brevity, see the source of this page
+  	templateSelection: formatOrganizationSelection // omitted for brevity, see the source of this page
+}).on("select2:select", function(e) { 
+   var id = $(this).val();
+   location.href = "/admin/organizations/" + id + "/edit";
+});
 @stop
