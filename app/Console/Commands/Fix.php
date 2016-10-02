@@ -123,7 +123,7 @@ class Fix extends Command
     {
         $path = public_path() . "/data/";
         $files = File::allFiles($path);
-        $output = public_path() . '/gisphones.txt';
+        // $output = public_path() . '/gisphones.txt';
 
         $inc = 0;
         $total = count($files);
@@ -188,7 +188,7 @@ class Fix extends Command
                         }
 
                         // type
-                        $type = ($contact->type == 'fax') ? 'fax' : $type;
+                        if ($contact->type == 'fax') $type = 'fax';
 
                         // append
                         $phones[] = [
