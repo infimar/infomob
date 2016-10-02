@@ -130,6 +130,9 @@ class Fix extends Command
         $totalOrgs = 0;
         $bar = $this->output->createProgressBar($total);
 
+        $shortNumber = false;
+        $type = $text = $code = $number = $fp = $lp = $fd = $sd = '';
+
         foreach ($files as $key => $file)
         {
             $inc += 1;
@@ -146,9 +149,6 @@ class Fix extends Command
                     foreach ($contactGroup->contacts as $contact)
                     {
                         if (!in_array($contact->type, ['phone', 'fax'])) continue;
-
-                        $shortNumber = false;
-                        $type = $contact->type;
 
                         // if it is full number
                         if (mb_strpos($contact->text, '+7') !== false) 
