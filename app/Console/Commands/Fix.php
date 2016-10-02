@@ -6,6 +6,9 @@ use Illuminate\Console\Command;
 
 use DB;
 use File;
+use App\Organization;
+use App\Branch;
+use App\Phone;
 
 class Fix extends Command
 {
@@ -45,6 +48,10 @@ class Fix extends Command
 
         switch ($action) 
         {
+            case 'gisphones':
+                $this->gisphones();
+                break;
+
             case 'orgs':
                 $this->orgs(50000);
                 break;
@@ -109,6 +116,171 @@ class Fix extends Command
         $time_end = microtime(true);
         $this->info("Done in " . ($time_end - $time_start) . " seconds");
     }
+
+
+
+    private function gisphones()
+    {
+        $path = public_path() . "/data/";
+        $files = File::allFiles($path);
+        $output = public_path() . '/gisphones.txt';
+
+        $inc = 0;
+        $total = count($files);
+        $totalOrgs = 0;
+        $bar = $this->output->createProgressBar($total);
+
+        foreach ($files as $key => $file)
+        {
+            $inc += 1;
+            $data = json_decode(File::get($file));
+
+            foreach ($data->result->items as $item)
+            {
+                $phones = [];
+
+                // get phones from data
+                foreach ($item->contact_groups as $contactGroup)
+                {
+                    foreach ($contactGroup->contacts as $contact)
+                    {
+                        if (!in_array($contact->type, ['phone', 'fax'])) continue;
+
+                        $shortNumber = false;
+
+                        // if it is full number
+                        if (mb_strpos($contact->text, '+7') !== false) 
+                        {
+                            // work
+                            if (mb_strpos($contact->text, '(') !== false)
+                            {
+                                $type = 'work';
+
+                                $text = str_replace('‒', '', $contact->text);
+
+                                // get last )
+                                $fp = mb_strpos($text, '(');
+                                $lp = mb_strpos($text, ')');
+
+                                $code = substr($text, $fp + 1, $lp - $fp - 1);
+                                $number = substr($text, $lp + 1);
+                            }
+                            // mobile
+                            else
+                            {
+                                $type = 'mobile';
+
+                                $fd = mb_strpos($contact->text, '‒');
+                                $sd = mb_strpos($contact->text, '‒', $fd + 1);
+
+                                $code = mb_substr($contact->text, $fd + 1, $sd - $fd - 1);
+
+                                $text = mb_substr($contact->text, $sd + 1);
+                                $number = str_replace('‒', '', $text);
+                            }
+                        }
+                        // short number
+                        else
+                        {
+                            $shortNumber = true;
+                            $code = 'short_numb';
+                            $number = $contact->value;
+                        }
+
+                        // type
+                        $type = ($contact->type == 'fax') ? 'fax' : $type;
+
+                        // append
+                        $phones[] = [
+                            'origin' => $contact->text,
+                            'short_number' => $shortNumber,
+                            'type' => $type,
+                            'value' => $contact->value,
+                            'text' => $text,
+                            'code' => trim($code),
+                            'number' => trim($number),
+                        ];
+
+                        // File::append($output, $contact->text . " - " . $type . ' (' . $code . ') ' . $number . "\n");
+                    }
+                }
+                // dd($phones);
+
+                // look for organizations in db
+                $foundOrg = Organization::select(['id', 'name'])
+                    ->whereName($item->name)
+                    ->whereHas('branches', function($query) {
+                        $query->whereCityId(2);
+                    })
+                    ->first();
+                if (!$foundOrg) { $this->info("Org not found"); continue; }
+
+                $branch = Branch::whereOrganizationId($foundOrg->id)->select('id', 'organization_id')->first();
+                if (!$branch) { $this->info("Branch not found"); continue; }
+
+                $phonesArr = [];
+                $phonesDB = Phone::whereBranchId($branch->id)->get();
+                // dd($phonesDB->toArray());
+                foreach ($phonesDB as $phone)
+                {
+                    $phonesArr[] = [
+                        'id' => $phone->id,
+                        'type' => $phone->code_operator,
+                        'value' => $phone->code_country . $phone->code_operator . $phone->number,
+                        'text' => $phone->code_country . ' (' . $phone->code_operator . ') ' . $phone->number
+                    ];
+                }
+
+                // dd([
+                //     'gis' => $phones,
+                //     'db' => $phonesArr
+                // ]);
+
+                // compare phones
+                $length = count($phones);
+                $lengthDB = count($phonesArr);
+
+                for ($i = 0; $i < $length; $i++)
+                {
+                    // if (strpos($phonesArr[$i]['value'], $phones[$i]['number']))
+                    // {
+                    //     // $this->info('same: ' . $phones[$i]['value'] . ' - ' . $phonesArr[$j]['value']);
+                    // }
+                    
+                    if (!isset($phonesArr[$i])) continue;
+                    
+                    $updatedPhone = Phone::find($phonesArr[$i]['id']);
+                    $updatedPhone->type = $phones[$i]['type'];
+                    $updatedPhone->code_operator = $phones[$i]['code'];
+                    $updatedPhone->number = $phones[$i]['number'];
+                    $updatedPhone->save();
+
+                    $content = 'id: ' . $updatedPhone->id . ' - ' . $updatedPhone->type . ' - ' . $updatedPhone->code_country . ' (' . $updatedPhone->code_operator . ') ' . $updatedPhone->number . "\n";
+
+                    // $this->info('gis: ' . $phones[$i]['origin'] . ' | ' . $content);
+                    // File::append($output, $content);
+                }
+
+                // dd("Done");
+            }
+            
+            $totalOrgs += $data->result->total;
+
+            $this->info($total - $inc . " left. Orgs count: " . $totalOrgs);
+            $bar->advance();
+        }
+
+        $bar->finish();
+    }
+
+
+
+
+
+
+
+
+
 
     private function clearBranches()
     {

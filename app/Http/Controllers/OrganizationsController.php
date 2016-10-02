@@ -29,7 +29,7 @@ class OrganizationsController extends AdminController
     	$city = $this->city;
         $category = $this->category;
 
-        Debugbar::startMeasure('organizations_fetch','Time for fetching organizations - ' . $this->perPage);
+        // Debugbar::startMeasure('organizations_fetch','Time for fetching organizations - ' . $this->perPage);
         $organizations = Organization::orderBy("id", "DESC")
         	->whereHas("branches", function($query) use ($city, $category) 
         	{
@@ -40,7 +40,7 @@ class OrganizationsController extends AdminController
         	})
             ->orderBy('created_at', 'DESC')
         	->paginate($this->perPage);
-        Debugbar::stopMeasure('organizations_fetch');    
+        // Debugbar::stopMeasure('organizations_fetch');    
 
         JavaScript::put(['activeLink' => 'organizations_index']);
         return view('organizations.admin.index', compact("organizations"));
