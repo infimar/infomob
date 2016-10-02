@@ -148,6 +148,7 @@ class Fix extends Command
                         if (!in_array($contact->type, ['phone', 'fax'])) continue;
 
                         $shortNumber = false;
+                        $type = $contact->type;
 
                         // if it is full number
                         if (mb_strpos($contact->text, '+7') !== false) 
