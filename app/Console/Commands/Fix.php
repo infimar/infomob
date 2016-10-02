@@ -266,7 +266,7 @@ class Fix extends Command
             
             $totalOrgs += $data->result->total;
 
-            $this->info($total - $inc . " left. Orgs count: " . $totalOrgs);
+            $this->info($total - $inc . " left. Organizations count: " . $totalOrgs);
             $bar->advance();
         }
 
