@@ -134,6 +134,7 @@ class Fix extends Command
         {
             $inc += 1;
             $data = json_decode(File::get($file));
+            dd($data);
 
             foreach ($data->result->items as $item)
             {
