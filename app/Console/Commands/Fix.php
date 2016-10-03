@@ -121,7 +121,7 @@ class Fix extends Command
 
     private function gisphones()
     {
-        $cityId = 3;
+        // $cityId = 3;
         $path = public_path() . "/data/";
         $files = File::allFiles($path);
         // $output = public_path() . '/gisphones.txt';
@@ -213,7 +213,7 @@ class Fix extends Command
                 $foundOrg = Organization::select(['id', 'name'])
                     ->whereName($item->name)
                     ->whereHas('branches', function($query) {
-                        $query->whereCityId($cityId);
+                        $query->whereCityId(3);
                     })
                     ->first();
                 if (!$foundOrg)
