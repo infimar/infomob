@@ -121,6 +121,7 @@ class Fix extends Command
 
     private function gisphones()
     {
+        $cityId = 3;
         $path = public_path() . "/data/";
         $files = File::allFiles($path);
         // $output = public_path() . '/gisphones.txt';
@@ -212,13 +213,21 @@ class Fix extends Command
                 $foundOrg = Organization::select(['id', 'name'])
                     ->whereName($item->name)
                     ->whereHas('branches', function($query) {
-                        $query->whereCityId(2);
+                        $query->whereCityId($cityId);
                     })
                     ->first();
-                if (!$foundOrg) { $this->info("Org not found"); continue; }
+                if (!$foundOrg)
+                { 
+                    // $this->info("Org not found"); 
+                    continue; 
+                }
 
                 $branch = Branch::whereOrganizationId($foundOrg->id)->select('id', 'organization_id')->first();
-                if (!$branch) { $this->info("Branch not found"); continue; }
+                if (!$branch) 
+                { 
+                    // $this->info("Branch not found"); 
+                    continue; 
+                }
 
                 $phonesArr = [];
                 $phonesDB = Phone::whereBranchId($branch->id)->get();
