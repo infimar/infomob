@@ -300,6 +300,8 @@ class ApiController extends Controller
 		}
 		
 		$branchId = $request->input("branch_id");
+		$agent = $request->get('agent', 'www');
+		$referer = $request->get('referer', $request->header('User-Agent'));
 		
 		try
 		{
@@ -339,7 +341,6 @@ class ApiController extends Controller
 				$categoryLabel .= "\n";
 			}
 
-			
 			// other branches?
 			$otherBranches = Branch::where("organization_id", $branch->organization->id)
 				->with([
@@ -359,6 +360,9 @@ class ApiController extends Controller
 					$phone->code_operator = "";
 				}
 			}
+
+			// inc hit
+			$branch->addHit($request, $agent, $referer);
 
 			return response()->json([
 				"status" => "success",

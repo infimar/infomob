@@ -2,7 +2,9 @@
 
 namespace App;
 
+use App\Hit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 class Branch extends Model
 {
@@ -46,6 +48,11 @@ class Branch extends Model
 		return $this->belongsToMany('App\Category', 'branch_category', 'branch_id', 'category_id');
 	}
 
+	public function hits()
+	{
+		return $this->hasMany(Hit::class);
+	}
+
 
 	/**
 	 * Scopes
@@ -74,5 +81,21 @@ class Branch extends Model
 	public function scopeArchived($query)
 	{
 		return $query->where("status", "archived");
+	}
+
+	/**
+	 * Methods
+	 */
+	public function addHit(Request $request, $agent, $referer)
+	{
+		$hit = new Hit([
+			'branch_id' => $this->id,
+			'user_id' 	=> 1,				// user id 
+			'ip_addr' 	=> $request->ip(), 
+			'agent' 	=> $agent, 
+			'referer' 	=> $referer
+		]);
+
+		$this->hits()->save($hit);
 	}
 }
