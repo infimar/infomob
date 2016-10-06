@@ -1,5 +1,7 @@
 <?php
 
+use GuzzleHttp\Client;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -195,18 +197,23 @@ Route::group(['prefix' => 'api'], function()
 
 
 Route::get('/test/{minId?}', function($minId = 180346) {
-	$result = [];
+	$client = new Client();
+	$body = $client->get('http://api.infomob.local/branch?branch_id=88')->getBody();
+	$data = json_decode($body);
+	dd($data->result);
 
-	$branches = App\Branch::with('categories')->where('id', '>=', $minId)->get();
-	foreach ($branches as $branch)
-	{
-		if (count($branch->categories) > 1)
-		{
-			$result[] = $branch->id;
-		}
-	}
+	// $result = [];
 
-	return response()->json($result);
+	// $branches = App\Branch::with('categories')->where('id', '>=', $minId)->get();
+	// foreach ($branches as $branch)
+	// {
+	// 	if (count($branch->categories) > 1)
+	// 	{
+	// 		$result[] = $branch->id;
+	// 	}
+	// }
+
+	// return response()->json($result);
 
 	// 180245
 	// 180346 - local

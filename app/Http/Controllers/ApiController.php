@@ -409,7 +409,7 @@ class ApiController extends Controller
 			if ($noCategory || $categoryId == 0)
 			{
 				$branches = Branch::published()
-					->orderBy("name", "ASC")
+					->orderBy("type", "ASC")
 					->where('organization_id', $organization->id)
 					->whereHas("city", function ($query) use ($cityId) {
 						$query->where("id", $cityId);
@@ -422,7 +422,7 @@ class ApiController extends Controller
 			else
 			{
 				$branches = Branch::published()
-					->orderBy("name", "ASC")
+					->orderBy("type", "ASC")
 					->where("organization_id", $organization->id)
 					->whereHas("city", function ($query) use ($cityId) {
 						$query->where("id", $cityId);
