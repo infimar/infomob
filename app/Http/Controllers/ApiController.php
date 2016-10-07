@@ -70,7 +70,7 @@ class ApiController extends Controller
 				$q->where('id', $cityId);	
 			})
 			->where('date_end', '>=', $today->format('Y-m-d'))
-			->orderBy('id', 'DESC')
+			->orderBy('updated_at', 'DESC')
 			->get();
 
 		foreach ($offers as $offer) {
