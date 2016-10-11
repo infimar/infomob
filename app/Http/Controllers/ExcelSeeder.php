@@ -161,7 +161,7 @@ class ExcelSeeder extends Controller
 	    	$organization = Organization::create([
 	    		"name" 			   => $name,
 	    		"type" 			   => 'custom',
-			  	"description"  => $description,
+			  	"description"  => is_null($description) ? "" : $description,
 			  	'status' 		   => 'published'
 		    ]);
 
