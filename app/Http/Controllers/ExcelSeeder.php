@@ -128,10 +128,18 @@ class ExcelSeeder extends Controller
     		// dd($branch);
 
   			// attach to category
-  			DB::table('branch_category')->insert([
-  				'branch_id'   => $branch->id,
-  				'category_id' => $categoryId
-  			]);
+        $exists = DB::table('branch_category')
+          ->where('branch_id', $branch->id)
+          ->where('category_id', $categoryId)
+          ->first();
+
+        if (is_null($exists))
+        {
+          DB::table('branch_category')->insert([
+            'branch_id'   => $branch->id,
+            'category_id' => $categoryId
+          ]);
+        }
     	}
 
     	DB::commit();
