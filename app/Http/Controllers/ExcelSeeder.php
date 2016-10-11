@@ -184,7 +184,7 @@ class ExcelSeeder extends Controller
 			  // check for existence
 	    	$branchInDb = Branch::
                         whereName($name)
-                        whereOrganizationId($organization->id)
+                        ->whereOrganizationId($organization->id)
                         ->first();
 	    	if (!is_null($branchInDb) && $branchInDb->organization->id == $organization->id)
 	    	{
