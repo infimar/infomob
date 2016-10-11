@@ -61,11 +61,11 @@ class ExcelSeeder extends Controller
     	
     	// upload file first
     	$destinationPath = public_path() . '/docs/excels/';
-        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-        $file->move($destinationPath, $filename);
+      $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+      $file->move($destinationPath, $filename);
 
-        // read data
-        $data = [];
+      // read data
+      $data = [];
     	Excel::load($destinationPath . $filename, function($reader) use (&$data) 
     	{
     		$items = [];
@@ -73,20 +73,22 @@ class ExcelSeeder extends Controller
     		$result = $reader->get();
     		// dd($result);
 
-    		foreach ($result as $key => $result) 
+    		foreach ($result as $key => $res) 
     		{
+          // dd($res);
+          
     			// exit when rows ended
-    			if (is_null($result['gorod']) || empty($result['gorod'])) break;
+    			if (is_null($res['gorod']) || empty($res['gorod'])) break;
 
     			$items[] = [
-    				'name' => $result['nazvanie_organizatsii'],
-    				'city' => $result['gorod'],
-    				'description' => $result['opisanie_deyatelnosti'],
-    				'address' => $result['adres'],
-    				'email' => $result['email'],
-    				'working_hours' => $result['chasy_rabota'],
-    				'contacts' => $result['telefony'],
-    				'socials' => $result['vebsayt_sots_seti']
+    				'name'          => $res['nazvanie_organizatsii'],
+    				'city'          => $res['gorod'],
+    				'description'   => $res['opisanie_deyatelnosti'],
+    				'address'       => $res['adres'],
+    				'email'         => $res['email'],
+    				'working_hours' => $res['chasy_rabota'],
+    				'contacts'      => $res['telefony'],
+    				'socials'       => $res['vebsayt_sots_seti']
     			];
     		}
 
@@ -109,17 +111,25 @@ class ExcelSeeder extends Controller
 
     	foreach ($data as $item)
     	{
+        // city
+        $city = City::where('name', $item['city'])->first();
+        if (is_null($city))
+        {
+          // wrong city, raise error
+          throw new Exception("Wrong city name: " . $item['city']); 
+        }
+
     		// create organization
-    		$organization = $this->createOrganization($item['name'], $item['description']);
+    		$organization = $this->createOrganization($item['name'], $item['description'], $city);
     		// dd($organization);
 
     		// create branch
-    		$branch = $this->createBranch($item, $organization, $categoryId);
+    		$branch = $this->createBranch($item, $organization, $categoryId, $city);
     		// dd($branch);
 
   			// attach to category
   			DB::table('branch_category')->insert([
-  				'branch_id' => $branch->id,
+  				'branch_id'   => $branch->id,
   				'category_id' => $categoryId
   			]);
     	}
@@ -128,7 +138,7 @@ class ExcelSeeder extends Controller
     }
 
 
-    private function createOrganization($name, $description)
+    private function createOrganization($name, $description, $city)
    	{
    		try
    		{
@@ -136,7 +146,12 @@ class ExcelSeeder extends Controller
 	    	$name = str_replace("*", "", $name);
 
 	    	// check for existence
-	    	$organizationInDb = Organization::whereName($name)->first();
+	    	$organizationInDb = Organization::whereName($name)
+                            ->whereHas('branches', function($query) use ($city) {
+                              $query->where('city_id', $city->id);
+                            })
+                            ->first();
+
 	    	if (!is_null($organizationInDb))
 	    	{
 	    		return $organizationInDb;
@@ -144,10 +159,10 @@ class ExcelSeeder extends Controller
 
 	    	// create organization to get its ID
 	    	$organization = Organization::create([
-	    		"name" 			=> $name,
-	    		"type" 			=> 'custom',
-			  	"description" 	=> $description,
-			  	'status' 		=> 'published'
+	    		"name" 			   => $name,
+	    		"type" 			   => 'custom',
+			  	"description"  => $description,
+			  	'status' 		   => 'published'
 		    ]);
 
 		    return $organization;
@@ -159,7 +174,7 @@ class ExcelSeeder extends Controller
    	}
 
    	// createBranch($data, $organization)
-   	private function createBranch($info, $organization, $categoryId)
+   	private function createBranch($info, $organization, $categoryId, $city)
    	{
    		try
    		{
@@ -173,40 +188,32 @@ class ExcelSeeder extends Controller
 	    		return $branchInDb;
 	    	}
 
-  			// city
-  			$city = City::where('name', $info['city'])->first();
-  			if (is_null($city))
-  			{
-  				// wrong city, raise error
-  				throw new Exception("Wrong city name: " . $info['city']);	
-  			}
-
   			// create branch
   			$branch = Branch::create([
-  				"organization_id" 	=> $organization->id,
-  				"city_id"			=> $city->id,
-  				"type" 				=> 'main',
-  				"name" 				=> $name,
-  				"description" 		=> $info['description'],
-  				"address" 			=> $info['address'],
-  				"post_index" 		=> '',
-  				"email"				=> $info['email'],
-  				"hits"				=> 0,
-  				"lat"				=> '0.00',
-  				"lng"				=> '0.00',
-  				'pricingfile'		=> '',
-  				'status'			=> 'published',
-  				'working_hours'		=> $info['working_hours'],
+  				"organization_id" => $organization->id,
+  				"city_id"			    => $city->id,
+  				"type" 				    => 'main',
+  				"name" 				    => $name,
+  				"description" 		=> is_null($info['description']) ? "" : $info['description'],
+  				"address" 			  => is_null($info['address']) ? "" : $info['address'],
+  				"post_index" 		  => '',
+  				"email"				    => is_null($info['email']) ? "" : $info['email'],
+  				"hits"				    => 0,
+  				"lat"				      => '0.00',
+  				"lng"				      => '0.00',
+  				'pricingfile'		  => '',
+  				'status'			    => 'published',
+  				'working_hours'   => is_null($info['working_hours']) ? "" : $info['working_hours'],
   			]);
 
         // with phones
-        $phones = $this->createPhones($item['contacts'], $branch);
+        $phones = $this->createPhones($info['contacts'], $branch);
         // dd($phones);
 
         // and socials
-        if (!empty($item['socials']) || !is_null($item['socials']))
+        if (!empty($info['socials']) || !is_null($info['socials']))
         {
-          $socials = $this->createSocials($item['socials'], $branch);
+          $socials = $this->createSocials($info['socials'], $branch);
           // dd($socials);  
         }
 
@@ -235,25 +242,30 @@ class ExcelSeeder extends Controller
    			// if no parenthesises
    			if ($firstParenthesis == false && $lastParenthesis == false)
    			{
-   				$codeCountry = "7";
-   				$codeOperator = "7252";
-   				$number = $item;
-   				$type = "work";
+   				// $codeCountry = "7";
+   				// $codeOperator = "7252";
+   				// $number = $item;
+   				// $type = "work";
+
+          $codeCountry = "7";
+          $codeOperator = "short_numb";
+          $number = $item;
+          $type = "work";
    			}
    			else
    			{
    				// build phones
-	   			$codeCountry = substr($item, 0, $firstParenthesis);
+	   			$codeCountry = "+" . substr($item, 0, $firstParenthesis);
 	   			$codeOperator = substr($item, $firstParenthesis + 1, $lastParenthesis - $firstParenthesis - 1);
 	   			$number = substr($item, $lastParenthesis + 1);
 	   			$type = strlen($codeOperator) >= 4 ? "work" : "mobile";
    			}
    			
    			$phones[] = $this->createPhone([
-   				'type' => $type,
-   				'code_country' => "+" . $codeCountry,
-   				'code_operator' => $codeOperator,
-   				'number' => $number
+   				'type'           => $type,
+   				'code_country'   => $codeCountry,
+   				'code_operator'  => $codeOperator,
+   				'number'         => $number
    			], $branch);
    		}
 
@@ -266,11 +278,11 @@ class ExcelSeeder extends Controller
   		try
    		{
    			$phone = Phone::create([
-				"branch_id"			=> $branch->id,
-				"type"				=> $info['type'],
+				"branch_id"			  => $branch->id,
+				"type"				    => $info['type'],
 				"code_country"		=> $info['code_country'],
 				"code_operator" 	=> $info['code_operator'],
-				"number" 			=> $info['number'],
+				"number" 			    => $info['number'],
 				"contact_person"	=> ''
 			]);
 
@@ -302,9 +314,9 @@ class ExcelSeeder extends Controller
   		try
    		{
    			$social = Social::create([
-  				"branch_id"			=> $branch->id,
-  				"type"				=> 'website',
-  				"name"				=> $info,
+  				"branch_id"			  => $branch->id,
+  				"type"				    => 'website',
+  				"name"				    => mb_strtolower($info),
   				"contact_person"	=> ''
   			]);
 
