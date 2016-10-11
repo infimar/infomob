@@ -182,7 +182,10 @@ class ExcelSeeder extends Controller
 	      $name = str_replace("*", "", $info['name']);
 
 			  // check for existence
-	    	$branchInDb = Branch::whereName($name)->first();
+	    	$branchInDb = Branch::
+                        whereName($name)
+                        whereOrganizationId($organization->id)
+                        ->first();
 	    	if (!is_null($branchInDb) && $branchInDb->organization->id == $organization->id)
 	    	{
 	    		return $branchInDb;
