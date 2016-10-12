@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-
+use App\Branch;
+use App\City;
+use App\Organization;
+use App\Phone;
 use DB;
 use File;
-use App\Organization;
-use App\Branch;
-use App\Phone;
+use Illuminate\Console\Command;
 
 class Fix extends Command
 {
@@ -108,6 +108,10 @@ class Fix extends Command
                 $this->clearBranches();
                 break;
 
+            case 'removeCity':
+                $this->removeCity();
+                break;
+
             default:
                 $this->info("Wrong action name");
                 break;
@@ -117,6 +121,53 @@ class Fix extends Command
         $this->info("Done in " . ($time_end - $time_start) . " seconds");
     }
 
+
+    private function removeCity()
+    {
+        $cityId = 4;
+
+        try
+        {
+            $city = City::findOrFail($cityId);
+            
+            $total = Branch::where("city_id", $city->id)->count();
+            $bar = $this->output->createProgressBar($total);
+
+            Branch::with(['phones', 'photos', 'socials'])
+                ->where("city_id", $city->id)->chunk(200, function($branches) use ($bar)
+            {
+                foreach ($branches as $branch)
+                {
+                    // dd($branch);
+                    foreach ($branch->phones as $key => $phone) 
+                    {
+                        $phone->delete();
+                    }
+
+                    foreach ($branch->socials as $key => $social) 
+                    {
+                        $social->delete();
+                    }
+
+                    foreach ($branch->photos as $key => $photo) 
+                    {
+                        File::delete(public_path() . "/images/photos/" . $photo->path);                
+                        $photo->delete();
+                    }
+
+                    $branch->delete();
+
+                    $bar->advance();
+                }
+            });
+
+            $bar->finish();
+        }
+        catch (Exception $e)
+        {
+            $this->info($e->getMessage());
+        }
+    }
 
 
     private function gisphones()

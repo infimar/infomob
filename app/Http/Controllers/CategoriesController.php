@@ -287,7 +287,7 @@ class CategoriesController extends AdminController
 
         // check for slug
         $slug = $this->sluggify($name);
-        $existingCategory = Category::where("slug", $slug)->first();
+        $existingCategory = Category::where("slug", $slug)->where('parent_id', $parentId)->first();
         
         if ($existingCategory !== null)
         {
