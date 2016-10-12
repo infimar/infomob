@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Branch;
+use App\Category;
 use App\City;
 use App\Organization;
 use App\Phone;
@@ -112,6 +113,10 @@ class Fix extends Command
                 $this->removeCity();
                 break;
 
+            case 'atameken':
+                $this->atameken();
+                break;
+
             default:
                 $this->info("Wrong action name");
                 break;
@@ -119,6 +124,67 @@ class Fix extends Command
 
         $time_end = microtime(true);
         $this->info("Done in " . ($time_end - $time_start) . " seconds");
+    }
+
+
+    private function atameken()
+    {
+        $atamekenCategoryId = 140;
+        $categories = Category::where('parent_id', $atamekenCategoryId)->get();
+
+        $total = Branch::whereHas('categories', function ($query) use ($categories) {
+            $query->whereIn('category_id', $categories->pluck('id'));
+        })->where('city_id', 1)->count();
+        $bar = $this->output->createProgressBar($total);
+
+        Branch::whereHas('categories', function ($query) use ($categories) {
+            $query->whereIn('category_id', $categories->pluck('id'));
+        })->with('socials', 'categories')->where('city_id', 1)->chunk(200, function ($branches) use ($bar, $atamekenCategoryId)
+        {
+            foreach ($branches as $branch)
+            {
+                foreach ($branch->categories as $category)
+                {
+                    if ($category->parent_id != $atamekenCategoryId)
+                    {
+                        // dd($branch->toArray());
+                        DB::table('branch_category')
+                            ->where('branch_id', $branch->id)
+                            ->where('category_id', $category->id)
+                            ->delete();
+                    }
+                }
+
+                $socials = collect();
+                foreach ($branch->socials as $social)
+                {
+                    if (empty($social->name))
+                    {
+                        DB::table('socials')->where('id', $social->id)->delete();
+                        continue;
+                    }
+
+                    if ($social->type == "website" && !empty($social->name)) $socials->push($social);
+                }
+
+                if ($socials->count() > 1)
+                {
+                    $website = $socials->first();
+                    
+                    foreach ($socials as $social)
+                    {
+                        if ($website->name == $social->name && $website->id != $social->id)
+                        {
+                            DB::table('socials')->where('id', $social->id)->delete();
+                        }
+                    }
+                }
+
+                $bar->advance();
+            }
+        });
+
+        $bar->finish();
     }
 
 
