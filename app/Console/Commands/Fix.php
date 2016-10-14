@@ -117,6 +117,10 @@ class Fix extends Command
                 $this->atameken();
                 break;
 
+            case 'emptyphones':
+                $this->emptyphones();
+                break;
+
             default:
                 $this->info("Wrong action name");
                 break;
@@ -124,6 +128,21 @@ class Fix extends Command
 
         $time_end = microtime(true);
         $this->info("Done in " . ($time_end - $time_start) . " seconds");
+    }
+
+
+    private function emptyphones()
+    {
+        $file = public_path() . '/data/emptyphones.txt';
+        
+        Phone::with('branch')->where('number', '')->chunk(200, function($phones) use ($file)
+        {
+            foreach ($phones as $phone)
+            {
+                $output = $phone->branch->id . ' - ' . $phone->branch->name . "\n";
+                File::append($file, $output);
+            }
+        });
     }
 
 

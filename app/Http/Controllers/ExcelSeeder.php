@@ -246,6 +246,9 @@ class ExcelSeeder extends Controller
    		{
    			$item = trim($item);
 
+        // if empty - skip
+        if (empty($item)) continue;
+
    			// parse phone
    			$firstParenthesis = strpos($item, "(");
    			$lastParenthesis = strpos($item, ")");

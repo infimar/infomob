@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Branch;
 use Illuminate\Database\Eloquent\Model;
 
 class Phone extends Model
@@ -10,4 +11,9 @@ class Phone extends Model
     	"branch_id", "type", "code_country", 
     	"code_operator", "number", "contact_person"
 	];
+
+	public function branch()
+	{
+		return $this->belongsTo(Branch::class);
+	}
 }
