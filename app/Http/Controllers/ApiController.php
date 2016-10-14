@@ -582,32 +582,49 @@ class ApiController extends Controller
 		try
 		{
 			$city = City::findOrFail($cityId);
-			$categories = Category::published()
-				->where("parent_id", null)
-				->orderBy('order', 'DESC')
-				->orderBy("name", "ASC")
-				->get(["id", "name", "slug", "icon", "order"]);
+
+			// $categories = Category::published()
+			// 	->where("parent_id", null)
+			// 	->orderBy('order', 'DESC')
+			// 	->orderBy("name", "ASC")
+			// 	->get(["id", "name", "slug", "icon", "order"]);
+
+			$categories = DB::table('view_categories')
+	            ->where('city_id', $city->id)
+	            ->where('parent_id', 0)
+	            ->orderBy('order', "DESC")
+	            ->get();
+
+	        // return response()->json(['categories' => $categories->toArray(), 'viewCategories' => $viewCategories]);
 			
 			foreach ($categories as $category)
 			{					
-				$names = explode("|", $category->name);
+				// $names = explode("|", $category->name);
 				
-				if (count($names) > 1)				
-					$list[] = [
-						"id" 			=> $category->id,
-						"short_name" 	=> $names[0],
-						"full_name" 	=> $names[1],
-						"slug" 			=> $category->slug,
-						"icon" 			=> $category->icon
-					];
-				else
-					$list[] = [
-						"id" 			=> $category->id,
-						"short_name" 	=> $category->name,
-						"full_name" 	=> $category->name,
-						"slug" 			=> $category->slug,
-						"icon" 			=> $category->icon
-					];
+				// if (count($names) > 1)				
+				// 	$list[] = [
+				// 		"id" 			=> $category->id,
+				// 		"short_name" 	=> $names[0],
+				// 		"full_name" 	=> $names[1],
+				// 		"slug" 			=> $category->slug,
+				// 		"icon" 			=> $category->icon
+				// 	];
+				// else
+				// 	$list[] = [
+				// 		"id" 			=> $category->id,
+				// 		"short_name" 	=> $category->name,
+				// 		"full_name" 	=> $category->name,
+				// 		"slug" 			=> $category->slug,
+				// 		"icon" 			=> $category->icon
+				// 	];
+
+				$list[] = [
+					"id" 			=> $category->category_id,
+					"short_name" 	=> $category->category_name,
+					"full_name" 	=> $category->category_name,
+					"slug" 			=> $category->category_slug,
+					"icon" 			=> $category->category_icon
+				];
 			}
 			
 			$length = count($sections);
@@ -639,26 +656,35 @@ class ApiController extends Controller
 		try
 		{
 			$city = City::findOrFail($cityId);
-			$categories = Category::published()
-				->whereParentId($parentId)
-				->orderBy("name", "ASC")
-				->get(["id", "name", "slug", "icon"]);
+			// return response()->json($city->toArray());
+
+			// $categories = Category::published()
+			// 	->whereParentId($parentId)
+			// 	->orderBy("name", "ASC")
+			// 	->get(["id", "name", "slug", "icon"]);
 			
 			// TODO: what if there are no categories?
+			$categories = DB::table('view_subcategories')
+                ->where('city_id', $city->id)
+                ->where('parent_id', $parentId)
+                ->where('orgs_count', '>', 0)
+                ->orderBy('order', 'ASC')
+                ->orderBy('category_name', 'ASC')
+                ->get();
 			
 			foreach ($categories as $category)
 			{
 				$list[] = [
-					"id" 	=> $category->id,
-					"name" 	=> $category->name,
-					"slug" 	=> $category->slug,
-					"icon" 	=> $category->icon
+					"id" 	=> $category->category_id,
+					"name" 	=> $category->category_name,
+					"slug" 	=> $category->category_slug,
+					"icon" 	=> "noicon.png"
 				];
 			}
 			
 			return response()->json([
 				"status" => "success",
-				"result" => $categories->toArray()
+				"result" => $list
 			]);
 		}
 		catch(Exception $e)

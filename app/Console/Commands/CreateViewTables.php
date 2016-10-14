@@ -81,13 +81,15 @@ class CreateViewTables extends Command
         }
 
         $time_end = microtime(true);
-        $this->info("Done in " . ($time_end - $time_start) . " seconds");
+        $this->info("\nDone in " . ($time_end - $time_start) . " seconds");
     }
 
     private function categories()
     {
         DB::table('view_categories')->delete();
         $cities = City::published()->correct()->get();
+
+        $bar = $this->output->createProgressBar(count($cities));
 
         foreach ($cities as $city)
         {
@@ -184,10 +186,15 @@ class CreateViewTables extends Command
                     'category_name' => $category->name,
                     'category_slug' => $category->slug,
                     'category_icon' => $category->icon,
-                    'orgs_count' => 0
+                    'orgs_count' => 0,
+                    'order' => $category->order
                 ]);
             }
+
+            $bar->advance();
         }
+
+        $bar->finish();
     }
 
     private function subcategoriesOpt()
