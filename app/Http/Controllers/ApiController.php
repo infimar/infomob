@@ -619,7 +619,7 @@ class ApiController extends Controller
 				// 	];
 
 				$list[] = [
-					"id" 			=> $category->category_id,
+					"id" 			=> intval($category->category_id),
 					"short_name" 	=> $category->category_name,
 					"full_name" 	=> $category->category_name,
 					"slug" 			=> $category->category_slug,
