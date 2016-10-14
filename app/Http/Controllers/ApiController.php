@@ -675,7 +675,7 @@ class ApiController extends Controller
 			foreach ($categories as $category)
 			{
 				$list[] = [
-					"id" 	=> $category->category_id,
+					"id" 	=> intval($category->category_id),
 					"name" 	=> $category->category_name,
 					"slug" 	=> $category->category_slug,
 					"icon" 	=> "noicon.png"
