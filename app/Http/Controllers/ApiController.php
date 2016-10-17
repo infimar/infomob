@@ -76,7 +76,7 @@ class ApiController extends Controller
 		foreach ($offers as $offer) {
 			$result[] = [
 				'id' => $offer->id,
-				'organization_id' => $offer->organization_id,
+				'organization_id' => strval($offer->organization_id),
 				'organization_name' => $offer->organization->name,
 				'organization_logo' => $offer->organization->logo,
 				'description' => $offer->description,
