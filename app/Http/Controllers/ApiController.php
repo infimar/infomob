@@ -660,8 +660,11 @@ class ApiController extends Controller
 
 			$categories = Category::published()
 				->whereParentId($parentId)
+				->orderBy("order", "DESC")
 				->orderBy("name", "ASC")
-				->get(["id", "name", "slug", "icon"]);
+				->get(["id", "name", "slug", "icon", "order"]);
+
+			return response()->json($categories->toArray());
 			
 			// TODO: what if there are no categories?
 			// $categories = DB::table('view_subcategories')
