@@ -664,7 +664,7 @@ class ApiController extends Controller
 				->orderBy("name", "ASC")
 				->get(["id", "name", "slug", "icon", "order"]);
 
-			return response()->json($categories->toArray());
+			// return response()->json($categories->toArray());
 			
 			// TODO: what if there are no categories?
 			// $categories = DB::table('view_subcategories')
