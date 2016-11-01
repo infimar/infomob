@@ -197,7 +197,7 @@ class ApiController extends Controller
 		
 		if (count($categories) > 0)
 		{
-			$result["categories"] = $categories;
+			// $result["categories"] = $categories;
 		}
 		else
 		{
