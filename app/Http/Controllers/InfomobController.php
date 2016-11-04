@@ -45,7 +45,9 @@ class InfomobController extends Controller
 
         // TODO: handle exception - try/catch?
         $this->city = City::findOrFail($this->cityId);
-        $this->category = Category::findOrFail($this->categoryId);
+        $this->category = Category::find($this->categoryId);
+
+        if ($this->category == null) $this->category = Category::first();
 
         View::share('chosenCity', $this->city);
         View::share('chosenCategory', $this->category);
