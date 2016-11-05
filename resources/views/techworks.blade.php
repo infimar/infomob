@@ -12,8 +12,8 @@
 </head>
 <body>
     <div class="container" style="margin-top: 200px; font-size: 18px;">
-        <div class="row">
-            <div class="col-md-offset-3 col-md-6 text-center">
+        <div class="row text-center">
+            <div class="col-md-6 col-md-offset-3">
                 Ведутся технические работы.<br>
                 Приносим извинения за неудобства!
             </div>
