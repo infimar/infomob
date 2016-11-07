@@ -2,6 +2,8 @@
 /node_modules
 /public/storage
 /public/docs/excels
+/public/images/offers
+/public/images/logos
 Homestead.yaml
 Homestead.json
 .env

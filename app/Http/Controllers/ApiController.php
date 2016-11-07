@@ -69,6 +69,7 @@ class ApiController extends Controller
 			{
 				$q->where('id', $cityId);	
 			})
+			->where('status', 'published')
 			->where('date_end', '>=', $today->format('Y-m-d'))
 			->orderBy('updated_at', 'DESC')
 			->get();
