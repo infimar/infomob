@@ -175,26 +175,6 @@ $('#btnSave').click(function(e) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Dropzone.options.myAwesomeDropzone = {
 	acceptedFiles: "image/*",
 	uploadMultiple: false,

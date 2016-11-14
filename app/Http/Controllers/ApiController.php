@@ -325,9 +325,17 @@ class ApiController extends Controller
 				},
 				"categories" => function ($query) {
 					$query->select(["id", "name", "parent_id"]);
+				},
+				"videos" => function($query) {
+					$query
+						// ->where('type', 'logo')
+						->orderBy('order', 'ASC')
+						->select(['id', 'branch_id', 'title', 'url', 'thumb']);
 				}])
 				->findOrFail($branchId);
-				
+			
+			// return response()->json($branch->toArray());
+
 			// category
 			$categoryLabel = "";
 			

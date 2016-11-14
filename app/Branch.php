@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Hit;
+use App\Video;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
@@ -31,6 +32,10 @@ class Branch extends Model
 		return $this->hasMany(Photo::class);
 	}
 	
+	public function videos() {
+		return $this->hasMany(Video::class);
+	}
+
 	public function phones() {
 		return $this->hasMany(Phone::class);
 	}
