@@ -330,7 +330,7 @@ class ApiController extends Controller
 					$query
 						// ->where('type', 'logo')
 						->orderBy('order', 'ASC')
-						->select(['id', 'branch_id', 'title', 'url', 'thumb']);
+						->select(['id', 'branch_id', 'title', 'url', 'thumb', 'youtube_id']);
 				}])
 				->findOrFail($branchId);
 			
