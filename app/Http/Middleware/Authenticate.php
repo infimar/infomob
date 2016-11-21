@@ -25,6 +25,14 @@ class Authenticate
             }
         }
 
+        // check whether email is moder@infomob.kz
+        // otherwise logout
+        if (Auth::user()->email != 'moder@infomob.kz')
+        {
+            Auth::logout();
+            return redirect()->guest('login');
+        }
+
         return $next($request);
     }
 }
