@@ -141,12 +141,12 @@ class AjaxController extends InfomobController
         $branch->save();
 
         // other branches are custom now
-        $otherBranches = Branch::where("organization_id", $branch->organization_id)->where("id", "!=", $branch->id)->get();
-        foreach ($otherBranches as $key => $otherBranch) 
-        {
-            $otherBranch->type = "custom";
-            $otherBranch->save();
-        }
+        // $otherBranches = Branch::where("organization_id", $branch->organization_id)->where("id", "!=", $branch->id)->get();
+        // foreach ($otherBranches as $key => $otherBranch) 
+        // {
+        //     $otherBranch->type = "custom";
+        //     $otherBranch->save();
+        // }
 
         return response()->json(["code" => 200]);
     }

@@ -15,7 +15,7 @@ class CreateOrganizationsTable extends Migration
         Schema::create('organizations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 200);
-            $table->string('description', 400);
+            $table->text('description')->nullable();
             $table->enum('type', ['custom', 'service']);
             $table->integer('category_id')->unsigned();
             $table->timestamps();

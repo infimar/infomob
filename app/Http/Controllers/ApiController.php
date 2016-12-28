@@ -256,9 +256,9 @@ class ApiController extends Controller
 		}
 		
 		return response()->json([
-				"status" => "success",
-				"result" => $result
-			]);
+			"status" => "success",
+			"result" => $result
+		]);
 	}
 
 	// photos

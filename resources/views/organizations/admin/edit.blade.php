@@ -180,7 +180,7 @@
 
 		$.post('/ajax/branches/makemain', { id: id }, function(response) {
 			if (response.code == 200) {
-				$('.btn_makeMain').removeClass().addClass('btn btn-sm btn-default btn_makeMain');
+				//$('.btn_makeMain').removeClass().addClass('btn btn-sm btn-default btn_makeMain');
 				$('.btn_makeMain[data-id=' + id + ']').removeClass().addClass('btn btn-sm btn-warning btn_makeMain');
 			}
 		});
