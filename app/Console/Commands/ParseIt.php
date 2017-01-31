@@ -1546,7 +1546,7 @@ class ParseIt extends Command
     public function handle()
     {
       $time_start = microtime(true);
-        // $this->getFromGis();
+      $this->getFromGis("rubrics-karagandy.js");
         // $this->seedGis();
 
 
@@ -1554,7 +1554,7 @@ class ParseIt extends Command
       // $this->getBranches();
 
       // $this->parseOrgPages();
-      $this->parseShymkent();
+      //$this->parseShymkent();
 
       $time_end = microtime(true);
       $this->info("Done in " . ($time_end - $time_start) . " seconds");
@@ -2091,9 +2091,10 @@ class ParseIt extends Command
       }
 
 
-    private function getFromGis()
+    private function getFromGis($rubricsFile)
     {
-        $src = File::get(public_path() . "/data/rubrics-astana.js");
+        // $src = File::get(public_path() . "/data/rubrics-astana.js");
+        $src = File::get(public_path() . "/data/" . $rubricsFile);
         $data = json_decode($src);
         // dd($data);
 
@@ -2145,7 +2146,7 @@ class ParseIt extends Command
             );
             $context = stream_context_create($opts);
 
-            $data = file_get_contents("https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=1&page_size=12&rubric_id=" . $rubric['id'] . "&hash=b0fbb1953a710af0&stat%5Bpr%5D=3&region_id=68&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Ccontext_rubrics%2Chash%2Csearch_attributes&key=ruczoy1743", false, $context);
+            $data = file_get_contents("https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=1&page_size=12&rubric_id=" . $rubric['id'] . "&hash=63fbd10ac274911c&stat%5Bpr%5D=3&region_id=84&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Ccontext_rubrics%2Chash%2Csearch_attributes&key=ruczoy1743", false, $context);
 
             $data = json_decode($data);
 
@@ -2178,8 +2179,8 @@ class ParseIt extends Command
     {
         $proxy = $this->getRandomProxy();
 
-        $path = public_path() . "/data/gis-astana/";
-        $url = "https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=" . $pageNum . "&page_size=50&rubric_id=" . $rubricId . "&hash=b0fbb1953a710af0&stat%5Bpr%5D=3&region_id=68&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Ccontext_rubrics%2Chash%2Csearch_attributes&key=ruczoy1743";
+        $path = public_path() . "/data/gis/";
+        $url = "https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=" . $pageNum . "&page_size=12&rubric_id=" . $rubricId . "&hash=63fbd10ac274911c&stat%5Bpr%5D=3&region_id=84&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Ccontext_rubrics%2Chash%2Csearch_attributes&key=ruczoy1743";
 
         $opts = array(
             'https' => array(
