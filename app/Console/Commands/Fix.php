@@ -138,7 +138,7 @@ class Fix extends Command
     private function openhours($model)
     {
         $ids = [];
-        for ($i = 182064; $i <= 182150; $i++) { $ids[] = $i; }
+        for ($i = 182183; $i <= 182208; $i++) { $ids[] = $i; }
 
         foreach ($ids as $id)
         {
@@ -152,7 +152,7 @@ class Fix extends Command
                 'sunday_atc' => 1,
                 'branch_id' => $id
             ];
-            
+
             // insert 
             DB::table('open_hours')->insert($data);
         }
