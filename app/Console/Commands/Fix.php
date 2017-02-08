@@ -121,6 +121,10 @@ class Fix extends Command
                 $this->emptyphones();
                 break;
 
+            case 'openhours':
+                $this->openhours('atm');
+                break;
+
             default:
                 $this->info("Wrong action name");
                 break;
@@ -130,6 +134,29 @@ class Fix extends Command
         $this->info("Done in " . ($time_end - $time_start) . " seconds");
     }
 
+
+    private function openhours($model)
+    {
+        $ids = [];
+        for ($i = 182064; $i <= 182150; $i++) { $ids[] = $i; }
+
+        foreach ($ids as $id)
+        {
+            $data = [
+                'monday_atc' => 1,
+                'tuesday_atc' => 1,
+                'wednesday_atc' => 1,
+                'thursday_atc' => 1,
+                'friday_atc' => 1,
+                'saturday_atc' => 1,
+                'sunday_atc' => 1,
+                'branch_id' => $id
+            ];
+            
+            // insert 
+            DB::table('open_hours')->insert($data);
+        }
+    }
 
     private function emptyphones()
     {
