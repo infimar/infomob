@@ -350,7 +350,7 @@ class ExcelSeeder extends Controller
  	// createSocial($data, $branch)
  	private function createSocial($info, $branch)
  	{
-    if (strpos($info, 'http://') === false) 
+    if (strpos($info, 'http://') === false && strpos($info, 'https://') === false) 
     {
       // it is a lat;lng
       $points = [];
