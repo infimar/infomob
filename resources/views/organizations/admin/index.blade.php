@@ -72,7 +72,7 @@
 								{{ $organization->name }}
 							</a>
 						</td>
-						<td>{{ $organization->description }}</td>
+						<td>{{ str_limit($organization->description, 100) }}</td>
 						<td width="160px">
 							<img src="{{ asset("images/imageloader.gif") }}" class="imageLoader gone" data-id="{{ $organization->id }}">
 							
