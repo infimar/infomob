@@ -16,8 +16,10 @@ use XmlParser;
 
 class ParseIt extends Command
 {
-  // protected $hash = "ff4f6fd6ff0dd89a"; // karagandy
-  protected $hash = "60ff6b2e619458b4"; // ustkaman
+  // protected $hash = "ff4f6fd6ff0dd89a";  // karagandy
+  // protected $hash = "60ff6b2e619458b4";     // ustkaman
+  protected $hash = "775db635d5b9bdb0";     // shymkent
+  protected $key = "ruoedw9225";            // shymkent
 
   /**
    * The name and signature of the console command.
@@ -66,9 +68,9 @@ class ParseIt extends Command
     $arguments = $this->argument();
     // dd($arguments);
 
-    // $this->prepareOrgIds(public_path("/data/cities/uralsk"));
-    $this->prepareBranchIds(public_path("/data/cities/almaty/branches"));
-    //$this->getBranchesFromGis(public_path("/data/orgs/" . $arguments['city'] . ".txt"), intval($arguments['start']), intval($arguments['end']));
+    // $this->prepareOrgIds(public_path("/data/cities/shymkent"));
+    // $this->prepareBranchIds(public_path("/data/cities/almaty/branches"));
+    $this->getBranchesFromGis(public_path("/data/orgs/" . $arguments['city'] . ".txt"), intval($arguments['start']), intval($arguments['end']));
 
     $time_end = microtime(true);
     $this->info("Done in " . ($time_end - $time_start) . " seconds");
@@ -157,14 +159,14 @@ class ParseIt extends Command
     );
     $context = stream_context_create($opts);
 
-    $data = file_get_contents("https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=1&page_size=12&org_id=" . $orgId . "&hash=" . $this->hash . "&stat%5Bpr%5D=8&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Chash%2Csearch_attributes&key=ruczoy1743", false, $context);
+    $data = file_get_contents("https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=1&page_size=12&org_id=" . $orgId . "&hash=" . $this->hash . "&stat%5Bpr%5D=8&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Chash%2Csearch_attributes&key=" . $this->key, false, $context);
 
     $data = json_decode($data);
 
     if ($data->meta->code == 404) 
     {
       $this->info("no results for " . $orgId);
-      continue;
+      return;
     }
 
     $total = $data->result->total;
@@ -182,14 +184,15 @@ class ParseIt extends Command
       }
     }
 
-    $this->info('Org: ' . $orgId . ' done. Left: ' . ($countOrgs - $num - 1));
+    $arguments = $this->argument();
+    $this->info('Org: ' . $orgId . ' done. Left: ' . ($arguments['end'] - $num - 1));
   }
 
   public function downloadBranchItems($orgId, $pageNum) {
     $proxy = $this->getRandomProxy();
 
-    $path = public_path() . "/data/branches/";
-    $url = "https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=1&page_size=12&org_id=" . $orgId . "&hash=" . $this->hash . "&stat%5Bpr%5D=8&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Chash%2Csearch_attributes&key=ruczoy1743";
+    $path = public_path() . "/data/download/";
+    $url = "https://catalog.api.2gis.ru/2.0/catalog/branch/list?page=1&page_size=12&org_id=" . $orgId . "&hash=" . $this->hash . "&stat%5Bpr%5D=8&fields=items.region_id%2Citems.adm_div%2Citems.contact_groups%2Citems.flags%2Citems.address%2Citems.rubrics%2Citems.name_ex%2Citems.point%2Citems.external_content%2Citems.schedule%2Citems.org%2Citems.ads.options%2Citems.reg_bc_url%2Crequest_type%2Cwidgets%2Cfilters%2Citems.reviews%2Chash%2Csearch_attributes&key=" . $this->key;
 
     $opts = array(
       'https' => array(

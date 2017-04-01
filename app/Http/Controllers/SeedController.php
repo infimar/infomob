@@ -9,6 +9,7 @@ use App\Http\Response;
 use File;
 use DB;
 use Excel;
+use Input;
 
 use App\Category;
 use App\City;
@@ -25,12 +26,320 @@ class SeedController extends Controller
 {
   protected $client;
 
+  protected $cities = [
+    68 => 2,              // astana
+                          // shymkent
+  ];
+
+  protected $cityname = 'astana';
+
 	public function __construct()
 	{
 		// header('Content-Type: text/html; charset=utf-8');
     
     $this->client = new Client(); 
 	}
+
+  public function mapper()
+  {
+    $rubric = DB::table('tmp_category_mapper')->where('cat_id', -1)->first();
+    $rubricsTotal = DB::table('tmp_category_mapper')->where('cat_id', -1)->count();
+
+    return view('seed.mapper', compact('rubric', 'subcategories', 'rubricsTotal'));
+  }
+
+  // steps
+  // prep branches
+  // prep orgs
+  // prep contacts
+  // prep socials
+
+
+  // prep branches
+  public function parseAll()
+  {
+    $branchesDir = public_path() . '/data/branches/';
+    $branches = File::files($branchesDir . '/' . $this->cityname);
+
+    DB::beginTransaction();
+
+    $orgs = [];
+    $branchesTotal = [];
+
+    foreach ($branches as $branch)
+    {
+      $data = json_decode(File::get($branch));
+      $items = $data->result->items;
+
+      $parsed = $this->parseBranches($items);
+      // dd($parsed);
+      // if (!isset($parsed['org'])) { return response()->json($parsed); }
+
+      // $orgs[] = $parsed['org'];
+      foreach ($parsed['branches'] as $b)
+      {
+        $branchesTotal[] = $b;
+      }
+    }
+
+    // File::put(public_path() . '/data/json_orgs.js', json_encode($orgs));
+    File::put(public_path() . '/data/parsed/' . $this->cityname . '/json_branches.js', json_encode($branchesTotal));
+
+    // DB::commit();
+
+    return 'Done.';
+  }
+
+  public function parseBranches($branches)
+  {
+    // dd("Parse");
+
+    $parsed = [
+      'org' => null,
+      'branches' => [],
+      'gis' => null
+    ];
+
+    // dd("Parse");
+    foreach ($branches as $branch)
+    {
+      $email = '';
+      $contacts = $phones = $socials = [];
+
+      $parsed['gis'] = $branch;
+
+      // create organization
+      // if ($parsed['org'] == null)
+      // {
+      //   $org = [
+      //     'table' => 'Organization',
+      //     'gis_id' => $branch->org->id,
+      //     'name' => $branch->org->name,
+      //     'type' => 'custom'
+      //   ];
+
+      //   // $org = new Organization;
+      //   // $org->name = $branch->org->name;
+      //   // $org->description = '';
+      //   // $org->type = 'custom';
+      //   // $org->save();
+
+      //   $parsed['org'] = $org;
+      // }
+
+      // dd($branch);
+
+      // branch
+      $type = (count($parsed['branches']) > 0) ? 'custom' : 'main';
+      $newBranch = [
+        'org_id' => $branch->org->id,
+        'org_name' => $branch->org->name,
+        'city_id' => $this->cities[$branch->region_id],
+        'name' => $branch->name,
+        'type' => $type,
+        'description' => '',
+        'address' => isset($branch->address_name) ? $branch->address_name : '',
+        'post_index' => '',
+        'email' => $email,
+        'lat' => isset($branch->point) ? $branch->point->lat : '0.00',
+        'lon' => isset($branch->point) ? $branch->point->lon : '0.00',
+        'rubrics' => [],
+        'contacts' => [],
+        'socials' => []
+      ];
+
+      if (isset($branch->rubrics))
+      {
+        foreach ($branch->rubrics as $rubric)
+        {
+          $newBranch['rubrics'][] = [
+            'rubric_id' => $rubric->id,
+            'rubric_name' => $rubric->name
+          ];
+        }
+      }
+
+      // schedule
+      $newBranch['schedule'] = $branch->schedule;
+
+      // phones, websites, socials
+      if (isset($branch->contact_groups))
+      {
+        foreach ($branch->contact_groups as $contactGroup)
+        {
+          foreach ($contactGroup->contacts as $contact)
+          {
+            $newBranch['contacts'][] = $contact;
+          }
+        }
+      }
+
+      // email
+      foreach ($newBranch['contacts'] as $contact) {
+        if ($contact->type == 'email') {
+          $newBranch['email'] = $contact->value;
+          break;
+        }
+      }
+
+      $parsed['branches'][] = $newBranch;
+    }
+
+    // dd($parsed);
+    return $parsed;
+  }
+
+  public function test()
+  {
+    $file = public_path() . '/data/json_branches.js';
+    $items = json_decode(File::get($file));
+
+    $types = [];
+    $contacts = [];
+    $schedules = [];
+
+    foreach ($items as $item)
+    {
+      // if (count($item->contacts) > 2) return response()->json($item);
+      // if (count($item->rubrics) > 2) return response()->json($item);
+
+      // if ($item->schedule != null) $schedules[] = $item->schedule;
+
+      // if (isset($item->schedule->comment)) return response()->json($item->schedule);
+
+      // if (isset($item->schedule->Mon)) 
+      // {
+      //   foreach ($item->schedule->Mon->working_hours as $hours)
+      //   {
+      //     if ($hours->to == "24:00") return response()->json($item->schedule);
+      //   }
+      // }
+
+      mb_internal_encoding("UTF-8");
+      foreach ($item->contacts as $key => $contact)
+      {
+        // if ($contact->type == 'website') 
+        // {
+        //   $type = 'website';
+        //   $indexQuestion = mb_strpos($contact->value, "?");
+        //   $value = mb_substr($contact->value, $indexQuestion + 1);
+
+        //   $contacts[] = ['2gis_value' => $contact->value, 'value' => $value];
+        // }
+
+        // if ($contact->type == 'instagram') 
+        // {
+        //   $type = 'instagram';
+        //   $value = $contact->value;
+
+        //   $contacts[] = ['2gis_value' => $contact->value, 'value' => $value];
+        // }
+
+        if ($contact->type == 'facebook') 
+        {
+          $type = 'facebook';
+          $value = $contact->value;
+
+          // $contacts[] = $contact;
+          $contacts[] = ['2gis_value' => $contact->value, 'value' => $value];
+        }
+      }
+
+      // return $item->rubrics;
+    }
+
+    // File::put(public_path() . '/data/json_branches_with_emails.js', json_encode($items));
+
+    return response()->json($contacts);
+    
+    return 'Done';
+  }
+
+  // prep orgs
+  public function prepOrgs()
+  {
+    $file = public_path() . '/data/parsed/' . $this->cityname . '/json_branches.js';
+    $items = json_decode(File::get($file));
+
+    $orgKeys = [];
+    $orgs = [];
+
+    foreach ($items as $item)
+    {
+      if (in_array($item->org_id, $orgKeys)) continue;
+
+      $orgs[] = [
+        'id' => $item->org_id,
+        'name' => $item->org_name
+      ];
+
+      $orgKeys[] = $item->org_id;
+
+      // if (count($item->rubrics) > 2) return response()->json($item);
+    }
+
+    // TODO: change city
+    File::put(public_path() . '/data/parsed/' . $this->cityname . '/json_orgs.js', json_encode($orgs));
+    
+    return 'Done';
+  }
+
+  public function map(Request $request)
+  {
+    $input = $request->all();
+    // dd($input);
+
+    if (isset($input['next'])) 
+    {
+      $subcategory = Category::findOrFail($input['cat_id']);
+
+      DB::table('tmp_category_mapper')->where('id', $input['rubric_id'])->update([
+        'cat_id' => $subcategory->id,
+        'cat_name' => $subcategory->name
+      ]);
+    }
+    else
+    {
+      DB::table('tmp_category_mapper')->where('id', $input['rubric_id'])->delete();
+    }
+
+    return redirect()->route('seed.mapper');
+  }
+
+  public function getAllRubrics()
+  {
+    $saveFile = public_path() . '/data/allRubrics.txt';
+    $dir = public_path() . '/data/rubrics/';
+    $rubrics = [];
+
+    $files = File::files($dir);
+
+    foreach ($files as $file)
+    {
+      $contents = File::get($file);
+      $json = json_decode($contents);
+
+      foreach ($json->result->items as $item)
+      {
+        foreach ($item->rubrics as $rubric)
+        {          
+          $rubrics[$rubric->name] = $rubric->name;
+        }
+      }
+    }
+
+    foreach ($rubrics as $rubric)
+    {
+      // save to file
+      // File::append($saveFile, $rubric . "\n");
+      DB::table('tmp_category_mapper')->insert([
+        'name' => $rubric,
+        'cat_id' => -1
+      ]);
+    }
+
+    return 'Done.';
+  }
 
   public function index(Request $request)
   {
@@ -353,29 +662,29 @@ class SeedController extends Controller
 
     	// $this->showCategoriesTree();
 
-		// get all organizations for specified category
-		$organizations = [];
+  		// get all organizations for specified category
+  		$organizations = [];
 
-		$categories = Category::with('organizations')->whereParentId($category_id)->get();
-		foreach ($categories as $key => $category) 
-		{
-			foreach ($category->organizations as $organization)
-			{
-				$organizations[] = $organization;
-			}
-		}
+  		$categories = Category::with('organizations')->whereParentId($category_id)->get();
+  		foreach ($categories as $key => $category) 
+  		{
+  			foreach ($category->organizations as $organization)
+  			{
+  				$organizations[] = $organization;
+  			}
+  		}
 
-		foreach ($organizations as $organization)
-		{
-			$similarity = $this->isSimilar($organization->name, $name);
-			if ($similarity['percent'] >= 90)
-			{
-				echo $organization->name . " <> " . $name . " = " . $similarity['percent'];
-				echo "\n";
-			}
-		}				
+  		foreach ($organizations as $organization)
+  		{
+  			$similarity = $this->isSimilar($organization->name, $name);
+  			if ($similarity['percent'] >= 90)
+  			{
+  				echo $organization->name . " <> " . $name . " = " . $similarity['percent'];
+  				echo "\n";
+  			}
+  		}				
 
-		echo "</pre>";
+  		echo "</pre>";
     }
 
     /**
@@ -464,7 +773,7 @@ class SeedController extends Controller
     }
 
     /**
-     * Load and seed cities and their rains.
+     * Load and seed cities and their raions.
      * @param  string $src source json file
      */
     public function city($src)
@@ -507,7 +816,7 @@ class SeedController extends Controller
 
 	    echo "\n-----\n";
 	    echo "DONE.";
-		echo "</pre>";
+		  echo "</pre>";
     }
 
 
@@ -577,134 +886,134 @@ class SeedController extends Controller
 	    }
     }
 
-  /**
-   * Seed organization with branches
-   * @param  StdClass $data parsed json object
-   */
-  private function seedOrganization($data)
-  {
-  	DB::beginTransaction();
-
-    if (!isset($data["name"]))
+    /**
+     * Seed organization with branches
+     * @param  StdClass $data parsed json object
+     */
+    private function seedOrganization($data)
     {
-      DB::rollBack();
-      echo "No name<br>";
-      return false;
-    }
+    	DB::beginTransaction();
 
-  	if (Organization::whereName($data["name"])->first())
-  	{
-  		// interrupt
-  		echo "Organization [" . $data["name"] . "] already exists.<br>";
-  		return false;
-  	}
-
-  	// get category's id
-    if (!isset($data["category"]))
-    {
-      DB::rollBack();
-      echo "No category<br>";
-      return false;
-    }
-
-  	$category = Category::whereName($data["category"])->first();
-  	if (!$category) dd("Could not find category.");
-
-  	// create organization to get its ID
-  	$organization = Organization::create([
-  		"name" 			    => $data["name"],
-  		"type" 			    => "custom",
-		  "description" 	=> $data["description"]
-	  ]);
-    // dd($organization);
-
-		// create branch
-    $address = (isset($data["address"])) ? $data["address"] : "";
-
-    $branch = Branch::create([
-      "organization_id"   => $organization->id,
-      "type"              => "main",
-      "name"              => $organization->name,
-      "description"       => $organization->description,
-      "raion_id"          => 1,
-      "address"           => $address,
-      "post_index"        => "160000",
-      "email"             => "",
-      "hits"              => 0,
-      "lat"               => "0.00",
-      "lng"               => "0.00"
-    ]);
-    //dd($branch->toArray());
-
-    // map branch to category!
-    $pivotRecord = DB::table("branch_category")->insert([
-      "branch_id"   => $branch->id,
-      "category_id" => $category->id
-    ]);
-    // dd($pivotRecord);
-
-    // create its phones
-		if (isset($data["phones"]))
-    {
-      foreach ($data["phones"] as $phone)
+      if (!isset($data["name"]))
       {
-        $phoneRecord = Phone::create([
-          "branch_id"      => $branch->id,
-          "type"           => $phone["type"],
-          "code_country"   => $phone["code_country"],
-          "code_operator"  => $phone["code_operator"],
-          "number"         => $phone["number"],
-          "contact_person" => ""
-        ]);
-        //dd($phoneRecord);
+        DB::rollBack();
+        echo "No name<br>";
+        return false;
       }
-    }
-			
-    // create its faxes
-    if (isset($data["faxes"]))
-    {
-      foreach ($data["faxes"] as $fax)
+
+    	if (Organization::whereName($data["name"])->first())
+    	{
+    		// interrupt
+    		echo "Organization [" . $data["name"] . "] already exists.<br>";
+    		return false;
+    	}
+
+    	// get category's id
+      if (!isset($data["category"]))
       {
-        $phoneRecord = Phone::create([
-          "branch_id"      => $branch->id,
-          "type"           => $fax["type"],
-          "code_country"   => $fax["code_country"],
-          "code_operator"  => $fax["code_operator"],
-          "number"         => $fax["number"],
-          "contact_person" => ""
-        ]);
-        // dd($phoneRecord);
+        DB::rollBack();
+        echo "No category<br>";
+        return false;
       }
+
+    	$category = Category::whereName($data["category"])->first();
+    	if (!$category) dd("Could not find category.");
+
+    	// create organization to get its ID
+    	$organization = Organization::create([
+    		"name" 			    => $data["name"],
+    		"type" 			    => "custom",
+  		  "description" 	=> $data["description"]
+  	  ]);
+      // dd($organization);
+
+  		// create branch
+      $address = (isset($data["address"])) ? $data["address"] : "";
+
+      $branch = Branch::create([
+        "organization_id"   => $organization->id,
+        "type"              => "main",
+        "name"              => $organization->name,
+        "description"       => $organization->description,
+        "raion_id"          => 1,
+        "address"           => $address,
+        "post_index"        => "160000",
+        "email"             => "",
+        "hits"              => 0,
+        "lat"               => "0.00",
+        "lng"               => "0.00"
+      ]);
+      //dd($branch->toArray());
+
+      // map branch to category!
+      $pivotRecord = DB::table("branch_category")->insert([
+        "branch_id"   => $branch->id,
+        "category_id" => $category->id
+      ]);
+      // dd($pivotRecord);
+
+      // create its phones
+  		if (isset($data["phones"]))
+      {
+        foreach ($data["phones"] as $phone)
+        {
+          $phoneRecord = Phone::create([
+            "branch_id"      => $branch->id,
+            "type"           => $phone["type"],
+            "code_country"   => $phone["code_country"],
+            "code_operator"  => $phone["code_operator"],
+            "number"         => $phone["number"],
+            "contact_person" => ""
+          ]);
+          //dd($phoneRecord);
+        }
+      }
+  			
+      // create its faxes
+      if (isset($data["faxes"]))
+      {
+        foreach ($data["faxes"] as $fax)
+        {
+          $phoneRecord = Phone::create([
+            "branch_id"      => $branch->id,
+            "type"           => $fax["type"],
+            "code_country"   => $fax["code_country"],
+            "code_operator"  => $fax["code_operator"],
+            "number"         => $fax["number"],
+            "contact_person" => ""
+          ]);
+          // dd($phoneRecord);
+        }
+      }
+  			
+
+  		// // create its socials
+  		// foreach ($branchData->socials as $socialData)
+  		// {
+  		// 	Social::create([
+  		// 		"branch_id"			=> $branch->id,
+  		// 		"type"				=> $socialData->type,
+  		// 		"name"				=> $socialData->name,
+  		// 		"contact_person"	=> $socialData->contact_person
+  		// 	]);
+  		// }
+
+  		// // create its photos (logo)
+  		// foreach ($branchData->photos as $key => $photoData) 
+  		// {
+  		// 	Photo::create([
+  		// 		"branch_id"		=> $branch->id,
+  		// 		"type"			=> $photoData->type,
+  		// 		"path"			=> $photoData->path,
+  		// 		"description"	=> $photoData->description
+  		// 	]);
+  		// }
+
+  		// everything is fine -> go ahead
+  		DB::commit();
+  		echo "Organization [" . $organization->name . "] created.<br>";
+      return true;
     }
-			
-
-		// // create its socials
-		// foreach ($branchData->socials as $socialData)
-		// {
-		// 	Social::create([
-		// 		"branch_id"			=> $branch->id,
-		// 		"type"				=> $socialData->type,
-		// 		"name"				=> $socialData->name,
-		// 		"contact_person"	=> $socialData->contact_person
-		// 	]);
-		// }
-
-		// // create its photos (logo)
-		// foreach ($branchData->photos as $key => $photoData) 
-		// {
-		// 	Photo::create([
-		// 		"branch_id"		=> $branch->id,
-		// 		"type"			=> $photoData->type,
-		// 		"path"			=> $photoData->path,
-		// 		"description"	=> $photoData->description
-		// 	]);
-		// }
-
-		// everything is fine -> go ahead
-		DB::commit();
-		echo "Organization [" . $organization->name . "] created.<br>";
-    return true;
-  }
 
     /**
      * Get data from json file.
@@ -717,20 +1026,20 @@ class SeedController extends Controller
    		$path = public_path() . '/data/' . $filename;
 
    		try
-		{
-		    $contents = file_get_contents($path);
-		    $contents = preg_replace('/\s+/', ' ', trim($contents));
-		    // dd($contents);
+  		{
+  		    $contents = file_get_contents($path);
+  		    $contents = preg_replace('/\s+/', ' ', trim($contents));
+  		    // dd($contents);
 
-		    $data = json_decode($contents);
-		    // dd($data);
-		}
-		catch (Illuminate\Filesystem\FileNotFoundException $exception)
-		{
-		    die("The file doesn't exist");
-		}
-		
-		return $data;
+  		    $data = json_decode($contents);
+  		    // dd($data);
+  		}
+  		catch (Illuminate\Filesystem\FileNotFoundException $exception)
+  		{
+  		    die("The file doesn't exist");
+  		}
+  		
+  		return $data;
    	}
 
    	/**
@@ -862,7 +1171,7 @@ class SeedController extends Controller
 
 
    			echo "<br><br>-----<br>DONE: " . $count . " organizations were created.";	
-		});
+		  });
    	} 
 
    	// createOrganization($data)
@@ -1008,7 +1317,7 @@ class SeedController extends Controller
    	}
 
    	// createPhoto($data, $branch)
-	private function createPhoto($info, $branch)
+    private function createPhoto($info, $branch)
    	{
    		// 0 => "type"
   		// 1 => "path"

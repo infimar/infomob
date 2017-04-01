@@ -131,6 +131,13 @@ Route::group(['prefix' => 'seeders', 'middleware' => 'auth'], function()
 {
 	Route::get('/excel', 'ExcelSeeder@index');
 	Route::post('/excel/seed', 'ExcelSeeder@seed')->name('seeders.excel.seed');
+
+	Route::get('/mapper', 'SeedController@mapper')->name('seed.mapper');
+	Route::post('/mapper/map', 'SeedController@map')->name('seed.map_category');
+
+	Route::get('/parseall', 'SeedController@parseAll')->name('seed.parseall');
+
+	Route::get('/test', 'SeedController@test')->name('seed.test');
 });
 
 

@@ -17,6 +17,8 @@ class Kernel extends ConsoleKernel
         Commands\ParseIt::class,
         Commands\CreateViewTables::class,
         Commands\Fix::class,
+        Commands\SeedData::class,
+        Commands\PrepDatabase::class,
     ];
 
     /**
