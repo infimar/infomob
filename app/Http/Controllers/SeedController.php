@@ -189,70 +189,39 @@ class SeedController extends Controller
     return $parsed;
   }
 
-  public function test()
+  public function test(Request $request)
   {
-    $file = public_path() . '/data/json_branches.js';
-    $items = json_decode(File::get($file));
+    $orgs = [];
+    $subscriptions = DB::table('subscriptions')->get();
 
-    $types = [];
-    $contacts = [];
-    $schedules = [];
-
-    foreach ($items as $item)
+    foreach ($subscriptions as $s)
     {
-      // if (count($item->contacts) > 2) return response()->json($item);
-      // if (count($item->rubrics) > 2) return response()->json($item);
-
-      // if ($item->schedule != null) $schedules[] = $item->schedule;
-
-      // if (isset($item->schedule->comment)) return response()->json($item->schedule);
-
-      // if (isset($item->schedule->Mon)) 
-      // {
-      //   foreach ($item->schedule->Mon->working_hours as $hours)
-      //   {
-      //     if ($hours->to == "24:00") return response()->json($item->schedule);
-      //   }
-      // }
-
-      mb_internal_encoding("UTF-8");
-      foreach ($item->contacts as $key => $contact)
-      {
-        // if ($contact->type == 'website') 
-        // {
-        //   $type = 'website';
-        //   $indexQuestion = mb_strpos($contact->value, "?");
-        //   $value = mb_substr($contact->value, $indexQuestion + 1);
-
-        //   $contacts[] = ['2gis_value' => $contact->value, 'value' => $value];
-        // }
-
-        // if ($contact->type == 'instagram') 
-        // {
-        //   $type = 'instagram';
-        //   $value = $contact->value;
-
-        //   $contacts[] = ['2gis_value' => $contact->value, 'value' => $value];
-        // }
-
-        if ($contact->type == 'facebook') 
-        {
-          $type = 'facebook';
-          $value = $contact->value;
-
-          // $contacts[] = $contact;
-          $contacts[] = ['2gis_value' => $contact->value, 'value' => $value];
-        }
-      }
-
-      // return $item->rubrics;
+      $orgs[$s->organization_id] = $s->organization_id;
     }
 
-    // File::put(public_path() . '/data/json_branches_with_emails.js', json_encode($items));
+    $cityId = $request->get('city_id');
 
-    return response()->json($contacts);
+    $branches = DB::table('branches')
+      ->whereIn('organization_id', $orgs)
+      ->where('city_id', $cityId)
+      ->get();
+
+    echo "By subscriptions:<br>";
+    foreach ($branches as $key => $branch)
+    {
+      echo '<input type="checkbox">' . $branch->id . " - " . $branch->name . '<br>';
+    }
+
+    echo "<br><br>By branch subscription field:<br>";
+    $branches = DB::table('branches')
+      ->where('subscription', '!=', 'none')
+      ->where('city_id', $cityId)
+      ->get();
     
-    return 'Done';
+    foreach ($branches as $key => $branch)
+    {
+      echo '<input type="checkbox">' . $branch->id . " - " . $branch->name . '<br>';
+    }
   }
 
   // prep orgs
