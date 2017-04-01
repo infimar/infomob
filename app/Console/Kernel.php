@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         Commands\Fix::class,
         Commands\SeedData::class,
         Commands\PrepDatabase::class,
+        Commands\MapModels::class,
     ];
 
     /**
