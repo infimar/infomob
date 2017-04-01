@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         Commands\SeedData::class,
         Commands\PrepDatabase::class,
         Commands\MapModels::class,
+        Commands\RemoveDuplicates::class,
     ];
 
     /**
