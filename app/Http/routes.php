@@ -13,9 +13,7 @@ use GuzzleHttp\Client;
 |
 */
 // index
-Route::get('/', function (){
-    return view('techworks');
-});
+Route::get('/', 'HomeController@index');
 Route::get('/category/{slug}', 'HomeController@category');
 Route::get('/organization/{organizationId}/{categoryId?}', 'HomeController@organization');
 Route::get('/branch/{id}/{category_id?}', 'HomeController@branch');
