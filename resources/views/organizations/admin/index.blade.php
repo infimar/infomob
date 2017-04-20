@@ -88,7 +88,7 @@
 								{{ App\Category::statuses($organization->status) }}
 							</span>
 						</td>
-						<td>{{ $organization->created_at->format('d/m/Y H:i:s') }}</td>
+						<td>@if ($organization->created_at) {{ $organization->created_at->format('d/m/Y H:i:s') }} @else не указано @endif</td>
 						<td width="200px">
 							<a href="/admin/organizations/{{ $organization->id }}/edit" class="btn btn-sm btn-default" title="Редактировать"><i class="fa fa-pencil"></i></a>
 							<a href="/admin/organizations/{{ $organization->id }}/remove" class="btn_remove btn btn-sm btn-default" title="Удалить"><i class="fa fa-trash"></i></a>
