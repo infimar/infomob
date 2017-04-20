@@ -24,7 +24,7 @@ class AjaxController extends InfomobController
                             ->skip(($pageNum - 1) * $perPage)
                             ->take($perPage)
                             ->orderBy('name', 'ASC')
-                            ->get(['id', 'name']);
+                            ->get(['id', 'name', 'status']);
 
         return response()->json([
             'items' => $organizations->toArray(),

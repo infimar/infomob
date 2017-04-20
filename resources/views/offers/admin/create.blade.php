@@ -79,13 +79,13 @@ $('#chooseAllCities').click(function(e) {
 
 // ORGANIZATIONS
 function formatOrganization (org) {
-  	var markup = org.name;
+  	var markup = org.name + " - " + org.status;
 
   	return markup;
 }
 
 function formatOrganizationSelection (org) {
-	return org.name;
+	return org.name + " - " + org.status;
 }
 
 var select2 = $("#js-data-organizations-ajax");
