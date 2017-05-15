@@ -73,7 +73,8 @@ $("#js-data-organizations-ajax").select2({
 	    data: function (params) {
 	  		return {
 	        	q: params.term, // search term
-	        	page: params.page
+	        	page: params.page,
+	        	cityId: {{ $choseCity->id }}
 	      	};
 	    },
 	    processResults: function (data, params) {
