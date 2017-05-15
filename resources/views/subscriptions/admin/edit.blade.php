@@ -74,7 +74,7 @@ $("#js-data-organizations-ajax").select2({
 	  		return {
 	        	q: params.term, // search term
 	        	page: params.page,
-	        	cityId: {{ $choseCity->id }}
+	        	city_id: {{ $choseCity->id }}
 	      	};
 	    },
 	    processResults: function (data, params) {
