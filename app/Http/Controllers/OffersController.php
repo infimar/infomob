@@ -62,7 +62,9 @@ class OffersController extends AdminController
                 case 'organization_id':
                     $column->setLabel('Организация');
                     $column->setRenderer(function($model) {
-                        return '<a href="' . route('admin.offers.edit', ['id' => $model->id]) . '">' . $model->organization_id . '</a>';
+                        $organizationName = ($model->organization != null) ? $model->organization->name : "Организация удалена";
+                        
+                        return '<a href="' . route('admin.offers.edit', ['id' => $model->id]) . '">' . $organizationName . '</a>';
                     });
                     break;
                 
