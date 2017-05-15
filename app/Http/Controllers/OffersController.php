@@ -15,7 +15,7 @@ use DB;
 use Exception;
 use Carbon\Carbon;
 
-class OffersController extends InfomobController
+class OffersController extends AdminController
 {
     public function __construct(Request $request)
     {
