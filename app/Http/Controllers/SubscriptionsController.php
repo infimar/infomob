@@ -30,7 +30,7 @@ class SubscriptionsController extends AdminController
             $query->sorted('id', 'DESC');
             
         $subscriptions = $query->paginate();
-        $table = Table::create($subscriptions, ['organization_id', 'type', 'year']);
+        $table = Table::create($subscriptions, ['organization_id', 'type', 'expires_in']);
 
         // prepare index table
         foreach ($table->getColumns() as $column) {
@@ -52,10 +52,11 @@ class SubscriptionsController extends AdminController
                     });
                     break;
 
-                case 'year':
-                    $column->setLabel('Год');
+                case 'expires_in':
+                    $column->setLabel('Осталось дней');
                     $column->setRenderer(function($model) {
-                        return $model->year;
+                        $cDate = Carbon::parse($model->expires_in);
+                        return $cDate->diffInDays();
                     });
                     break;
 
