@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Subscription;
+use App\Branch;
 use Table;
 use JavaScript;
 use Carbon\Carbon;
@@ -109,6 +110,11 @@ class SubscriptionsController extends AdminController
                 'expires_in' => $nextYear
             ]);
 
+            // update branches
+            Branch::where('organization_id', $input['organization_id'])->update([
+                'subscription' => $input['type']
+            ]);
+
             Flash::success('Новая подписка успешно создана');
             return redirect()->action('SubscriptionsController@index');
         }
@@ -172,6 +178,12 @@ class SubscriptionsController extends AdminController
             $subscription->year = $input['year'];
             $subscription->save();
 
+            // update branches
+            Branch::where('organization_id', $input['organization_id'])->update([
+                'subscription' => $input['type']
+            ]);
+
+
             Flash::success('Подписка успешно обновлена');
             return redirect()->action('SubscriptionsController@index');
         }
@@ -193,6 +205,13 @@ class SubscriptionsController extends AdminController
         try 
         {
             $subscription = Subscription::findOrFail($id);
+
+            // update branches
+            Branch::where('organization_id', $subscription->organization_id)->update([
+                'subscription' => 'none'
+            ]);
+
+            // delete subscription
             $subscription->delete();
 
             Flash::info('Подписка удалена');
