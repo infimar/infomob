@@ -19,8 +19,12 @@ class AjaxController extends InfomobController
         $searchTerm = $request->input('q');
         $pageNum = $request->input('page');
         $perPage = 30;  // like in select2
+        $cityId = $request->input('city_id');
 
         $organizations = Organization::where('name', 'LIKE', '%' . $searchTerm . '%')
+                            ->whereHas('branches', function($query) use ($cityId) {
+                                $query->where('city_id', $cityId);
+                            })
                             ->skip(($pageNum - 1) * $perPage)
                             ->take($perPage)
                             ->orderBy('name', 'ASC')

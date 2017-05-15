@@ -1,6 +1,7 @@
 <?php
 
 use GuzzleHttp\Client;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -201,58 +202,75 @@ Route::group(['prefix' => 'api'], function()
 });
 
 
-
 Route::get('/test/{minId?}', function($minId = 180346) {
-	$client = new Client();
-	$body = $client->get('http://api.infomob.local/branch?branch_id=88')->getBody();
-	$data = json_decode($body);
-	dd($data->result);
+	$now = date("d.m.Y H:i:s", time());
+	// dd($now);
 
-	// $result = [];
+	return view('test.test');
 
-	// $branches = App\Branch::with('categories')->where('id', '>=', $minId)->get();
-	// foreach ($branches as $branch)
-	// {
-	// 	if (count($branch->categories) > 1)
-	// 	{
-	// 		$result[] = $branch->id;
-	// 	}
-	// }
+});
 
-	// return response()->json($result);
+Route::post('/test-post', function(Request $request) {
 
-	// 180245
-	// 180346 - local
-	// $phones = App\Phone::where('branch_id', '>=', $minId)->orderBy('number')->get();
+	$input = $request->all();
+	// dd($input);
 
-	// $prevPhone = null;
+	$now = date("d.m.Y H:i:s", time());	
 
-	// foreach ($phones as $phone)
-	// {
-	// 	if (empty($phone->number))
-	// 	{
-	// 		$phone->delete();
-	// 		continue;
-	// 	}
+	$base_url = "https://api.rglservice.kz/v2/:promo_id";
+	$api_method = "/w/users/:phone/codes/redeem";
+	$promo_id = "308838";
+	$api_key = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0OTE4ODg1NTIsIm5iZiI6MTQ5MTg4ODU1MiwicHJvbW9faWQiOiIzMDg4MzgiLCJzb3VyY2UiOiJzaXRlIn0._AjktgHSqK1sAAJ_iAADSnpIgTH6KCRkrAaoZgRi9co";
 
-	// 	if (is_null($prevPhone))
-	// 	{
-	// 		$prevPhone = $phone;
-	// 		continue;
-	// 	}
+	/* следующие поля заполняются на основе формы регистрации кода */
+	$phone = preg_replace('/\D/', '', $input['user_phone']);
+	$post_fields = array(
+	    "transaction_id" => uniqid(),
+	    "promo_code" => $input['promo_code'],
+	    "promo_app_type" => "web",
+	    "promo_language" => "ru",
+	    "promo_time" => $now,
+	    "user_firstname" => $input['user_firstname'],
+	    "user_lastname" => $input['user_lastname'],
+	    "user_city" => $input['user_city'],
+	    // "user_age" => "21",
+	    // "user_gender" => "male"
+	);
 
-	// 	if ($prevPhone->number == $phone->number 
-	// 		&& $prevPhone->code_operator == $phone->code_operator 
-	// 		&& $prevPhone->branch_id == $phone->branch_id)
-	// 	{
-	// 		$phone->delete();
-	// 		continue;
-	// 	}
+	$url = $base_url . $api_method;
+	$url = preg_replace('/:promo_id/', $promo_id, $url);
+	$url = preg_replace('/:phone/', $phone, $url);
 
-	// 	echo "Phone [" . $phone->id . "] - (" . $phone->code_operator . ") " . $phone->number . "<br>";
+    // dd($url);
+	// dd($post_fields);
 
-	// 	// update prevPhone
-	// 	$prevPhone = $phone;
-	// }
+	$response = false;
+	$ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_fields));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+      	"content-type: application/x-www-form-urlencoded",
+      	"api-key: " . $api_key
+    ));
+    
+    $json = curl_exec($ch);
+    $errno = curl_errno($ch);
+    $http_info = curl_getinfo($ch);
+    curl_close($ch);
+    
+    if (!$errno) {
+        $response = json_decode($json, true);        
+        if ($response)
+        {
+            dd($response);
 
+            // TODO: code 200
+        }
+    } else {
+    	// TODO: ERROR
+    	dd($errno);
+    }
 });
