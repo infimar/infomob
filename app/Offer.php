@@ -11,7 +11,7 @@ class Offer extends Model
 {
 	use Sortable;
 
-    protected $fillable = ['organization_id', 'description', 'image', 'date_start', 'date_end'];
+    protected $fillable = ['organization_id', 'description', 'image', 'date_start', 'date_end', 'branch_id', 'no_time', 'type'];
     protected $sortable = ['organization_id', 'date_start', 'date_end'];
 
     protected $dates = ['date_start', 'date_end'];

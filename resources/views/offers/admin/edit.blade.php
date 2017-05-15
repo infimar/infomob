@@ -39,6 +39,18 @@
 					<textarea name="description" id="description" class="form-control">{{ $offer->description }}</textarea>
 					<br><br>
 
+					{{-- type --}}
+					<label for="type">Тип акции</label>
+					<select name="type" id="type" class="form-control">
+						<option value="default" @if ($offer->type == 'default') selected @endif>По умолчанию</option>
+						<option value="kids" @if ($offer->type == 'kids') selected @endif>Для детей</option>
+						<option value="rest" @if ($offer->type == 'rest') selected @endif>Отдых</option>
+						<option value="preview" @if ($offer->type == 'preview') selected @endif>Превью компании</option>
+						<option value="invitations" @if ($offer->type == 'invitations') selected @endif>Приглашение на мероприятие</option>
+						<option value="deals" @if ($offer->type == 'deals') selected @endif>Специальное предложение</option>
+					</select>
+					<br><br>
+
 					{{-- date --}}
 					<div class="row">
 						<div class="col-md-6">
@@ -50,6 +62,12 @@
 							<input type="date" name="date_end" class="form-control" value="{{ $offer->date_end->format('Y-m-d') }}">
 						</div>
 					</div>
+					<br><br>
+
+					{{-- no_time --}}
+					<label for="no_time">Показывать время действия акции</label><br>
+					<input type="radio" name="no_time" value="0" @if ($offer->no_time == 0) checked @endif> Да<br>
+					<input type="radio" name="no_time" value="1" @if ($offer->no_time == 1) checked @endif> Нет<br>
 
 					<br><br>
 					<input type="submit" value="Сохранить изменения">

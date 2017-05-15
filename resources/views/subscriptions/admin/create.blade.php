@@ -51,7 +51,7 @@ function formatOrganization (org) {
 }
 
 function formatOrganizationSelection (org) {
-	return org.name;
+	return org.name + " - " + org.status;
 }
 
 var select2 = $("#js-data-organizations-ajax");

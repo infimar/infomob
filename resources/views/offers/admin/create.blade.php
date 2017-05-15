@@ -33,6 +33,18 @@
 					<textarea name="description" id="description" class="form-control"></textarea>
 					<br><br>
 
+					{{-- type --}}
+					<label for="type">Тип акции</label>
+					<select name="type" id="type" class="form-control">
+						<option value="default">По умолчанию</option>
+						<option value="kids">Для детей</option>
+						<option value="rest">Отдых</option>
+						<option value="preview">Превью компании</option>
+						<option value="invitations">Приглашение на мероприятие</option>
+						<option value="deals">Специальное предложение</option>
+					</select>
+					<br><br>
+
 					{{-- date --}}
 					<div class="row">
 						<div class="col-md-6">
@@ -44,6 +56,12 @@
 							<input type="date" name="date_end" class="form-control">
 						</div>
 					</div>
+					<br><br>
+
+					{{-- no_time --}}
+					<label for="no_time">Показывать время действия акции</label><br>
+					<input type="radio" name="no_time" value="0"> Да<br>
+					<input type="radio" name="no_time" value="1" checked> Нет<br>
 
 					<br><br>
 					<input type="submit" value="Создать">

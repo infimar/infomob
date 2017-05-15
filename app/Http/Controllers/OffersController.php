@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use JavaScript;
+use App\Branch;
 use App\Offer;
 use App\City;
 use Flash;
@@ -121,6 +122,7 @@ class OffersController extends AdminController
     public function store(Request $request)
     {
         $input = $request->all();
+        // dd($input);
 
         // TODO: validation
         // TODO: date start and end validation!
@@ -139,10 +141,18 @@ class OffersController extends AdminController
         // save new offer
         DB::beginTransaction();
 
+        // get primary branch
+        $branch = Branch::where('organization_id', $input['organization_id'])
+            ->where('type', 'main')
+            ->orderBy('id', 'ASC')->first();
+
         $offer = Offer::create([
             'organization_id' => $input['organization_id'],
+            'branch_id' => $branch->id,
             'image' => $filename,
             'description' => $input['description'],
+            'type' => $input['type'],
+            'no_time' => $input['no_time'],
             'date_start' => $input['date_start'],
             'date_end' => $input['date_end']
         ]);
@@ -246,6 +256,8 @@ class OffersController extends AdminController
             $offer->description = $input['description'];
             $offer->date_start = $input['date_start'];
             $offer->date_end = $input['date_end'];
+            $offer->type = $input['type'];
+            $offer->no_time = $input['no_time'];
 
             if ($imageWasChanged) { $offer->image = $newImage; }
             
