@@ -42,7 +42,7 @@ class OffersController extends AdminController
         $today = Carbon::now();
 
         $query = Offer::with(['organization', 'cities' => function($q) { $q->orderBy('order'); }])
-            ->where('date_end', '>=', $today->format('Y-m-d'))->where('status', 'published');
+            ->where('date_end', '>=', $today->format('Y-m-d'));
 
         // sort
         if ($request->has('sort')) 
@@ -62,7 +62,7 @@ class OffersController extends AdminController
                 case 'organization_id':
                     $column->setLabel('Организация');
                     $column->setRenderer(function($model) {
-                        return '<a href="' . route('admin.offers.edit', ['id' => $model->id]) . '">' . $model->organization->name . '</a>';
+                        return '<a href="' . route('admin.offers.edit', ['id' => $model->id]) . '">' . $model->organization_id . '</a>';
                     });
                     break;
                 

@@ -10,9 +10,6 @@
 <hr>
 <div class="row">
 	<div class="col-md-12">
-		<!-- TODO: FILTER: organization name, city, date_start, date_end -->
-		{{-- <p>[Cities dropdown for filtering]</p> --}}
-
 		{!! $table->render() !!}
 	</div>
 </div>
