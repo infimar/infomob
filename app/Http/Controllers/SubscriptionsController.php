@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use Exception;
 use Flash;
 
-class SubscriptionsController extends Controller
+class SubscriptionsController extends AdminController
 {
     /**
      * Display a listing of the resource.
