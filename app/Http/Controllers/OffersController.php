@@ -48,7 +48,7 @@ class OffersController extends AdminController
         if ($request->has('sort')) 
             $query->sorted();
         else 
-            $query->sorted('id', 'DESC');
+            $query->sorted('id', 'ASC');
             
         $offers = $query->paginate();
         $table = Table::create($offers, ['organization_id', 'cities', 'date_start', 'date_end']);
