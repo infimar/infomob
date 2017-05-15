@@ -24,7 +24,7 @@ class OrganizationsController extends AdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
     	$city = $this->city;
         $category = $this->category;

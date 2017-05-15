@@ -16,7 +16,7 @@ class AdminController extends InfomobController
     	$this->initFilter();
     }
 
-    public function index()
+    public function index(Request $request)
     {
     	return view('layouts.admin.index');
     }

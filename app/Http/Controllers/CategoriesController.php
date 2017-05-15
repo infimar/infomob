@@ -18,7 +18,7 @@ class CategoriesController extends AdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $categories = Category::roots()->get();
 
