@@ -42,13 +42,13 @@ class OffersController extends AdminController
         $today = Carbon::now();
 
         $query = Offer::with(['organization', 'cities' => function($q) { $q->orderBy('order'); }])
-            ->where('date_end', '>=', $today->format('Y-m-d'))->orderBy('id', 'DESC');
+            ->where('date_end', '>=', $today->format('Y-m-d'));
 
         // sort
         if ($request->has('sort')) 
             $query->sorted();
         else 
-            $query->sorted('date_start', 'ASC');
+            $query->sorted('id', 'DESC');
             
         $offers = $query->paginate();
         $table = Table::create($offers, ['organization_id', 'cities', 'date_start', 'date_end']);
