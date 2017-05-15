@@ -154,7 +154,7 @@
 						{{ App\Category::statuses($branch->status) }}
 					</span>
 				</td>
-				<td>{{ $branch->created_at->format('d/m/Y H:i:s') }}</td>
+				<td>@if ($branch->created_at) {{ $branch->created_at->format('d/m/Y H:i:s') }} @endif</td>
 				<td width="200px">
 					<a href="/admin/branches/{{ $branch->id }}/edit" class="btn btn-sm btn-default" title="Редактировать"><i class="fa fa-pencil"></i></a>
 					<a href="/admin/branches/{{ $branch->id }}/remove" class="btn_remove btn btn-sm btn-default" title="Удалить"><i class="fa fa-trash"></i></a>
