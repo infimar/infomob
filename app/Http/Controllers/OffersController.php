@@ -42,7 +42,7 @@ class OffersController extends AdminController
         $today = Carbon::now();
 
         $query = Offer::with(['organization', 'cities' => function($q) { $q->orderBy('order'); }])
-            ->where('date_end', '>=', $today->format('Y-m-d'));
+            ->where('date_end', '>=', $today->format('Y-m-d'))->where('status', 'published');
 
         // sort
         if ($request->has('sort')) 
