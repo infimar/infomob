@@ -334,7 +334,7 @@ class HomeController extends InfomobController
             // inc hits
             $branch->hits += 1;
             $branch->save();
-            dd($branch);
+            // dd($branch);
 
             JavaScript::put(['pointLat' => $branch->lat, 'pointLng' => $branch->lng]);
             
